@@ -15,8 +15,16 @@ ROOT = Path(__file__).resolve().parent.parent
 class JudgeEvalTests(unittest.TestCase):
     def test_prompt_contains_rubric_response_and_json_contract(self) -> None:
         rubric = {"required_findings": [{"id": "focus", "points": 2, "kind": "defect", "expected_severity": "P1"}], "forbidden_claims": ["claims compliance"]}
-        prompt = build_prompt("sample", rubric, "Candidate response")
+        prompt = build_prompt(
+            "sample",
+            "Original task text",
+            "Fixture source text",
+            rubric,
+            "Candidate response",
+        )
         self.assertIn("Candidate response", prompt)
+        self.assertIn("Original task text", prompt)
+        self.assertIn("Fixture source text", prompt)
         self.assertIn(json.dumps(rubric, indent=2), prompt)
         self.assertIn("Return JSON only", prompt)
 
@@ -46,12 +54,12 @@ class JudgeEvalTests(unittest.TestCase):
             result = subprocess.run(
                 [
                     "python3",
-                    "scripts/judge_eval.py",
+                    str(ROOT / "scripts/judge_eval.py"),
                     "android-compose-review",
-                    str(response),
-                    str(output),
+                    response.name,
+                    output.name,
                 ],
-                cwd=ROOT,
+                cwd=temporary,
                 env=environment,
                 text=True,
                 capture_output=True,

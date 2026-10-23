@@ -9,7 +9,13 @@ import subprocess
 import sys
 
 
-def build_prompt(eval_id: str, rubric: dict[str, object], response: str) -> str:
+def build_prompt(
+    eval_id: str,
+    task_prompt: str,
+    fixture: str,
+    rubric: dict[str, object],
+    response: str,
+) -> str:
     schema = {
         "matched_findings": [{"id": "finding-id", "severity": "P1"}],
         "forbidden_claims": ["verbatim unsupported claim from the response"],
@@ -19,7 +25,10 @@ def build_prompt(eval_id: str, rubric: dict[str, object], response: str) -> str:
         "Do not reward findings that are absent, vague, or unsupported. Use severity only when the rubric "
         "defines one; otherwise omit it. Return JSON only with this shape:\n"
         f"{json.dumps(schema, indent=2)}\n\n"
-        f"Evaluation: {eval_id}\nRubric:\n{json.dumps(rubric, indent=2)}\n\n"
+        f"Evaluation: {eval_id}\n\n"
+        f"Original task:\n{task_prompt}\n\n"
+        f"Fixture under review:\n{fixture}\n\n"
+        f"Rubric:\n{json.dumps(rubric, indent=2)}\n\n"
         f"Candidate response:\n{response}"
     )
 
@@ -35,11 +44,15 @@ def main(root: Path, eval_id: str, response_path: Path, result_path: Path) -> in
     if evaluation is None:
         print(f"Unknown eval id: {eval_id}")
         return 2
+    response_path = response_path.resolve()
+    result_path = result_path.resolve()
+    task_prompt = (root / evaluation["prompt"]).read_text(encoding="utf-8")
+    fixture = (root / evaluation["fixture"]).read_text(encoding="utf-8")
     rubric = json.loads((root / evaluation["rubric"]).read_text(encoding="utf-8"))
     response = response_path.read_text(encoding="utf-8")
     completed = subprocess.run(
         shlex.split(command),
-        input=build_prompt(eval_id, rubric, response),
+        input=build_prompt(eval_id, task_prompt, fixture, rubric, response),
         text=True,
         capture_output=True,
         check=False,
