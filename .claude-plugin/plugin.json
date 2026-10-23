@@ -1,6 +1,6 @@
 {
   "name": "mobile-a11y-agent-skills",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Production-focused accessibility agents and skills for Android, iOS, and Kotlin Multiplatform.",
   "author": {
     "name": "VProgrammers"

@@ -31,7 +31,7 @@ The project helps coding agents implement and review accessible native mobile in
 | `mobile-a11y-review` | Cross-platform audit, evidence, severity, and regulatory mapping |
 | `android-a11y` | Compose/Views semantics, focus, actions, scaling, input, WebView, and testing |
 | `ios-a11y` | SwiftUI/UIKit structure, focus, actions, Dynamic Type, audits, and device checks |
-| `kmp-a11y` | Shared state with native UI, expect/actual decisions, export, SKIE, and dependency boundaries |
+| `kmp-a11y` | Shared state with native UI, Compose Multiplatform shared UI (draft), expect/actual decisions, export, SKIE, and dependency boundaries |
 | `mobile-a11y-testing` | Test-layer selection, concrete tools, commands, and evidence limits |
 
 ## Install with Claude Code
@@ -75,7 +75,18 @@ Verify: Compose device test for reachable nodes, then TalkBack navigation on a s
 2. Use the Android and/or iOS implementation agent.
 3. Use `accessibility-test-engineer` to close evidence gaps.
 4. Use `accessibility-reviewer` for an independent final pass.
-5. Run `./scripts/validate.sh` and report device checks separately.
+5. Report device checks separately from automated results.
+
+## Quality checks
+
+| Check | What it covers | Command |
+|---|---|---|
+| Structure | Skill and agent frontmatter, skill names used by agents, reference review dates and sources, manifest versions, eval markers, links | `./scripts/validate.sh` |
+| Android samples | Reference examples and eval fixtures compile; Robolectric semantics tests | `cd samples/android && ./gradlew assembleDebug testDebugUnitTest` |
+| iOS samples | Reference examples and eval fixture compile; XCTest property tests | `./samples/ios/test.sh` |
+| Evals | Agent finds seeded defects without invented evidence; one negative control | Manual, see [evals/README.md](evals/README.md) |
+
+CI runs the first three on every pull request.
 
 ## Non-goals
 
@@ -83,6 +94,7 @@ Verify: Compose device test for reachable nodes, then TalkBack navigation on a s
 - Simulating exact TalkBack or VoiceOver speech without device verification.
 - Replacing testing with disabled users.
 - Forcing identical Android and iOS accessibility implementations.
+- Flutter, React Native, and other non-Kotlin cross-platform UI frameworks.
 - Providing legal advice.
 
 ## License

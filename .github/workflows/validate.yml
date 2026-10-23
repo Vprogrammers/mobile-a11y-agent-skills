@@ -1,4 +1,4 @@
-name: Validate skills
+name: Validate
 
 on:
   pull_request:
@@ -10,8 +10,30 @@ permissions:
 
 jobs:
   validate:
+    name: Skills, agents, evals, and links
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Validate skill structure and links
-        run: ./scripts/validate.sh
+      - run: ./scripts/validate.sh
+
+  android-samples:
+    name: Android samples and fixtures
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: samples/android
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+      - run: ./gradlew --console=plain assembleDebug testDebugUnitTest
+
+  ios-samples:
+    name: iOS samples and fixtures
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./samples/ios/test.sh

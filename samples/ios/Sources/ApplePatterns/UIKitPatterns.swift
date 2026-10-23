@@ -1,0 +1,81 @@
+import UIKit
+
+// Compiled counterparts of the UIKit guidance in apple-patterns.md.
+
+/// Dynamic Type label using UIFontMetrics with a custom base font.
+@MainActor
+public func makeScalableLabel(text: String, baseFont: UIFont = .systemFont(ofSize: 17, weight: .semibold)) -> UILabel {
+    let label = UILabel()
+    label.text = text
+    label.numberOfLines = 0
+    label.font = UIFontMetrics(forTextStyle: .body).scaledFont(for: baseFont)
+    label.adjustsFontForContentSizeCategory = true
+    return label
+}
+
+/// Custom modal container that keeps VoiceOver inside it while presented.
+public final class ModalCardView: UIView {
+    public let titleLabel = UILabel()
+
+    public override init(frame: CGRect) {
+        super.init(frame: frame)
+        accessibilityViewIsModal = true
+        titleLabel.accessibilityTraits.insert(.header)
+        addSubview(titleLabel)
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) is not supported")
+    }
+
+    /// Move VoiceOver to the card after presentation; this is a major context change.
+    public func announcePresented() {
+        UIAccessibility.post(notification: .screenChanged, argument: titleLabel)
+    }
+}
+
+/// Custom adjustable control: one leaf element with value and increment/decrement.
+public final class StepperView: UIView {
+    public private(set) var value: Int
+    public let range: ClosedRange<Int>
+
+    public init(value: Int, range: ClosedRange<Int>) {
+        self.value = value
+        self.range = range
+        super.init(frame: .zero)
+        isAccessibilityElement = true
+        accessibilityLabel = "Quantity"
+        accessibilityTraits.insert(.adjustable)
+        updateAccessibilityValue()
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) is not supported")
+    }
+
+    public override func accessibilityIncrement() {
+        value = min(value + 1, range.upperBound)
+        updateAccessibilityValue()
+    }
+
+    public override func accessibilityDecrement() {
+        value = max(value - 1, range.lowerBound)
+        updateAccessibilityValue()
+    }
+
+    private func updateAccessibilityValue() {
+        accessibilityValue = "\(value)"
+    }
+}
+
+/// Row with a secondary action exposed as a custom action instead of a swipe only.
+@MainActor
+public func addArchiveAction(to row: UIView, onArchive: @escaping @MainActor () -> Void) {
+    let archive = UIAccessibilityCustomAction(name: "Archive") { _ in
+        onArchive()
+        return true
+    }
+    row.accessibilityCustomActions = (row.accessibilityCustomActions ?? []) + [archive]
+}
