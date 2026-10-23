@@ -1,19 +1,26 @@
 ---
 name: mobile-a11y-review
-description: Review native Android, iOS, or Kotlin Multiplatform UI changes for accessibility barriers, sensitive-data exposure, semantics, focus, scaling, contrast, motion, input, and testing gaps. Use before pull requests, releases, or after accessibility regressions.
+description: Review native Android, iOS, or Kotlin Multiplatform UI for accessibility barriers and testing gaps. Use for pull requests, releases, regressions, WCAG 2.2 or EN 301 549 mapping, TalkBack or VoiceOver failures, semantics, focus, scaling, contrast, motion, navigation, media, input, WebView, or sensitive-data changes.
 ---
 
 # Review mobile accessibility
 
-1. Identify platforms, UI frameworks, critical flows, sensitive data, and supported OS versions.
-2. Inspect standard-control usage before custom semantics.
-3. Trace the accessibility tree, focus order, state changes, error handling, and alternative input.
-4. Check text scaling, reflow, contrast, non-color cues, target sizes, motion, and transparency.
-5. Inspect autofill, keyboard, paste, masking, logging, and announcements for sensitive fields.
-6. Compare Android and iOS product requirements without requiring identical APIs.
-7. Inspect automated coverage and list real-device checks separately.
-8. Report P0, P1, P2, and Note findings with minimal fixes.
+1. Establish the changed scope, supported platforms, UI frameworks, critical flows, sensitive data, and OS versions.
+2. Identify affected users and assistive technologies before judging implementation details.
+3. Inspect standard-control usage, accessibility tree, focus order, labels, values, states, actions, errors, and alternatives to gestures.
+4. Check scaling, reflow, contrast, non-color cues, target size, orientation, motion, audio, media, keyboard, switch, and voice input.
+5. Check navigation, sheets, dialogs, lists, sliders, charts, custom drawing, WebView boundaries, and asynchronous updates.
+6. Inspect privacy, autofill, clipboard, masking, logging, analytics, and announcements for sensitive data.
+7. Map findings to standards only when useful and never infer legal applicability from WCAG alone.
+8. Separate static evidence, automated checks, simulator observations, and real-device results.
 
-Read [references/review-checklist.md](references/review-checklist.md) for detailed evidence prompts.
+Use these severities:
 
-Do not claim legal compliance or exact screen-reader speech from code review alone.
+- **P0**: blocks a critical flow, exposes sensitive data, or makes functionality unavailable without a reasonable alternative.
+- **P1**: creates a substantial barrier for an affected user group.
+- **P2**: degrades usability, consistency, resilience, or maintainability.
+- **Note**: optional improvement without a demonstrated barrier.
+
+For each finding report: severity, file/location, affected users and technology, evidence, relevant criterion when appropriate, smallest viable fix, and verification method. End with blockers, device checks, and residual risk.
+
+Read [references/review-checklist.md](references/review-checklist.md). Read [references/regulatory-landscape.md](references/regulatory-landscape.md) before making standards or legal claims.
