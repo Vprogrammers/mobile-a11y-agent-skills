@@ -21,6 +21,17 @@ Use these severities:
 - **P2**: degrades usability, consistency, resilience, or maintainability.
 - **Note**: optional improvement without a demonstrated barrier.
 
-For each finding report: severity, file/location, affected users and technology, evidence, relevant criterion when appropriate, smallest viable fix, and verification method. End with blockers, device checks, and residual risk.
+Report each finding in this format:
+
+```text
+<severity> — <file>:<line or symbol>
+Affected users: <users and assistive technologies>
+Evidence: <what the code proves; mark assumptions>
+Criterion: <WCAG/EN 301 549 reference, only when useful>
+Fix: <smallest viable change>
+Verify: <automated layer, then device check>
+```
+
+End with three sections: **Blockers** (P0/P1, or “No blocking finding found”), **Device checks** (assistive technology, settings, and flow), and **Residual risk**.
 
 Read [references/review-checklist.md](references/review-checklist.md). Read [references/regulatory-landscape.md](references/regulatory-landscape.md) before making standards or legal claims.

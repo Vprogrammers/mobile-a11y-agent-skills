@@ -114,17 +114,14 @@ Text(title)
 - Test VoiceOver entry/exit, headings, forms, zoom, keyboard, errors, authentication, and focus restoration in `WKWebView`.
 - Native accessibility modifiers cannot repair inaccessible DOM content.
 
-## Testing and tools
+## Diagnosis
 
-- Use Accessibility Inspector to inspect hierarchy, labels, values, traits, actions, hit regions, contrast, and audit warnings.
-- Use XCTest for view-model and adapter behavior; use XCUITest for user-visible labels, values, identifiers, actions, flow completion, and focusable structure.
-- Use `performAccessibilityAudit(for:)` on supported Xcode/iOS versions and suppress only narrowly documented false positives.
+- Use Accessibility Inspector to inspect hierarchy, labels, values, traits, actions, hit regions, and contrast before changing modifiers.
 - Keep accessibility identifiers separate from user-facing labels.
-- Manually verify VoiceOver navigation and rotor, Voice Control overlays, Switch Control, Full Keyboard Access, Dynamic Type, Large Content Viewer, Reduce Motion, Increase Contrast, and Reduce Transparency on supported devices.
+- For test-layer choice, XCTest/XCUITest APIs, audits, and evidence limits, invoke the `mobile-a11y-testing` skill.
 
 Official sources:
 
 - Apple accessibility: https://developer.apple.com/accessibility/
 - SwiftUI accessibility: https://developer.apple.com/documentation/swiftui/accessibility
 - UIKit accessibility: https://developer.apple.com/documentation/uikit/accessibility
-- XCUITest audits: https://developer.apple.com/documentation/xctest/xcuiapplication/performaccessibilityaudit(for:)

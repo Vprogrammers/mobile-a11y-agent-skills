@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.0
+
+- Add `samples/android` and `samples/ios`, which compile the reference examples and the Android and iOS eval fixtures, with guard tests tied to rubric finding ids. CI runs both.
+- Require at least one https source in every reference file and skip build output during validation.
+- Add review sources to every reference and move duplicated test guidance into `mobile-a11y-testing`.
+- Add draft Compose Multiplatform shared UI guidance, Swift export status, Android edge-to-edge, predictive back, and keyboard focus visibility.
+- Add a literal report template to `mobile-a11y-review`.
+
 ## 0.5.0
 
 - Separate finding kind from optional P0–P3 severity in eval rubrics.

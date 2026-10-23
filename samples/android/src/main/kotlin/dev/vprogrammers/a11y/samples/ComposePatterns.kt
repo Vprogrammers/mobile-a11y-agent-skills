@@ -1,0 +1,111 @@
+package dev.vprogrammers.a11y.samples
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.autofill.ContentType
+import androidx.compose.ui.semantics.contentType
+import androidx.compose.ui.semantics.error
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.hideFromAccessibility
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.unit.dp
+
+// Compiled counterparts of the "Better" examples in android-patterns.md.
+
+/** One real action: the icon is decorative because the visible text already names it. */
+@Composable
+fun DeleteButton(onDelete: () -> Unit) {
+    Button(onClick = onDelete) {
+        Icon(Icons.Default.Delete, contentDescription = null)
+        Text("Delete")
+    }
+}
+
+/** Add only the missing property instead of replacing descendant semantics. */
+@Composable
+fun SectionHeading(title: String) {
+    Text(title, Modifier.semantics { heading() })
+}
+
+/** Expose state through semantics instead of announcing every change. */
+@Composable
+fun UploadProgress(progressText: String) {
+    Text(progressText, Modifier.semantics { stateDescription = progressText })
+}
+
+/** Reserve live regions for concise, important asynchronous status. */
+@Composable
+fun SyncStatus(message: String) {
+    Text(message, Modifier.semantics { liveRegion = LiveRegionMode.Polite })
+}
+
+/** Grow with font scale instead of clipping at a fixed height. */
+@Composable
+fun ScalableLabel(text: String) {
+    Text(text, Modifier.heightIn(min = 40.dp))
+}
+
+/** Decorative icon next to text that already conveys the meaning. */
+@Composable
+fun FeaturedLabel(text: String) {
+    Column {
+        Icon(Icons.Default.Star, contentDescription = null, modifier = Modifier.semantics { hideFromAccessibility() })
+        Text(text)
+    }
+}
+
+/** Associate the error with its field and keep autofill available. */
+@Composable
+fun PasswordField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    errorMessage: String?,
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text("Password") },
+        isError = errorMessage != null,
+        supportingText = errorMessage?.let { { Text(it) } },
+        visualTransformation = PasswordVisualTransformation(),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        modifier = Modifier.semantics {
+            contentType = ContentType.Password
+            if (errorMessage != null) error(errorMessage)
+        },
+    )
+}
+
+/** Visible one-time code: numeric keyboard without password semantics, autofill allowed. */
+@Composable
+fun OneTimeCodeField(value: String, onValueChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text("Verification code") },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        modifier = Modifier.semantics { contentType = ContentType.SmsOtpCode },
+    )
+}
+
+/** Keep content out from under system bars and the IME once edge-to-edge is enforced. */
+@Composable
+fun EdgeToEdgeContent(content: @Composable () -> Unit) {
+    Column(Modifier.safeDrawingPadding()) { content() }
+}

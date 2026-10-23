@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import json
+import re
 import shutil
 import subprocess
 import tempfile
@@ -24,7 +25,13 @@ class ValidateRepositoryTests(unittest.TestCase):
     def invalid_copy(self, mutate) -> subprocess.CompletedProcess[str]:
         with tempfile.TemporaryDirectory() as directory:
             copy = Path(directory) / "repo"
-            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+            shutil.copytree(
+                ROOT,
+                copy,
+                ignore=shutil.ignore_patterns(
+                    "__pycache__", "*.pyc", ".gradle", ".kotlin", "build", ".build", ".swiftpm", "DerivedData"
+                ),
+            )
             mutate(copy)
             return self.run_validator(copy)
 
@@ -107,6 +114,14 @@ class ValidateRepositoryTests(unittest.TestCase):
 
         result = self.invalid_copy(mutate)
         self.assertIn("invokes missing skill", result.stdout)
+
+    def test_reference_without_source_is_rejected(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "skills/kmp-a11y/references/kmp-boundaries.md"
+            path.write_text(re.sub(r"https://\S+", "removed", path.read_text()))
+
+        result = self.invalid_copy(mutate)
+        self.assertIn("must cite at least one https source", result.stdout)
 
 
 if __name__ == "__main__":
