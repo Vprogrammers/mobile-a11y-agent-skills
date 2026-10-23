@@ -13,7 +13,17 @@ from urllib.request import Request, urlopen
 EXPECTED_REPOSITORY = "https://github.com/Vprogrammers/mobile-a11y-agent-skills"
 MAX_REVIEW_AGE_DAYS = 365
 REQUIRED_EVAL_FIELDS = {"id", "agent", "prompt", "fixture", "rubric", "minimum_score"}
-ALLOWED_SEVERITIES = {"P0", "P1", "P2", "P3", "architecture", "interop", "dependency", "recommendation"}
+ALLOWED_SEVERITIES = {"P0", "P1", "P2", "P3"}
+ALLOWED_FINDING_KINDS = {
+    "architecture",
+    "compliance",
+    "defect",
+    "dependency",
+    "interop",
+    "recommendation",
+    "testing",
+    "verification",
+}
 
 
 def frontmatter(path: Path) -> tuple[list[str], dict[str, str]]:
@@ -179,7 +189,12 @@ def main(root: Path) -> int:
                 finding_ids: set[str] = set()
                 max_score = 0
                 for item in findings:
-                    if not isinstance(item, dict) or set(item) != {"id", "points", "expected_severity"}:
+                    if not isinstance(item, dict) or set(item) != {
+                        "id",
+                        "points",
+                        "kind",
+                        "expected_severity",
+                    }:
                         errors.append(f"Eval {eval_id} has an invalid finding schema")
                         continue
                     finding_id = item["id"]
@@ -193,9 +208,19 @@ def main(root: Path) -> int:
                         errors.append(f"Eval {eval_id} finding {finding_id} points must be a positive integer")
                     else:
                         max_score += points
-                    if item["expected_severity"] not in ALLOWED_SEVERITIES:
+                    if item["kind"] not in ALLOWED_FINDING_KINDS:
+                        errors.append(
+                            f"Eval {eval_id} finding {finding_id} has invalid kind: {item['kind']}"
+                        )
+                    if item["expected_severity"] is not None and item["expected_severity"] not in ALLOWED_SEVERITIES:
                         errors.append(
                             f"Eval {eval_id} finding {finding_id} has invalid severity: {item['expected_severity']}"
+                        )
+                    if item["kind"] == "defect" and item["expected_severity"] is None:
+                        errors.append(f"Eval {eval_id} defect {finding_id} must define expected_severity")
+                    if item["kind"] != "defect" and item["expected_severity"] is not None:
+                        errors.append(
+                            f"Eval {eval_id} non-defect {finding_id} must use null expected_severity"
                         )
                 if isinstance(minimum_score, int) and minimum_score > max_score:
                     errors.append(f"Eval {eval_id} minimum score exceeds rubric maximum")

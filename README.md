@@ -91,7 +91,9 @@ CHECK_EXTERNAL_LINKS=1 ./scripts/validate.sh
 
 Evaluation scenarios live in `evals/`. Each manifest entry points to a prompt, raw code fixture, scoring rubric, minimum score, and forbidden claims. Give only the prompt and fixture to the agent; score the result afterward with the rubric to avoid leaking expected findings.
 
-Record the assessment using rubric finding IDs. Severity is optional for backward compatibility; when supplied, it must match the rubric:
+Rubrics keep finding `kind` separate from severity. Severity is limited to `P0`–`P3` for defects and is `null` for architecture, interop, testing, verification, compliance, dependency, or recommendation criteria.
+
+Record the assessment using rubric finding IDs. Severity is optional for backward compatibility; when supplied for a defect, it must match the rubric:
 
 ```json
 {
@@ -111,10 +113,20 @@ Then calculate deterministic pass/fail:
 
 The scorer is deterministic, but classification is intentionally separate: a human or independent evaluator must map the raw agent response to finding IDs and forbidden claims. This avoids pretending that substring matching can judge review quality.
 
+For an optional end-to-end run, configure any judge CLI that reads the blind judging prompt from standard input and returns the documented JSON result:
+
+```bash
+EVAL_JUDGE_COMMAND='claude -p' \
+  ./scripts/judge_eval.py android-compose-review response.md result.json
+```
+
+The judge is deliberately excluded from CI: model evaluation is nondeterministic, costs money, and requires user-managed credentials. The deterministic scorer still validates its output.
+
 Run repository tests with:
 
 ```bash
 python3 -m unittest discover -s tests -v
+python3 scripts/install_smoke.py .
 ```
 
 The eval set includes positive Android, iOS, KMP, test-strategy, and regulatory cases plus a clean-screen case that penalizes invented findings.
