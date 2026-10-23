@@ -1,17 +1,17 @@
 ---
 name: mobile-a11y-testing
-description: Plan, implement, or review accessibility tests for Android, iOS, and Kotlin Multiplatform, including shared unit tests, Compose semantics, Android device tests, XCTest, XCUITest, automated audits, and manual TalkBack or VoiceOver verification.
+description: Plan, implement, or review accessibility tests for Android, iOS, and Kotlin Multiplatform. Use for Compose semantics tests, enableAccessibilityChecks, Espresso AccessibilityChecks, Android device tests, XCTest, XCUITest, performAccessibilityAudit, Accessibility Inspector, TalkBack or VoiceOver test plans, regression coverage, and CI commands.
 ---
 
 # Test mobile accessibility
 
-1. Define the observable requirement before selecting a test layer.
-2. Use common tests for normalization, state, masking, descriptions, and layout decisions.
-3. Use platform unit or host tests for adapters and semantics construction.
-4. Use Android device tests for framework behavior, Compose UI, autofill, focus, and IME integration.
-5. Use XCTest or Kotlin/Native tests for iOS adapter logic.
-6. Use XCUITest for accessible labels, values, identifiers, actions, flow state, and automated audits.
-7. Reserve actual TalkBack, VoiceOver, Voice Control, Switch Control, keyboard, and autofill behavior for device verification.
-8. Report passed, failed, and skipped checks honestly.
+1. Define the observable requirement and affected user before selecting a test layer.
+2. Discover existing modules, source sets, Gradle tasks, Xcode schemes, destinations, dependencies, and CI environment.
+3. Use common tests for domain state, validation, formatting, privacy, and platform-neutral decisions.
+4. Use Android host tests only when Robolectric or the configured environment supports the required behavior; use instrumentation for framework integration.
+5. Use XCTest for native logic and XCUITest for user-visible accessibility structure and flows.
+6. Run automated scanners/audits as supplemental evidence, triage each result, and suppress narrowly.
+7. Reserve exact TalkBack, VoiceOver, Voice Control, Switch Control/Access, keyboard, and system-service behavior for device verification.
+8. Report passed, failed, skipped, unavailable, and manual checks separately.
 
-Read [references/test-matrix.md](references/test-matrix.md) to choose the narrowest useful layer.
+Read [references/test-matrix.md](references/test-matrix.md) for APIs, discovery commands, and evidence boundaries.

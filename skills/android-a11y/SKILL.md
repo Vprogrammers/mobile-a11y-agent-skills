@@ -1,18 +1,18 @@
 ---
 name: android-a11y
-description: Implement or review Android accessibility in Jetpack Compose or Views, including TalkBack semantics, focus, touch targets, font scaling, autofill, errors, live regions, motion, contrast, and Android host or device testing.
+description: Implement or review Android accessibility in Jetpack Compose or Views. Use for TalkBack or Voice Access problems, contentDescription, semantics, traversal, focus, headings, stateDescription, custom actions, live regions, font scaling, touch targets, autofill, errors, motion, contrast, WebView, accessibility testing, or “TalkBack does not read this”.
 ---
 
 # Implement Android accessibility
 
-1. Prefer native controls and their built-in semantics.
-2. Model one logical control as one accessibility node; hide decorative children.
-3. Expose changing value and state through semantics before adding announcements.
-4. Use live regions only for important asynchronous changes.
-5. Use `FocusRequester` for input focus and accessibility focus APIs only when context changes.
-6. Preserve platform keyboard, paste, selection, and autofill behavior.
-7. Support font scale, RTL, dark theme, remove animations, and 48 dp targets.
-8. Add JVM tests for platform-neutral behavior and device tests for Compose semantics or Android framework behavior.
-9. Verify TalkBack interaction on a real device before claiming speech behavior.
+1. Inspect the rendered semantics/accessibility tree before adding labels or announcements.
+2. Prefer native controls and preserve built-in role, state, action, focus, keyboard, selection, and autofill behavior.
+3. Model each logical control as one usable node; merge or clear semantics only with a verified result.
+4. Expose state and errors through semantics; reserve live regions and announcements for important asynchronous changes.
+5. Treat input focus and TalkBack accessibility focus as different systems. Do not claim Compose can directly request TalkBack focus through a stable public API.
+6. Support large font, RTL, dark theme, reduced/remove animations, keyboard, Switch Access, Voice Access, and 48 dp touch targets.
+7. Test custom controls, lists, dialogs, sheets, sliders, charts, WebViews, and navigation boundaries on representative API levels.
+8. Use host tests only when their environment supports the required UI behavior; use device tests for framework integration.
+9. Verify TalkBack and Voice Access on a real device before claiming actual announcements or navigation behavior.
 
-Read [references/android-patterns.md](references/android-patterns.md) for API-level guidance.
+Read [references/android-patterns.md](references/android-patterns.md) for APIs, traps, and bad-to-good examples.

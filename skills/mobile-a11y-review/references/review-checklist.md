@@ -1,41 +1,44 @@
 # Mobile accessibility review checklist
 
-## Semantics
+## Structure and semantics
 
-- Prefer one logical element for one logical control.
-- Hide decorative children from assistive technology.
-- Expose role, label, value, state, and available actions without repetition.
-- Use hints only when the result of an action is not already clear.
-- Keep dynamic values concise and localizable.
+- Prefer one logical element per logical control; group only when the result has one meaning and action.
+- Expose concise name, role, value, state, actions, and relationships without duplicating visible text or native speech.
+- Hide decorative content while preserving meaningful imagery, charts, status, and validation.
+- Check headings, landmarks/containers, lists, collection position, modal boundaries, and reading order.
+- Verify custom controls expose the same operability and state as their native equivalents.
 
 ## Navigation and input
 
-- Follow a logical focus order independent of visual animation.
-- Preserve keyboard, Switch Control, Voice Control, and external-input access.
-- Keep touch targets at least 48 dp on Android and 44 pt on Apple platforms.
-- Avoid custom gestures as the only way to perform an action.
+- Preserve logical focus through navigation, sheets, dialogs, lazy lists, updates, and restored state.
+- Avoid moving accessibility focus for ordinary value changes.
+- Support keyboard, Switch Control/Switch Access, Voice Control/Voice Access, and external input.
+- Provide alternatives to drag, multi-pointer, path-based, timed, and device-motion gestures.
+- Keep Android targets at least 48 dp and Apple targets at least 44 pt as platform design baselines. Do not present these as a literal conversion of WCAG CSS pixels.
 
 ## Visual access
 
-- Support font scaling and Dynamic Type without clipping or loss of actions.
-- Do not communicate state only through color.
-- Check 4.5:1 text contrast and 3:1 meaningful graphics or focus indicators where applicable.
-- Respect reduced motion, increased contrast, and reduced transparency.
+- Test large font and accessibility text sizes without clipped text, lost actions, or horizontal scrolling for ordinary text.
+- Avoid fixed-height text containers. Test orientation and narrow widths.
+- Do not communicate state only through color, position, shape, sound, or animation.
+- Evaluate text contrast, non-text contrast, focus visibility, dynamic colors, images, disabled states, and overlays in context.
+- Respect reduced motion, increased contrast, reduced transparency, bold text, and dark appearance where supported.
 
-## State changes
+## Content and flows
 
-- Announce important asynchronous results and errors without flooding speech.
-- Avoid moving accessibility focus unless context genuinely changes.
-- Clear stale errors when the user corrects input.
-- Preserve focus through recomposition, updates, and navigation.
+- Test errors, loading, empty states, confirmations, timeouts, session expiry, destructive actions, and asynchronous changes.
+- Provide captions, transcripts, audio description, playback controls, and non-audio alternatives where media requires them.
+- Give charts, maps, canvas, and custom drawing an equivalent textual or structured representation.
+- Verify focus transitions into and out of WebViews and that web content does not create a second inaccessible navigation model.
+- Preserve accessible authentication: allow paste, autofill, password managers, and alternatives to memory or transcription tasks.
 
-## Sensitive input
+## Privacy
 
-- Keep visible and accessibility masking aligned.
-- Do not log, persist, analytics-track, or announce secrets unexpectedly.
-- Prefer platform autofill APIs over reading messages or clipboard data.
-- Treat OTP, password, payment, identity, and health fields as sensitive.
+- Do not log, persist, analytics-track, copy, or announce secrets unexpectedly.
+- Align visual and accessibility masking.
+- Use platform-supported autofill and consent-based flows instead of broad message or clipboard access.
 
 ## Evidence
 
-Distinguish static findings, automated test evidence, simulator results, and real-device observations.
+- Distinguish static findings, unit tests, semantics/XCUITest evidence, scanner/audit results, simulator observations, and real-device assistive-technology results.
+- Automated tools detect only a subset of barriers. Record OS, device, app build, assistive technology, settings, steps, expected result, and actual result for manual evidence.

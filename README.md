@@ -2,79 +2,88 @@
 
 Production-focused accessibility agents and skills for Android, iOS, and Kotlin Multiplatform.
 
-The project helps AI coding agents implement and review accessible native mobile interfaces instead of applying web accessibility rules blindly. It covers Jetpack Compose, Android Views, SwiftUI, UIKit, Kotlin Multiplatform boundaries, TalkBack, VoiceOver, Voice Control, Switch Control, Dynamic Type, font scaling, reduced motion, contrast, autofill, focus, and device testing.
+The project helps coding agents implement and review accessible native mobile interfaces instead of applying a web checklist blindly. It covers Compose, Android Views, SwiftUI, UIKit, KMP boundaries, TalkBack, VoiceOver, Voice Access/Control, Switch Access/Control, Dynamic Type, font scaling, reduced motion, contrast, autofill, focus, testing, and standards-aware reporting.
 
-> Early release: APIs and instructions may evolve while the skills are validated against real projects.
+> Early release: verify version-sensitive APIs and real assistive-technology behavior in the target project and on supported devices.
 
-## What makes this different
+## Why use it
 
-- Native mobile accessibility, not an ARIA checklist adapted to mobile.
-- Shared product requirements with platform-native implementations.
-- Clear separation between what automated tests can prove and what requires a real device.
-- KMP guidance for deciding what belongs in common code and what must stay in Android or iOS code.
-- Implementation, testing, architecture, and independent review agents.
-- Privacy-aware guidance for OTP, passwords, payment fields, and other sensitive input.
+- Native mobile guidance with concrete platform APIs and failure modes.
+- Shared product requirements with platform-native implementation boundaries.
+- Explicit separation of static, automated, simulator, and real-device evidence.
+- WCAG 2.2, EN 301 549, EAA, ADA Title II, and Section 508 context without false compliance claims.
+- Privacy-aware guidance for credentials, payments, identity, health, and other sensitive data.
 
-## Included agents
+## Agents
 
 | Agent | Use it for |
 |---|---|
-| `kmp-a11y-architect` | Shared contracts, source-set boundaries, dependencies, and Swift interop |
-| `android-a11y-engineer` | Compose or Views implementation and TalkBack behavior |
-| `ios-a11y-engineer` | SwiftUI or UIKit implementation and VoiceOver behavior |
-| `accessibility-test-engineer` | Unit, semantics, UI, and device-test coverage |
-| `accessibility-reviewer` | Independent review before a pull request or release |
+| `kmp-a11y-architect` | Shared contracts, source-set boundaries, dependencies, Swift export/SKIE, and interop |
+| `android-a11y-engineer` | Compose or Views implementation and TalkBack/Voice Access behavior |
+| `ios-a11y-engineer` | SwiftUI or UIKit implementation and VoiceOver/Voice Control behavior |
+| `accessibility-test-engineer` | Unit, semantics, UI, audit, and device-test coverage |
+| `accessibility-reviewer` | Independent, severity-based review before a pull request or release |
 
-## Included skills
+## Skills
 
 | Skill | Focus |
 |---|---|
-| `mobile-a11y-review` | Cross-platform audit workflow and severity-based findings |
-| `android-a11y` | TalkBack, Compose semantics, Views, focus, autofill, and Android testing |
-| `ios-a11y` | VoiceOver, Voice Control, SwiftUI, UIKit, Dynamic Type, and XCUITest |
-| `kmp-a11y` | Shared accessibility contracts with native UI and safe Swift interop |
-| `mobile-a11y-testing` | Automated and manual verification across Android and iOS |
+| `mobile-a11y-review` | Cross-platform audit, evidence, severity, and regulatory mapping |
+| `android-a11y` | Compose/Views semantics, focus, actions, scaling, input, WebView, and testing |
+| `ios-a11y` | SwiftUI/UIKit structure, focus, actions, Dynamic Type, audits, and device checks |
+| `kmp-a11y` | Shared state with native UI, expect/actual decisions, export, SKIE, and dependency boundaries |
+| `mobile-a11y-testing` | Test-layer selection, concrete tools, commands, and evidence limits |
 
 ## Install with Claude Code
 
-Add the repository as a plugin marketplace:
-
 ```text
 /plugin marketplace add Vprogrammers/mobile-a11y-agent-skills
+/plugin install mobile-a11y-agent-skills@vprogrammers-mobile-a11y
 ```
 
-Then install the plugin from the marketplace UI. You can also copy the required folders into a project:
+Or copy `agents/*` to `.claude/agents/` and `skills/*` to `.claude/skills/`.
+
+The agents invoke skills by name, so they work from plugin installation or copied project directories without repository-relative paths.
+
+## Example prompts
 
 ```text
-.claude/
-├── agents/
-└── skills/
+Use accessibility-reviewer to review this PR. Separate proven findings from device checks.
 ```
 
-Copy this repository's `agents/*` into `.claude/agents/` and `skills/*` into `.claude/skills/`.
+```text
+Use android-a11y-engineer to fix the TalkBack order in this Compose screen without changing the shared API.
+```
 
-## Use with other agents
+```text
+Use kmp-a11y-architect to decide whether reduced-motion state belongs behind an interface or expect/actual.
+```
 
-The skills use the open `SKILL.md` format. Copy an individual skill directory into the skill location used by Codex, Cursor, or another compatible coding agent. Agent markdown files are Claude Code-specific; the underlying skills are intentionally tool-agnostic.
+Example reviewer finding:
 
-## Recommended workflow
+```text
+P1 — CheckoutDialog.kt:84
+Affected users: TalkBack and keyboard users.
+Evidence: the custom overlay does not expose a modal boundary, so focus reaches content behind it.
+Fix: use a platform dialog or add the correct modal/window semantics and restore focus on dismissal.
+Verify: Compose device test for reachable nodes, then TalkBack navigation on a supported device.
+```
 
-1. Use `kmp-a11y-architect` when public APIs, dependencies, or source-set boundaries change.
+## Workflow
+
+1. Use `kmp-a11y-architect` when public APIs, exports, dependencies, or source-set ownership change.
 2. Use the Android and/or iOS implementation agent.
-3. Use `accessibility-test-engineer` to close coverage gaps.
+3. Use `accessibility-test-engineer` to close evidence gaps.
 4. Use `accessibility-reviewer` for an independent final pass.
-5. Report automated results separately from manual device verification.
+5. Run `./scripts/validate.sh` and report device checks separately.
 
 ## Non-goals
 
-- Claiming WCAG or legal compliance from static code review alone.
-- Simulating real TalkBack or VoiceOver speech without device verification.
-- Replacing disabled-user testing.
+- Claiming WCAG, EAA, ADA, Section 508, or EN 301 549 compliance from static review alone.
+- Simulating exact TalkBack or VoiceOver speech without device verification.
+- Replacing testing with disabled users.
 - Forcing identical Android and iOS accessibility implementations.
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md). Keep skills concise, sourced from platform behavior, and explicit about verification limits.
+- Providing legal advice.
 
 ## License
 
