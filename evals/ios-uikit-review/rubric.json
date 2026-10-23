@@ -1,0 +1,13 @@
+{
+  "required_findings": [
+    {"id": "generic-avatar-label", "points": 2, "expected_severity": "P2"},
+    {"id": "fixed-font-no-dynamic-type", "points": 2, "expected_severity": "P1"},
+    {"id": "gesture-backed-view-not-button", "points": 2, "expected_severity": "P1"},
+    {"id": "verification-covers-voiceover-and-voice-control", "points": 2, "expected_severity": "recommendation"}
+  ],
+  "forbidden_claims": [
+    "Claims green text alone proves a color-only status failure without inspecting surrounding UI",
+    "Claims an accessibility identifier is a user-facing label",
+    "Claims exact VoiceOver speech"
+  ]
+}

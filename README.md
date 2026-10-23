@@ -83,7 +83,7 @@ Verify: Compose device test for reachable nodes, then TalkBack navigation on a s
 ./scripts/validate.sh
 ```
 
-The validator checks skill and agent metadata, duplicate names, local links, plugin version consistency, review dates, executable permissions, and eval manifests/rubrics. External links are intentionally optional to keep pull-request CI deterministic:
+The validator checks skill and agent metadata, invoked skill names, duplicate names, local links, plugin version consistency, required review dates, executable permissions, and typed eval manifests/rubrics. External links are intentionally optional to keep pull-request CI deterministic; a scheduled workflow checks them monthly:
 
 ```bash
 CHECK_EXTERNAL_LINKS=1 ./scripts/validate.sh
@@ -91,11 +91,14 @@ CHECK_EXTERNAL_LINKS=1 ./scripts/validate.sh
 
 Evaluation scenarios live in `evals/`. Each manifest entry points to a prompt, raw code fixture, scoring rubric, minimum score, and forbidden claims. Give only the prompt and fixture to the agent; score the result afterward with the rubric to avoid leaking expected findings.
 
-Record the assessment using rubric finding IDs:
+Record the assessment using rubric finding IDs. Severity is optional for backward compatibility; when supplied, it must match the rubric:
 
 ```json
 {
-  "matched_findings": ["gesture-only-help", "non-modal-overlay"],
+  "matched_findings": [
+    {"id": "gesture-only-help", "severity": "P1"},
+    {"id": "non-modal-overlay", "severity": "P1"}
+  ],
   "forbidden_claims": []
 }
 ```
@@ -105,6 +108,16 @@ Then calculate deterministic pass/fail:
 ```bash
 ./scripts/score_eval.py android-compose-review result.json
 ```
+
+The scorer is deterministic, but classification is intentionally separate: a human or independent evaluator must map the raw agent response to finding IDs and forbidden claims. This avoids pretending that substring matching can judge review quality.
+
+Run repository tests with:
+
+```bash
+python3 -m unittest discover -s tests -v
+```
+
+The eval set includes positive Android, iOS, KMP, test-strategy, and regulatory cases plus a clean-screen case that penalizes invented findings.
 
 ## Non-goals
 

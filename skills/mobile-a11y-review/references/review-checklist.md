@@ -1,5 +1,7 @@
 # Mobile accessibility review checklist
 
+Last reviewed: 2026-10-23
+
 ## Structure and semantics
 
 - Prefer one logical element per logical control; group only when the result has one meaning and action.
