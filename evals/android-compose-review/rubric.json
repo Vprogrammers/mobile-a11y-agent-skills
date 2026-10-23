@@ -2,7 +2,7 @@
   "required_findings": [
     {"id": "fixed-height-text", "points": 2, "kind": "defect", "criteria": "Identifies that fixed text height can clip content at larger font scales and recommends content-driven sizing.", "expected_severity": "P1"},
     {"id": "unstable-lazy-list-identity", "points": 2, "kind": "defect", "criteria": "Identifies missing stable item identity as a focus-continuity risk when the lazy list changes.", "expected_severity": "P2"},
-    {"id": "duplicate-delete-semantics", "points": 2, "kind": "defect", "criteria": "Identifies that both the icon and surrounding action expose the delete control, producing duplicate accessibility nodes or actions.", "expected_severity": "P1"},
+    {"id": "duplicate-delete-semantics", "points": 2, "kind": "defect", "criteria": "Identifies that the delete icon's content description repeats the adjacent visible delete text, causing redundant screen-reader output, and recommends exposing one clear accessible label for the action.", "expected_severity": "P1"},
     {"id": "gesture-only-help", "points": 2, "kind": "defect", "criteria": "Identifies help that is available only through a gesture and requires an equivalent accessible action or control.", "expected_severity": "P1"},
     {"id": "non-modal-overlay", "points": 2, "kind": "defect", "criteria": "Identifies that the custom overlay lacks a modal focus boundary and allows navigation to background content.", "expected_severity": "P1"}
   ],
