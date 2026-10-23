@@ -59,6 +59,51 @@ class ScoreEvalTests(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 2)
 
+    def test_non_defect_severity_is_invalid(self) -> None:
+        result = self.run_score(
+            "clean-compose-review",
+            {
+                "matched_findings": [
+                    {"id": "recognizes-no-proven-blocker", "severity": "P3"},
+                ],
+                "forbidden_claims": [],
+            },
+        )
+        self.assertEqual(result.returncode, 2)
+
+    def test_non_string_forbidden_claim_is_invalid(self) -> None:
+        result = self.run_score(
+            "android-compose-review",
+            {"matched_findings": [], "forbidden_claims": [{"claim": "invalid"}]},
+        )
+        self.assertEqual(result.returncode, 2)
+
+    def test_invalid_json_and_missing_file_are_reported_without_traceback(self) -> None:
+        with tempfile.NamedTemporaryFile("w", suffix=".json", encoding="utf-8") as file:
+            file.write("not-json")
+            file.flush()
+            invalid = subprocess.run(
+                ["python3", str(SCRIPT), "android-compose-review", file.name],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+        self.assertEqual(invalid.returncode, 2)
+        self.assertIn("Cannot score evaluation", invalid.stdout)
+        self.assertNotIn("Traceback", invalid.stderr)
+
+        missing = subprocess.run(
+            ["python3", str(SCRIPT), "android-compose-review", "/missing/result.json"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(missing.returncode, 2)
+        self.assertIn("Cannot score evaluation", missing.stdout)
+        self.assertNotIn("Traceback", missing.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()

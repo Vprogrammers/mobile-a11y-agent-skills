@@ -21,6 +21,9 @@ def main(root: Path, eval_id: str, result_source: str) -> int:
     rubric = json.loads((root / evaluation["rubric"]).read_text(encoding="utf-8"))
     result_text = sys.stdin.read() if result_source == "-" else Path(result_source).read_text(encoding="utf-8")
     result = json.loads(result_text)
+    if not isinstance(result, dict):
+        print("Result must be a JSON object")
+        return 2
     if set(result) - {"matched_findings", "forbidden_claims"}:
         print(f"Unknown result fields: {', '.join(sorted(set(result) - {'matched_findings', 'forbidden_claims'}))}")
         return 2
@@ -35,7 +38,11 @@ def main(root: Path, eval_id: str, result_source: str) -> int:
     for entry in matched_entries:
         if isinstance(entry, str):
             finding_id, severity = entry, None
-        elif isinstance(entry, dict) and isinstance(entry.get("id"), str):
+        elif (
+            isinstance(entry, dict)
+            and set(entry) <= {"id", "severity"}
+            and isinstance(entry.get("id"), str)
+        ):
             finding_id = entry["id"]
             severity = entry.get("severity")
             if severity is not None and severity not in ALLOWED_SEVERITIES:
@@ -51,6 +58,9 @@ def main(root: Path, eval_id: str, result_source: str) -> int:
 
     matched = set(normalized)
     forbidden = result.get("forbidden_claims", [])
+    if not all(isinstance(claim, str) and claim.strip() for claim in forbidden):
+        print("Each forbidden claim must be a non-empty string")
+        return 2
     known = {item["id"] for item in rubric["required_findings"]}
     unknown = matched - known
     if unknown:
@@ -95,4 +105,8 @@ if __name__ == "__main__":
         print("Usage: score_eval.py <eval-id> <result.json|->")
         raise SystemExit(2)
     repository = Path(__file__).resolve().parent.parent
-    raise SystemExit(main(repository, sys.argv[1], sys.argv[2]))
+    try:
+        raise SystemExit(main(repository, sys.argv[1], sys.argv[2]))
+    except (json.JSONDecodeError, OSError, TypeError, KeyError) as error:
+        print(f"Cannot score evaluation: {error}")
+        raise SystemExit(2) from None

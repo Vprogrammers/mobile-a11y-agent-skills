@@ -1,10 +1,10 @@
 {
   "required_findings": [
-    {"id": "compose-type-in-common-api", "points": 2, "kind": "architecture", "expected_severity": null},
-    {"id": "uikit-type-in-common-api", "points": 2, "kind": "architecture", "expected_severity": null},
-    {"id": "flow-and-sealed-swift-interop", "points": 2, "kind": "interop", "expected_severity": null},
-    {"id": "optional-play-services-leak", "points": 2, "kind": "dependency", "expected_severity": null},
-    {"id": "proposes-platform-neutral-state-contract", "points": 2, "kind": "recommendation", "expected_severity": null}
+    {"id": "compose-type-in-common-api", "points": 2, "kind": "architecture", "criteria": "Identifies the Compose type in common API as a native UI boundary violation.", "expected_severity": null},
+    {"id": "uikit-type-in-common-api", "points": 2, "kind": "architecture", "criteria": "Identifies the UIKit type in common API as a native UI boundary violation.", "expected_severity": null},
+    {"id": "flow-and-sealed-swift-interop", "points": 2, "kind": "interop", "criteria": "Explains Swift consumption risks for the exposed Flow and sealed hierarchy and requests generated-interface verification.", "expected_severity": null},
+    {"id": "optional-play-services-leak", "points": 2, "kind": "dependency", "criteria": "Identifies the Play Services SMS capability as optional platform integration that should not leak into the core runtime contract.", "expected_severity": null},
+    {"id": "proposes-platform-neutral-state-contract", "points": 2, "kind": "recommendation", "criteria": "Proposes a platform-neutral state and action contract while keeping Compose and UIKit semantics native.", "expected_severity": null}
   ],
   "forbidden_claims": [
     "Recommends sharing Compose or UIKit semantics types",

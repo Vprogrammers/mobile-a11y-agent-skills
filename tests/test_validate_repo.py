@@ -65,6 +65,16 @@ class ValidateRepositoryTests(unittest.TestCase):
         self.assertIn("points must be a positive integer", result.stdout)
         self.assertIn("invalid kind", result.stdout)
 
+    def test_empty_criteria_is_rejected(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "evals/android-compose-review/rubric.json"
+            data = json.loads(path.read_text())
+            data["required_findings"][0]["criteria"] = "  "
+            path.write_text(json.dumps(data))
+
+        result = self.invalid_copy(mutate)
+        self.assertIn("must define non-empty criteria", result.stdout)
+
     def test_non_defect_severity_is_rejected(self) -> None:
         def mutate(root: Path) -> None:
             path = root / "evals/kmp-boundary-review/rubric.json"
