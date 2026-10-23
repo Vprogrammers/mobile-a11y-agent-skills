@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parent.parent
 
 class JudgeEvalTests(unittest.TestCase):
     def test_prompt_contains_rubric_response_and_json_contract(self) -> None:
-        rubric = {"required_findings": [{"id": "focus", "points": 2, "kind": "defect", "expected_severity": "P1"}], "forbidden_claims": ["claims compliance"]}
+        rubric = {"required_findings": [{"id": "focus", "points": 2, "kind": "defect", "criteria": "Identifies the focus defect and proposes restoration.", "expected_severity": "P1"}], "forbidden_claims": ["claims compliance"]}
         prompt = build_prompt(
             "sample",
             "Original task text",

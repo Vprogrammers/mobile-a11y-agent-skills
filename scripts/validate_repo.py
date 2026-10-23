@@ -193,6 +193,7 @@ def main(root: Path) -> int:
                         "id",
                         "points",
                         "kind",
+                        "criteria",
                         "expected_severity",
                     }:
                         errors.append(f"Eval {eval_id} has an invalid finding schema")
@@ -212,6 +213,8 @@ def main(root: Path) -> int:
                         errors.append(
                             f"Eval {eval_id} finding {finding_id} has invalid kind: {item['kind']}"
                         )
+                    if not isinstance(item["criteria"], str) or not item["criteria"].strip():
+                        errors.append(f"Eval {eval_id} finding {finding_id} must define non-empty criteria")
                     if item["expected_severity"] is not None and item["expected_severity"] not in ALLOWED_SEVERITIES:
                         errors.append(
                             f"Eval {eval_id} finding {finding_id} has invalid severity: {item['expected_severity']}"

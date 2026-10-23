@@ -1,11 +1,11 @@
 {
   "required_findings": [
-    {"id": "shared-validation-unit-test", "points": 2, "kind": "testing", "expected_severity": null},
-    {"id": "platform-semantics-tests", "points": 2, "kind": "testing", "expected_severity": null},
-    {"id": "custom-action-tests", "points": 2, "kind": "testing", "expected_severity": null},
-    {"id": "focus-requires-device-evidence", "points": 2, "kind": "verification", "expected_severity": null},
-    {"id": "rejects-exact-speech-ci-claim", "points": 2, "kind": "recommendation", "expected_severity": null},
-    {"id": "protects-sensitive-artifacts", "points": 2, "kind": "testing", "expected_severity": null}
+    {"id": "shared-validation-unit-test", "points": 2, "kind": "testing", "criteria": "Places cardholder-name validation in a shared unit test rather than a platform UI test.", "expected_severity": null},
+    {"id": "platform-semantics-tests", "points": 2, "kind": "testing", "criteria": "Assigns error semantics assertions to the existing Compose and Apple platform test layers.", "expected_severity": null},
+    {"id": "custom-action-tests", "points": 2, "kind": "testing", "criteria": "Tests the custom slider's equivalent increment and decrement accessibility actions and resulting value.", "expected_severity": null},
+    {"id": "focus-requires-device-evidence", "points": 2, "kind": "verification", "criteria": "Separates automated modal structure checks from real assistive-technology focus trapping and restoration evidence.", "expected_severity": null},
+    {"id": "rejects-exact-speech-ci-claim", "points": 2, "kind": "recommendation", "criteria": "Rejects the claim that CI can prove exact TalkBack or VoiceOver speech and proposes observable assertions plus device checks.", "expected_severity": null},
+    {"id": "protects-sensitive-artifacts", "points": 2, "kind": "testing", "criteria": "Uses synthetic payment data and prevents sensitive values from entering logs, screenshots, or test artifacts.", "expected_severity": null}
   ],
   "forbidden_claims": [
     "Claims simulator automation proves assistive-technology behavior",

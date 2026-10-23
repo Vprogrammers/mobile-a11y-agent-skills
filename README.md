@@ -91,7 +91,7 @@ CHECK_EXTERNAL_LINKS=1 ./scripts/validate.sh
 
 Evaluation scenarios live in `evals/`. Each manifest entry points to a prompt, raw code fixture, scoring rubric, minimum score, and forbidden claims. Give only the prompt and fixture to the agent; score the result afterward with the rubric to avoid leaking expected findings.
 
-Rubrics keep finding `kind` separate from severity. Severity is limited to `P0`–`P3` for defects and is `null` for architecture, interop, testing, verification, compliance, dependency, or recommendation criteria.
+Rubrics keep finding `kind` separate from severity. Each finding has explicit acceptance `criteria`. Severity is limited to `P0`–`P3` for defects and is `null` for architecture, interop, testing, verification, compliance, dependency, or recommendation criteria.
 
 Record the assessment using rubric finding IDs. Severity is optional for backward compatibility; when supplied for a defect, it must match the rubric:
 

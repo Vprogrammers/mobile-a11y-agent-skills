@@ -6,6 +6,9 @@
 - Add negative validator tests for malformed manifests, rubrics, references, and agent skill links.
 - Add a plugin copy-install smoke test.
 - Add an optional provider-neutral judge adapter for end-to-end eval runs.
+- Add explicit acceptance criteria to every rubric finding.
+- Harden scorer errors and tests for malformed result input.
+- Pin GitHub Actions by commit SHA and add monthly Dependabot updates.
 
 ## 0.4.0
 
