@@ -91,6 +91,21 @@ CHECK_EXTERNAL_LINKS=1 ./scripts/validate.sh
 
 Evaluation scenarios live in `evals/`. Each manifest entry points to a prompt, raw code fixture, scoring rubric, minimum score, and forbidden claims. Give only the prompt and fixture to the agent; score the result afterward with the rubric to avoid leaking expected findings.
 
+Record the assessment using rubric finding IDs:
+
+```json
+{
+  "matched_findings": ["gesture-only-help", "non-modal-overlay"],
+  "forbidden_claims": []
+}
+```
+
+Then calculate deterministic pass/fail:
+
+```bash
+./scripts/score_eval.py android-compose-review result.json
+```
+
 ## Non-goals
 
 - Claiming WCAG, EAA, ADA, Section 508, or EN 301 549 compliance from static review alone.
