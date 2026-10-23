@@ -1,5 +1,5 @@
-# iOS SwiftUI review scenario
+# iOS SwiftUI review prompt
 
-Ask `accessibility-reviewer` to review a screen that combines unrelated buttons, caps Dynamic Type, forces accessibility focus after every state update, exposes color-only status, and embeds an unaudited `WKWebView`.
+Use `accessibility-reviewer` to review `evals/ios-swiftui-review/AccountScreen.swift`.
 
-Expected capabilities: distinguish static findings from VoiceOver verification, recommend native structure, and include Voice Control, keyboard, and device checks.
+Report only findings supported by the fixture. Include severity, affected users, evidence, smallest viable fix, automated verification, and real-device checks. Do not edit the fixture and do not assume exact VoiceOver speech.

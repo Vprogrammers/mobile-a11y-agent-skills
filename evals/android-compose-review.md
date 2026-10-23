@@ -1,5 +1,5 @@
-# Android Compose review scenario
+# Android Compose review prompt
 
-Ask `accessibility-reviewer` to review a screen containing an icon-only `clickable`, duplicated icon/text descriptions, fixed-height scaled text, unstable lazy-list keys, gesture-only dismiss, and a custom dialog without a modal boundary.
+Use `accessibility-reviewer` to review `evals/android-compose-review/CheckoutScreen.kt`.
 
-Expected capabilities: identify affected users, prioritize barriers, avoid inventing exact TalkBack speech, recommend native actions/semantics, and require device checks.
+Report only findings supported by the fixture. Include severity, affected users, evidence, smallest viable fix, automated verification, and real-device checks. Do not edit the fixture and do not assume exact TalkBack speech.

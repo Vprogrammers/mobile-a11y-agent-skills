@@ -77,6 +77,35 @@ Verify: Compose device test for reachable nodes, then TalkBack navigation on a s
 4. Use `accessibility-reviewer` for an independent final pass.
 5. Run `./scripts/validate.sh` and report device checks separately.
 
+## Validation and evals
+
+```bash
+./scripts/validate.sh
+```
+
+The validator checks skill and agent metadata, duplicate names, local links, plugin version consistency, review dates, executable permissions, and eval manifests/rubrics. External links are intentionally optional to keep pull-request CI deterministic:
+
+```bash
+CHECK_EXTERNAL_LINKS=1 ./scripts/validate.sh
+```
+
+Evaluation scenarios live in `evals/`. Each manifest entry points to a prompt, raw code fixture, scoring rubric, minimum score, and forbidden claims. Give only the prompt and fixture to the agent; score the result afterward with the rubric to avoid leaking expected findings.
+
+Record the assessment using rubric finding IDs:
+
+```json
+{
+  "matched_findings": ["gesture-only-help", "non-modal-overlay"],
+  "forbidden_claims": []
+}
+```
+
+Then calculate deterministic pass/fail:
+
+```bash
+./scripts/score_eval.py android-compose-review result.json
+```
+
 ## Non-goals
 
 - Claiming WCAG, EAA, ADA, Section 508, or EN 301 549 compliance from static review alone.

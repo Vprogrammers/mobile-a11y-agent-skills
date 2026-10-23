@@ -21,4 +21,4 @@ This repository contains reusable mobile accessibility agents and skills.
 
 ## Validation
 
-Run `./scripts/validate.sh` before a pull request. When example code changes, also test it in a minimal project. Report automated results separately from simulator and real-device verification.
+Run `./scripts/validate.sh` before a pull request. When example code changes, also test it in a minimal project. For forward evaluation, give the agent only the selected eval prompt and fixture; apply the rubric afterward so expected findings are not leaked. Report automated results separately from simulator and real-device verification.

@@ -1,0 +1,28 @@
+{
+  "evaluations": [
+    {
+      "id": "android-compose-review",
+      "agent": "accessibility-reviewer",
+      "prompt": "evals/android-compose-review.md",
+      "fixture": "evals/android-compose-review/CheckoutScreen.kt",
+      "rubric": "evals/android-compose-review/rubric.json",
+      "minimum_score": 8
+    },
+    {
+      "id": "ios-swiftui-review",
+      "agent": "accessibility-reviewer",
+      "prompt": "evals/ios-swiftui-review.md",
+      "fixture": "evals/ios-swiftui-review/AccountScreen.swift",
+      "rubric": "evals/ios-swiftui-review/rubric.json",
+      "minimum_score": 8
+    },
+    {
+      "id": "kmp-boundary-review",
+      "agent": "kmp-a11y-architect",
+      "prompt": "evals/kmp-boundary-review.md",
+      "fixture": "evals/kmp-boundary-review/AccessibilityContract.kt",
+      "rubric": "evals/kmp-boundary-review/rubric.json",
+      "minimum_score": 8
+    }
+  ]
+}
