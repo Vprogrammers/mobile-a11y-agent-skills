@@ -1,0 +1,13 @@
+{
+  "required_findings": [
+    {"id": "touch-only-action", "points": 2, "expected_severity": "P1"},
+    {"id": "missing-node-role-state-action", "points": 2, "expected_severity": "P1"},
+    {"id": "custom-view-needs-accessibility-node-contract", "points": 2, "expected_severity": "recommendation"},
+    {"id": "requires-device-verification", "points": 2, "expected_severity": "recommendation"}
+  ],
+  "forbidden_claims": [
+    "Claims drawing text creates accessible semantics",
+    "Treats a contentDescription alone as a complete fix",
+    "Claims exact TalkBack speech"
+  ]
+}

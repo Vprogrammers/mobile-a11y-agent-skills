@@ -1,5 +1,7 @@
 # KMP accessibility boundaries
 
+Last reviewed: 2026-10-23
+
 ## Share
 
 - immutable state and state transitions;

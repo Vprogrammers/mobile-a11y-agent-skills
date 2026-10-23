@@ -1,5 +1,7 @@
 # Accessibility test matrix
 
+Last reviewed: 2026-10-23
+
 ## Discover before writing tests
 
 Android/KMP examples:

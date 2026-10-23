@@ -23,6 +23,46 @@
       "fixture": "evals/kmp-boundary-review/AccessibilityContract.kt",
       "rubric": "evals/kmp-boundary-review/rubric.json",
       "minimum_score": 8
+    },
+    {
+      "id": "clean-compose-review",
+      "agent": "accessibility-reviewer",
+      "prompt": "evals/clean-compose-review.md",
+      "fixture": "evals/clean-compose-review/AccessibleSettings.kt",
+      "rubric": "evals/clean-compose-review/rubric.json",
+      "minimum_score": 4
+    },
+    {
+      "id": "android-views-review",
+      "agent": "android-a11y-engineer",
+      "prompt": "evals/android-views-review.md",
+      "fixture": "evals/android-views-review/PaymentView.kt",
+      "rubric": "evals/android-views-review/rubric.json",
+      "minimum_score": 6
+    },
+    {
+      "id": "ios-uikit-review",
+      "agent": "ios-a11y-engineer",
+      "prompt": "evals/ios-uikit-review.md",
+      "fixture": "evals/ios-uikit-review/ProfileViewController.swift",
+      "rubric": "evals/ios-uikit-review/rubric.json",
+      "minimum_score": 6
+    },
+    {
+      "id": "mobile-test-strategy",
+      "agent": "accessibility-test-engineer",
+      "prompt": "evals/mobile-test-strategy.md",
+      "fixture": "evals/mobile-test-strategy/CheckoutRequirements.md",
+      "rubric": "evals/mobile-test-strategy/rubric.json",
+      "minimum_score": 8
+    },
+    {
+      "id": "regulatory-evidence-review",
+      "agent": "accessibility-reviewer",
+      "prompt": "evals/regulatory-evidence-review.md",
+      "fixture": "evals/regulatory-evidence-review/AuditClaim.md",
+      "rubric": "evals/regulatory-evidence-review/rubric.json",
+      "minimum_score": 6
     }
   ]
 }

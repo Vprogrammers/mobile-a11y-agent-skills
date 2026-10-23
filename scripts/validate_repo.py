@@ -13,6 +13,7 @@ from urllib.request import Request, urlopen
 EXPECTED_REPOSITORY = "https://github.com/Vprogrammers/mobile-a11y-agent-skills"
 MAX_REVIEW_AGE_DAYS = 365
 REQUIRED_EVAL_FIELDS = {"id", "agent", "prompt", "fixture", "rubric", "minimum_score"}
+ALLOWED_SEVERITIES = {"P0", "P1", "P2", "P3", "architecture", "interop", "dependency", "recommendation"}
 
 
 def frontmatter(path: Path) -> tuple[list[str], dict[str, str]]:
@@ -49,6 +50,7 @@ def main(root: Path) -> int:
     names: dict[str, Path] = {}
     external_urls: set[str] = set()
     evaluations: list[dict[str, object]] = []
+    agent_names: set[str] = set()
 
     skills = sorted((root / "skills").glob("*/SKILL.md"))
     agents = sorted((root / "agents").glob("*.md"))
@@ -84,9 +86,17 @@ def main(root: Path) -> int:
             errors.append(f"{relative} name must match filename {path.stem}")
         name = metadata.get("name")
         if name:
+            agent_names.add(name)
             if name in names:
                 errors.append(f"Duplicate name {name}: {names[name]} and {relative}")
             names[name] = relative
+
+        body = path.read_text(encoding="utf-8")
+        invoked = re.findall(r"Invoke (?:the )?`([a-z0-9-]+)` skill|also invoke `([a-z0-9-]+)`", body)
+        for pair in invoked:
+            for skill_name in pair:
+                if skill_name and skill_name not in {skill.parent.name for skill in skills}:
+                    errors.append(f"{relative} invokes missing skill: {skill_name}")
 
     for path in root.rglob("*.md"):
         if ".git" in path.parts:
@@ -106,6 +116,7 @@ def main(root: Path) -> int:
         text = path.read_text(encoding="utf-8")
         match = re.search(r"^Last reviewed:\s*(\d{4}-\d{2}-\d{2})", text, re.MULTILINE)
         if not match:
+            errors.append(f"{path.relative_to(root)} must contain a Last reviewed date")
             continue
         reviewed = datetime.strptime(match.group(1), "%Y-%m-%d").date()
         age = (date.today() - reviewed).days
@@ -131,8 +142,8 @@ def main(root: Path) -> int:
 
     try:
         evaluations = json.loads((root / "evals/manifest.json").read_text(encoding="utf-8"))["evaluations"]
-        if len(evaluations) < 3:
-            errors.append("At least three evaluation scenarios are required")
+        if len(evaluations) < 5:
+            errors.append("At least five evaluation scenarios are required")
         eval_ids: set[str] = set()
         for evaluation in evaluations:
             missing = REQUIRED_EVAL_FIELDS - set(evaluation)
@@ -140,9 +151,16 @@ def main(root: Path) -> int:
                 errors.append(f"Eval entry missing fields: {sorted(missing)}")
                 continue
             eval_id = str(evaluation["id"])
+            if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", eval_id):
+                errors.append(f"Eval id must be lowercase hyphen-case: {eval_id}")
             if eval_id in eval_ids:
                 errors.append(f"Duplicate eval id: {eval_id}")
             eval_ids.add(eval_id)
+            if evaluation["agent"] not in agent_names:
+                errors.append(f"Eval {eval_id} references unknown agent: {evaluation['agent']}")
+            minimum_score = evaluation["minimum_score"]
+            if not isinstance(minimum_score, int) or isinstance(minimum_score, bool) or minimum_score < 0:
+                errors.append(f"Eval {eval_id} minimum_score must be a non-negative integer")
             for field in ("prompt", "fixture", "rubric"):
                 path = root / str(evaluation[field])
                 if not path.is_file():
@@ -150,10 +168,40 @@ def main(root: Path) -> int:
             rubric_path = root / str(evaluation["rubric"])
             if rubric_path.is_file():
                 rubric = json.loads(rubric_path.read_text(encoding="utf-8"))
-                max_score = sum(item["points"] for item in rubric["required_findings"])
-                if int(evaluation["minimum_score"]) > max_score:
+                if set(rubric) != {"required_findings", "forbidden_claims"}:
+                    errors.append(f"Eval {eval_id} rubric must contain only required_findings and forbidden_claims")
+                    continue
+                findings = rubric["required_findings"]
+                forbidden = rubric["forbidden_claims"]
+                if not isinstance(findings, list) or not findings:
+                    errors.append(f"Eval {eval_id} must define at least one required finding")
+                    continue
+                finding_ids: set[str] = set()
+                max_score = 0
+                for item in findings:
+                    if not isinstance(item, dict) or set(item) != {"id", "points", "expected_severity"}:
+                        errors.append(f"Eval {eval_id} has an invalid finding schema")
+                        continue
+                    finding_id = item["id"]
+                    if not isinstance(finding_id, str) or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", finding_id):
+                        errors.append(f"Eval {eval_id} has invalid finding id: {finding_id}")
+                    elif finding_id in finding_ids:
+                        errors.append(f"Eval {eval_id} has duplicate finding id: {finding_id}")
+                    finding_ids.add(str(finding_id))
+                    points = item["points"]
+                    if not isinstance(points, int) or isinstance(points, bool) or points <= 0:
+                        errors.append(f"Eval {eval_id} finding {finding_id} points must be a positive integer")
+                    else:
+                        max_score += points
+                    if item["expected_severity"] not in ALLOWED_SEVERITIES:
+                        errors.append(
+                            f"Eval {eval_id} finding {finding_id} has invalid severity: {item['expected_severity']}"
+                        )
+                if isinstance(minimum_score, int) and minimum_score > max_score:
                     errors.append(f"Eval {eval_id} minimum score exceeds rubric maximum")
-                if not rubric.get("forbidden_claims"):
+                if not isinstance(forbidden, list) or not forbidden or not all(
+                    isinstance(claim, str) and claim.strip() for claim in forbidden
+                ):
                     errors.append(f"Eval {eval_id} must define forbidden claims")
     except (FileNotFoundError, json.JSONDecodeError, KeyError, TypeError) as error:
         errors.append(f"Invalid eval manifest or rubric: {error}")

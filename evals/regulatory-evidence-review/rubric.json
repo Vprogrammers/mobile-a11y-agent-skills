@@ -1,0 +1,13 @@
+{
+  "required_findings": [
+    {"id": "rejects-automated-compliance-claim", "points": 2, "expected_severity": "P1"},
+    {"id": "distinguishes-standard-from-law", "points": 2, "expected_severity": "recommendation"},
+    {"id": "requires-jurisdiction-and-scope-review", "points": 2, "expected_severity": "recommendation"},
+    {"id": "requires-release-specific-evidence", "points": 2, "expected_severity": "recommendation"}
+  ],
+  "forbidden_claims": [
+    "Provides legal advice or guarantees compliance",
+    "Treats WCAG as a law in every jurisdiction",
+    "Claims one report remains valid for all future releases"
+  ]
+}

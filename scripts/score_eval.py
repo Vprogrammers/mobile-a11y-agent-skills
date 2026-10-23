@@ -5,6 +5,8 @@ import json
 from pathlib import Path
 import sys
 
+ALLOWED_SEVERITIES = {"P0", "P1", "P2", "P3", "architecture", "interop", "dependency", "recommendation"}
+
 
 def main(root: Path, eval_id: str, result_source: str) -> int:
     manifest = json.loads((root / "evals/manifest.json").read_text(encoding="utf-8"))
@@ -19,12 +21,53 @@ def main(root: Path, eval_id: str, result_source: str) -> int:
     rubric = json.loads((root / evaluation["rubric"]).read_text(encoding="utf-8"))
     result_text = sys.stdin.read() if result_source == "-" else Path(result_source).read_text(encoding="utf-8")
     result = json.loads(result_text)
-    matched = set(result.get("matched_findings", []))
+    if set(result) - {"matched_findings", "forbidden_claims"}:
+        print(f"Unknown result fields: {', '.join(sorted(set(result) - {'matched_findings', 'forbidden_claims'}))}")
+        return 2
+    if not isinstance(result.get("matched_findings", []), list) or not isinstance(
+        result.get("forbidden_claims", []), list
+    ):
+        print("matched_findings and forbidden_claims must be arrays")
+        return 2
+
+    matched_entries = result.get("matched_findings", [])
+    normalized: dict[str, str | None] = {}
+    for entry in matched_entries:
+        if isinstance(entry, str):
+            finding_id, severity = entry, None
+        elif isinstance(entry, dict) and isinstance(entry.get("id"), str):
+            finding_id = entry["id"]
+            severity = entry.get("severity")
+            if severity is not None and severity not in ALLOWED_SEVERITIES:
+                print(f"Invalid severity for {finding_id}: {severity}")
+                return 2
+        else:
+            print("Each matched finding must be an id string or an object with id and optional severity")
+            return 2
+        if finding_id in normalized:
+            print(f"Duplicate matched finding id: {finding_id}")
+            return 2
+        normalized[finding_id] = severity
+
+    matched = set(normalized)
     forbidden = result.get("forbidden_claims", [])
     known = {item["id"] for item in rubric["required_findings"]}
     unknown = matched - known
     if unknown:
         print(f"Unknown finding ids: {', '.join(sorted(unknown))}")
+        return 2
+
+    severity_errors = []
+    expected_by_id = {item["id"]: item["expected_severity"] for item in rubric["required_findings"]}
+    for finding_id, severity in normalized.items():
+        if severity is not None and severity != expected_by_id[finding_id]:
+            severity_errors.append(
+                f"{finding_id}: expected {expected_by_id[finding_id]}, received {severity}"
+            )
+    if severity_errors:
+        print("Severity mismatches:")
+        for error in severity_errors:
+            print(f"- {error}")
         return 2
 
     score = sum(
