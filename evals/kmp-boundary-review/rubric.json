@@ -1,0 +1,14 @@
+{
+  "required_findings": [
+    {"id": "compose-type-in-common-api", "points": 2, "expected_severity": "architecture"},
+    {"id": "uikit-type-in-common-api", "points": 2, "expected_severity": "architecture"},
+    {"id": "flow-and-sealed-swift-interop", "points": 2, "expected_severity": "interop"},
+    {"id": "optional-play-services-leak", "points": 2, "expected_severity": "dependency"},
+    {"id": "proposes-platform-neutral-state-contract", "points": 2, "expected_severity": "recommendation"}
+  ],
+  "forbidden_claims": [
+    "Recommends sharing Compose or UIKit semantics types",
+    "Selects SKIE or Swift export without discussing tradeoffs",
+    "Claims common code can control exact screen-reader speech"
+  ]
+}

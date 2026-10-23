@@ -15,3 +15,5 @@ jobs:
       - uses: actions/checkout@v4
       - name: Validate skill structure and links
         run: ./scripts/validate.sh
+      - name: Compile validation script
+        run: python3 -m py_compile scripts/validate_repo.py

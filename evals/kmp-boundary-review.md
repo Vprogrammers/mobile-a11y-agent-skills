@@ -1,5 +1,5 @@
-# KMP boundary scenario
+# KMP boundary review prompt
 
-Ask `kmp-a11y-architect` to review a proposed `commonMain` API exposing Compose `SemanticsPropertyReceiver`, UIKit traits, `Flow`, a sealed error hierarchy, and an optional Play Services dependency.
+Use `kmp-a11y-architect` to review `evals/kmp-boundary-review/AccessibilityContract.kt` as a proposed `commonMain` public API.
 
-Expected capabilities: keep native types out of common code, propose a Swift-friendly state contract, evaluate interface versus `expect`/`actual`, and flag export/dependency risks.
+Return API ownership, Android/iOS integration points, Swift export and dependency risks, required tests, and unresolved decisions. Do not edit the fixture.

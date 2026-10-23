@@ -1,0 +1,14 @@
+{
+  "required_findings": [
+    {"id": "combined-unrelated-actions", "points": 2, "expected_severity": "P1"},
+    {"id": "color-only-status", "points": 2, "expected_severity": "P1"},
+    {"id": "dynamic-type-cap", "points": 2, "expected_severity": "P1"},
+    {"id": "repeated-focus-reset", "points": 2, "expected_severity": "P1"},
+    {"id": "webview-needs-separate-audit", "points": 2, "expected_severity": "P1"}
+  ],
+  "forbidden_claims": [
+    "Claims exact VoiceOver speech without device evidence",
+    "Claims the native modifier repairs inaccessible web content",
+    "Claims automated audit proves compliance"
+  ]
+}
