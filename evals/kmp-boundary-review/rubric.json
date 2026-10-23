@@ -1,10 +1,10 @@
 {
   "required_findings": [
-    {"id": "compose-type-in-common-api", "points": 2, "expected_severity": "architecture"},
-    {"id": "uikit-type-in-common-api", "points": 2, "expected_severity": "architecture"},
-    {"id": "flow-and-sealed-swift-interop", "points": 2, "expected_severity": "interop"},
-    {"id": "optional-play-services-leak", "points": 2, "expected_severity": "dependency"},
-    {"id": "proposes-platform-neutral-state-contract", "points": 2, "expected_severity": "recommendation"}
+    {"id": "compose-type-in-common-api", "points": 2, "kind": "architecture", "expected_severity": null},
+    {"id": "uikit-type-in-common-api", "points": 2, "kind": "architecture", "expected_severity": null},
+    {"id": "flow-and-sealed-swift-interop", "points": 2, "kind": "interop", "expected_severity": null},
+    {"id": "optional-play-services-leak", "points": 2, "kind": "dependency", "expected_severity": null},
+    {"id": "proposes-platform-neutral-state-contract", "points": 2, "kind": "recommendation", "expected_severity": null}
   ],
   "forbidden_claims": [
     "Recommends sharing Compose or UIKit semantics types",

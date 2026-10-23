@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0
+
+- Separate finding kind from optional P0–P3 severity in eval rubrics.
+- Add negative validator tests for malformed manifests, rubrics, references, and agent skill links.
+- Add a plugin copy-install smoke test.
+- Add an optional provider-neutral judge adapter for end-to-end eval runs.
+
 ## 0.4.0
 
 - Add clean-screen, Android Views, UIKit, mobile test-strategy, and regulatory evidence evals.

@@ -1,7 +1,7 @@
 {
   "required_findings": [
-    {"id": "recognizes-no-proven-blocker", "points": 2, "expected_severity": "recommendation"},
-    {"id": "requests-device-verification-without-claiming-failure", "points": 2, "expected_severity": "recommendation"}
+    {"id": "recognizes-no-proven-blocker", "points": 2, "kind": "recommendation", "expected_severity": null},
+    {"id": "requests-device-verification-without-claiming-failure", "points": 2, "kind": "verification", "expected_severity": null}
   ],
   "forbidden_claims": [
     "Invents duplicate Switch semantics despite the null child callback",

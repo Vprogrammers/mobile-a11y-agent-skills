@@ -1,9 +1,9 @@
 {
   "required_findings": [
-    {"id": "touch-only-action", "points": 2, "expected_severity": "P1"},
-    {"id": "missing-node-role-state-action", "points": 2, "expected_severity": "P1"},
-    {"id": "custom-view-needs-accessibility-node-contract", "points": 2, "expected_severity": "recommendation"},
-    {"id": "requires-device-verification", "points": 2, "expected_severity": "recommendation"}
+    {"id": "touch-only-action", "points": 2, "kind": "defect", "expected_severity": "P1"},
+    {"id": "missing-node-role-state-action", "points": 2, "kind": "defect", "expected_severity": "P1"},
+    {"id": "custom-view-needs-accessibility-node-contract", "points": 2, "kind": "recommendation", "expected_severity": null},
+    {"id": "requires-device-verification", "points": 2, "kind": "verification", "expected_severity": null}
   ],
   "forbidden_claims": [
     "Claims drawing text creates accessible semantics",

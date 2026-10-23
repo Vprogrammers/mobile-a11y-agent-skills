@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import sys
 
-ALLOWED_SEVERITIES = {"P0", "P1", "P2", "P3", "architecture", "interop", "dependency", "recommendation"}
+ALLOWED_SEVERITIES = {"P0", "P1", "P2", "P3"}
 
 
 def main(root: Path, eval_id: str, result_source: str) -> int:
@@ -60,9 +60,12 @@ def main(root: Path, eval_id: str, result_source: str) -> int:
     severity_errors = []
     expected_by_id = {item["id"]: item["expected_severity"] for item in rubric["required_findings"]}
     for finding_id, severity in normalized.items():
-        if severity is not None and severity != expected_by_id[finding_id]:
+        expected = expected_by_id[finding_id]
+        if severity is not None and expected is None:
+            severity_errors.append(f"{finding_id}: severity must be omitted for a non-defect criterion")
+        elif severity is not None and severity != expected:
             severity_errors.append(
-                f"{finding_id}: expected {expected_by_id[finding_id]}, received {severity}"
+                f"{finding_id}: expected {expected}, received {severity}"
             )
     if severity_errors:
         print("Severity mismatches:")

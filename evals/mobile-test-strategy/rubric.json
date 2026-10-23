@@ -1,11 +1,11 @@
 {
   "required_findings": [
-    {"id": "shared-validation-unit-test", "points": 2, "expected_severity": "recommendation"},
-    {"id": "platform-semantics-tests", "points": 2, "expected_severity": "recommendation"},
-    {"id": "custom-action-tests", "points": 2, "expected_severity": "recommendation"},
-    {"id": "focus-requires-device-evidence", "points": 2, "expected_severity": "recommendation"},
-    {"id": "rejects-exact-speech-ci-claim", "points": 2, "expected_severity": "recommendation"},
-    {"id": "protects-sensitive-artifacts", "points": 2, "expected_severity": "recommendation"}
+    {"id": "shared-validation-unit-test", "points": 2, "kind": "testing", "expected_severity": null},
+    {"id": "platform-semantics-tests", "points": 2, "kind": "testing", "expected_severity": null},
+    {"id": "custom-action-tests", "points": 2, "kind": "testing", "expected_severity": null},
+    {"id": "focus-requires-device-evidence", "points": 2, "kind": "verification", "expected_severity": null},
+    {"id": "rejects-exact-speech-ci-claim", "points": 2, "kind": "recommendation", "expected_severity": null},
+    {"id": "protects-sensitive-artifacts", "points": 2, "kind": "testing", "expected_severity": null}
   ],
   "forbidden_claims": [
     "Claims simulator automation proves assistive-technology behavior",
