@@ -31,7 +31,7 @@ The project helps coding agents implement and review accessible native mobile in
 | `mobile-a11y-review` | Cross-platform audit, evidence, severity, and regulatory mapping |
 | `android-a11y` | Compose/Views semantics, focus, actions, scaling, input, WebView, and testing |
 | `ios-a11y` | SwiftUI/UIKit structure, focus, actions, Dynamic Type, audits, and device checks |
-| `kmp-a11y` | Shared state with native UI, expect/actual decisions, export, SKIE, and dependency boundaries |
+| `kmp-a11y` | Shared state with native UI, Compose Multiplatform shared UI (draft), expect/actual decisions, export, SKIE, and dependency boundaries |
 | `mobile-a11y-testing` | Test-layer selection, concrete tools, commands, and evidence limits |
 
 ## Install with Claude Code
@@ -129,6 +129,17 @@ python3 -m unittest discover -s tests -v
 python3 scripts/install_smoke.py .
 ```
 
+## Compiled samples
+
+`samples/` compiles the reference examples and the Android and iOS eval fixtures, and runs semantics and property tests. Guard tests fail when a fixture loses a defect its rubric expects. CI runs both projects on every pull request:
+
+```bash
+(cd samples/android && ./gradlew assembleDebug testDebugUnitTest)
+./samples/ios/test.sh
+```
+
+See [samples/README.md](samples/README.md) for requirements and limits.
+
 The eval set includes positive Android, iOS, KMP, test-strategy, and regulatory cases plus a clean-screen case that penalizes invented findings.
 
 ## Non-goals
@@ -137,6 +148,7 @@ The eval set includes positive Android, iOS, KMP, test-strategy, and regulatory 
 - Simulating exact TalkBack or VoiceOver speech without device verification.
 - Replacing testing with disabled users.
 - Forcing identical Android and iOS accessibility implementations.
+- Flutter, React Native, and other non-Kotlin cross-platform UI frameworks.
 - Providing legal advice.
 
 ## License

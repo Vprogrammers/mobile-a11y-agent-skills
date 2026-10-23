@@ -12,6 +12,7 @@ from urllib.request import Request, urlopen
 
 EXPECTED_REPOSITORY = "https://github.com/Vprogrammers/mobile-a11y-agent-skills"
 MAX_REVIEW_AGE_DAYS = 365
+BUILD_DIRECTORIES = {".git", ".gradle", ".kotlin", "build", ".build", ".swiftpm", "DerivedData"}
 REQUIRED_EVAL_FIELDS = {"id", "agent", "prompt", "fixture", "rubric", "minimum_score"}
 ALLOWED_SEVERITIES = {"P0", "P1", "P2", "P3"}
 ALLOWED_FINDING_KINDS = {
@@ -109,7 +110,7 @@ def main(root: Path) -> int:
                     errors.append(f"{relative} invokes missing skill: {skill_name}")
 
     for path in root.rglob("*.md"):
-        if ".git" in path.parts:
+        if BUILD_DIRECTORIES & set(path.parts):
             continue
         text = path.read_text(encoding="utf-8")
         for target in re.findall(r"\[[^\]]+\]\(([^)]+)\)", text):
@@ -125,6 +126,8 @@ def main(root: Path) -> int:
     for path in root.glob("skills/*/references/*.md"):
         text = path.read_text(encoding="utf-8")
         match = re.search(r"^Last reviewed:\s*(\d{4}-\d{2}-\d{2})", text, re.MULTILINE)
+        if not re.search(r"https://\S+", text):
+            errors.append(f"{path.relative_to(root)} must cite at least one https source")
         if not match:
             errors.append(f"{path.relative_to(root)} must contain a Last reviewed date")
             continue

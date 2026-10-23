@@ -98,6 +98,20 @@ Text(text, Modifier.height(40.dp))
 Text(text, Modifier.heightIn(min = 40.dp))
 ```
 
+## Edge-to-edge, insets, and back navigation
+
+These are requirements for apps that target the stated SDK levels:
+
+- Apps targeting SDK 35 run edge-to-edge on Android 15. Apps targeting SDK 36 can no longer opt out on Android 16 devices; `windowOptOutEdgeToEdgeEnforcement` is deprecated and disabled there.
+- Apply system bar, display cutout, and IME insets (for example `Modifier.safeDrawingPadding()` or `WindowInsets.safeDrawing`) so focused controls, errors, and snackbars are not hidden under system bars or the keyboard. This supports WCAG 2.4.11 Focus Not Obscured (Minimum).
+- Test with three-button and gesture navigation, the IME open, and 200% font scale.
+- Apps targeting SDK 36 on Android 16 no longer receive `onBackPressed` or `KEYCODE_BACK`. Handle back through `BackHandler`/`PredictiveBackHandler` in Compose or `OnBackPressedDispatcher` in Views so dialogs, sheets, and custom panes still dismiss for TalkBack, Switch Access, and keyboard users.
+
+## Keyboard focus visibility
+
+- Keep a visible focus indicator for hardware keyboard and Switch Access navigation. `clickable(indication = null)` and custom indications can remove the focused-state highlight.
+- Verify Tab and arrow-key order on custom layouts; Compose focus order and TalkBack traversal order are separate.
+
 ## Views APIs
 
 - Prefer platform widgets and Material components.
@@ -122,19 +136,15 @@ Text(text, Modifier.heightIn(min = 40.dp))
 - Audit DOM semantics separately; native labels do not repair inaccessible web content.
 - Verify keyboard, TalkBack, zoom, errors, and authentication transitions across the native/web boundary.
 
-## Testing and tools
+## Diagnosis
 
-- Inspect Compose semantics with `printToLog`/`printToString` during diagnosis.
-- Use Compose UI assertions for roles, text, state, actions, errors, traversal metadata, and merged/unmerged trees.
-- Use `enableAccessibilityChecks()` when available in the Compose testing version; treat results as heuristics and review false positives narrowly.
-- For Views/Espresso, use `AccessibilityChecks.enable()` from the Accessibility Test Framework.
-- Run Accessibility Scanner on representative flows.
-- Use instrumentation/device tests for IME, autofill, framework focus, WebView, and window behavior.
-- Manually verify TalkBack, Voice Access, Switch Access, keyboard navigation, font scale, display size, RTL, dark theme, and reduced motion.
+- Inspect Compose semantics with `printToLog`/`printToString` and compare merged and unmerged trees before changing modifiers.
+- For test-layer choice, test APIs, and evidence limits, invoke the `mobile-a11y-testing` skill.
 
 Official sources:
 
 - Compose semantics: https://developer.android.com/develop/ui/compose/accessibility/semantics
-- Compose accessibility testing: https://developer.android.com/develop/ui/compose/accessibility/testing
 - Android accessibility principles: https://developer.android.com/guide/topics/ui/accessibility/principles
 - Font scaling: https://developer.android.com/about/versions/14/features#non-linear-font-scaling
+- Edge-to-edge in Compose: https://developer.android.com/develop/ui/compose/system/system-bars
+- Android 16 behavior changes (edge-to-edge opt-out, predictive back): https://developer.android.com/about/versions/16/behavior-changes-16

@@ -1,6 +1,11 @@
 # KMP accessibility boundaries
 
-Last reviewed: 2026-10-23
+Last reviewed: 2026-10-23. Swift export, SKIE, and Compose Multiplatform accessibility change quickly; verify against the Kotlin and Compose Multiplatform versions used by the project.
+
+Two architectures need different rules:
+
+- **Shared logic, native UI**: Compose on Android, SwiftUI or UIKit on iOS. The rest of this file applies.
+- **Shared UI with Compose Multiplatform**: see [Compose Multiplatform shared UI](#compose-multiplatform-shared-ui).
 
 ## Share
 
@@ -62,8 +67,8 @@ Android maps it to Compose `error()`/state semantics; iOS maps it to native labe
 
 ## Swift export and SKIE
 
-- Kotlin/Native framework export is the baseline and must remain understandable without optional tooling.
-- Swift export may improve native Swift API shape but can be experimental or toolchain-constrained; verify current Kotlin support and limitations before adoption.
+- Kotlin/Native framework export through Objective-C headers is the baseline and must remain understandable without optional tooling.
+- Swift export is Alpha as of this review: it works only with direct Xcode integration, erases generic type parameters, ignores types inheriting `List`/`Set`/`Map`, and supports only final classes that inherit directly from `Any`. Suspend functions become `async` and flows become `AsyncSequence`. Do not make a public library contract depend on it without accepting breaking changes.
 - SKIE can improve coroutines, flows, sealed hierarchies, and Swift ergonomics, but adds a build dependency and configuration surface. Keep it optional unless the library contract requires it.
 - Document which layer consumers must configure and test both direct and enhanced interop paths when both are supported.
 
@@ -72,3 +77,23 @@ Android maps it to Compose `error()`/state semantics; iOS maps it to native labe
 - Keep Play Services, analytics, message retrieval, platform test frameworks, and optional interop plugins out of the core runtime artifact unless every consumer requires them.
 - Review API/ABI compatibility when public state, enum values, constructors, exported names, or framework packaging changes.
 - Verify Android publication, iOS framework/XCFramework export, linker settings, and sample-app consumption.
+
+## Compose Multiplatform shared UI
+
+This section is draft guidance. The official documentation does not list iOS accessibility limitations exhaustively, so treat every iOS behavior as unverified until tested on a device.
+
+- Compose semantics are mapped to native iOS accessibility objects, so `contentDescription`, `role`, `stateDescription`, `heading()`, and traversal properties are the shared implementation surface. This is the exception to keeping semantics native: the Compose UI itself is the iOS UI.
+- Material components map automatically. Give custom components explicit semantics and verify them with VoiceOver on iOS, not only with Android tests.
+- `testTag` maps to `accessibilityIdentifier`, so XCUITest and `performAccessibilityAudit()` can run against Compose screens.
+- Material3 `ColorScheme` has no built-in high-contrast variant. Detect Increase Contrast on iOS (`UIAccessibilityDarkerSystemColorsEnabled` and its change notification) through a platform capability and supply your own palette.
+- Before relying on an iOS-only capability (rotors, Voice Control input labels, Large Content Viewer, UIKit notifications, modal containment), verify that it works on the Compose screen. When it does not, host that part in a native SwiftUI/UIKit view through interop, or record the gap and its affected users.
+- Keep platform preference reads (reduced motion, increased contrast, font scale) behind the same injected interfaces described above.
+- Compose Multiplatform 1.8.0 removed the `AccessibilitySyncOptions` tree-synchronization setting; the tree now syncs lazily. Remove that configuration when upgrading.
+
+Official sources:
+
+- Kotlin/Objective-C interop: https://kotlinlang.org/docs/native-objc-interop.html
+- Swift export: https://kotlinlang.org/docs/native-swift-export.html
+- SKIE: https://skie.touchlab.co/
+- Compose Multiplatform accessibility: https://kotlinlang.org/docs/multiplatform/compose-accessibility.html
+- Compose Multiplatform iOS accessibility: https://kotlinlang.org/docs/multiplatform/compose-ios-accessibility.html
