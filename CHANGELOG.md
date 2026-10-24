@@ -2,15 +2,16 @@
 
 ## Unreleased
 
-- Replace the review skill's `Note` severity with `P3` so the skill, validator, scorer, and README share one `P0`–`P3` scale.
-- Make the Android and iOS engineer agents invoke `mobile-a11y-review` and avoid edits when asked to review.
-- Name the fixture path and forbid fixture edits in the Android Views and UIKit eval prompts.
-- Run script compilation, the install smoke test, and unit tests from `scripts/validate.sh` and the Linux CI job instead of the macOS job.
-- Skip Android and iOS sample builds on the monthly scheduled link check.
-- Share skill-invocation parsing between the validator and install smoke test, detect every ``invoke `skill` `` reference, and require each agent to invoke a skill.
-- Report a malformed rubric per eval instead of aborting validation of the remaining evals.
-- Accept judge output wrapped in a Markdown code fence and reject non-object or unknown-field output before writing it.
-- Add monthly Dependabot updates for the Android sample's Gradle dependencies.
+- Replace the `Note` severity with `P3` so the review skill, validator, and scorer share one `P0`–`P3` scale.
+- Have the Android and iOS engineer agents also invoke `mobile-a11y-review` for review-only tasks, and name the fixture path and forbid fixture edits in every eval prompt.
+- Name platform skills explicitly in agents and share one invoked-skill parser between the validator and the installation smoke test.
+- Lower `duplicate-delete-semantics` to P2, matching the skill's definition of degraded usability.
+- Run script compilation, the installation smoke test, and unit tests from `validate.sh`, in the Ubuntu CI job instead of the macOS job.
+- Skip the sample builds on the monthly link-check schedule, and build both samples before a release is created.
+- Report an invalid rubric per eval without stopping validation of the others.
+- Accept fenced or wrapped judge JSON and validate it before writing the result file.
+- Warn 30 days before a reference review date becomes stale.
+- Add static guards for the KMP and SwiftUI eval fixtures, and Dependabot updates for the Android sample's Gradle dependencies.
 
 ## 0.6.0
 

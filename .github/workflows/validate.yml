@@ -16,10 +16,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Validate repository, scripts, and tests
-        env:
-          CHECK_EXTERNAL_LINKS: ${{ github.event_name == 'schedule' && '1' || '0' }}
+      - name: Validate structure, links, scripts, and tests
         run: ./scripts/validate.sh
+      - name: Check external references on schedule
+        if: github.event_name == 'schedule'
+        env:
+          CHECK_EXTERNAL_LINKS: "1"
+        run: python3 scripts/validate_repo.py .
 
   android-samples:
     name: Android samples and eval fixtures
