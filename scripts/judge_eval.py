@@ -8,6 +8,7 @@ import re
 import shlex
 import subprocess
 import sys
+import tempfile
 
 # Allow both `python3 scripts/judge_eval.py` and `import scripts.judge_eval` in tests.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -90,12 +91,14 @@ def main(root: Path, eval_id: str, response_path: Path, result_path: Path) -> in
         print("EVAL_JUDGE_TIMEOUT_SECONDS must be a positive integer.")
         return 2
     try:
-        completed = run_bounded(
-            shlex.split(command),
-            input_text=prompt,
-            timeout=timeout,
-            max_output_bytes=MAX_OUTPUT_BYTES,
-        )
+        with tempfile.TemporaryDirectory(prefix=f"a11y-judge-{eval_id}-") as workspace:
+            completed = run_bounded(
+                shlex.split(command),
+                input_text=prompt,
+                timeout=timeout,
+                max_output_bytes=MAX_OUTPUT_BYTES,
+                cwd=Path(workspace),
+            )
     except ProcessTimedOut:
         print(f"Judge timed out after {timeout} seconds.")
         return 2

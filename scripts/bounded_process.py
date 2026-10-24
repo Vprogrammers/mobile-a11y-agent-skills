@@ -78,14 +78,12 @@ def run_bounded(
     failure: type[Exception] | None = None
 
     def kill_process_tree() -> None:
-        if process.poll() is not None:
-            return
         if os.name == "posix":
             try:
                 os.killpg(process.pid, signal.SIGKILL)
             except ProcessLookupError:
                 pass
-        else:
+        elif process.poll() is None:
             process.kill()
 
     while finished_streams < len(readers):

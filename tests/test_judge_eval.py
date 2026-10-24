@@ -150,6 +150,53 @@ class JudgeEvalTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertEqual(json.loads(output.read_text()), result_payload)
 
+    def test_judge_runs_in_isolated_working_directory(self) -> None:
+        result_payload = {
+            "matched_findings": [
+                "fixed-height-text",
+                "unstable-lazy-list-identity",
+                "duplicate-delete-semantics",
+                "gesture-only-help",
+                "non-modal-overlay",
+            ],
+            "forbidden_claims": [],
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            temporary = Path(directory)
+            response = temporary / "response.md"
+            output = temporary / "result.json"
+            cwd_record = temporary / "judge-cwd.txt"
+            stub = temporary / "judge.py"
+            response.write_text("review response", encoding="utf-8")
+            stub.write_text(
+                "import json, os, pathlib, sys\n"
+                "sys.stdin.read()\n"
+                "pathlib.Path(os.environ['JUDGE_CWD_FILE']).write_text(os.getcwd())\n"
+                "print(json.dumps(" + repr(result_payload) + "))\n",
+                encoding="utf-8",
+            )
+            environment = dict(os.environ)
+            environment["EVAL_JUDGE_COMMAND"] = f"python3 {stub}"
+            environment["JUDGE_CWD_FILE"] = str(cwd_record)
+            result = subprocess.run(
+                [
+                    "python3",
+                    str(ROOT / "scripts/judge_eval.py"),
+                    "android-compose-review",
+                    response.name,
+                    output.name,
+                ],
+                cwd=temporary,
+                env=environment,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            judge_cwd = Path(cwd_record.read_text(encoding="utf-8"))
+            self.assertNotEqual(judge_cwd, temporary)
+            self.assertTrue(judge_cwd.name.startswith("a11y-judge-"))
+
 
 if __name__ == "__main__":
     unittest.main()
