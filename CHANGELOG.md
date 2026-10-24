@@ -7,6 +7,10 @@
 - Name the fixture path and forbid fixture edits in the Android Views and UIKit eval prompts.
 - Run script compilation, the install smoke test, and unit tests from `scripts/validate.sh` and the Linux CI job instead of the macOS job.
 - Skip Android and iOS sample builds on the monthly scheduled link check.
+- Share skill-invocation parsing between the validator and install smoke test, detect every ``invoke `skill` `` reference, and require each agent to invoke a skill.
+- Report a malformed rubric per eval instead of aborting validation of the remaining evals.
+- Accept judge output wrapped in a Markdown code fence and reject non-object or unknown-field output before writing it.
+- Add monthly Dependabot updates for the Android sample's Gradle dependencies.
 
 ## 0.6.0
 

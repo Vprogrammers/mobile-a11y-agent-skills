@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from pathlib import Path
 import shlex
 import subprocess
@@ -33,6 +34,21 @@ def build_prompt(
     )
 
 
+def parse_judge_output(text: str) -> dict[str, object]:
+    """Extract the judge's JSON object, tolerating a surrounding Markdown code fence."""
+    stripped = text.strip()
+    fenced = re.fullmatch(r"```(?:json)?\s*\n(.*?)\n?```", stripped, re.DOTALL)
+    if fenced:
+        stripped = fenced.group(1).strip()
+    result = json.loads(stripped)
+    if not isinstance(result, dict):
+        raise ValueError("judge output must be a JSON object")
+    unknown = set(result) - {"matched_findings", "forbidden_claims"}
+    if unknown:
+        raise ValueError(f"judge output has unknown fields: {', '.join(sorted(unknown))}")
+    return result
+
+
 def main(root: Path, eval_id: str, response_path: Path, result_path: Path) -> int:
     command = os.environ.get("EVAL_JUDGE_COMMAND")
     if not command:
@@ -61,9 +77,9 @@ def main(root: Path, eval_id: str, response_path: Path, result_path: Path) -> in
         print(completed.stderr or completed.stdout)
         return completed.returncode
     try:
-        result = json.loads(completed.stdout)
-    except json.JSONDecodeError as error:
-        print(f"Judge returned invalid JSON: {error}")
+        result = parse_judge_output(completed.stdout)
+    except (json.JSONDecodeError, ValueError) as error:
+        print(f"Judge returned invalid output: {error}")
         return 2
     result_path.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     scorer = subprocess.run(

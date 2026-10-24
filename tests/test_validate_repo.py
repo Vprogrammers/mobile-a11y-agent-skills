@@ -115,6 +115,34 @@ class ValidateRepositoryTests(unittest.TestCase):
         result = self.invalid_copy(mutate)
         self.assertIn("invokes missing skill", result.stdout)
 
+    def test_missing_also_invoked_skill_is_rejected(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "agents/android-a11y-engineer.md"
+            path.write_text(path.read_text().replace("`mobile-a11y-review`", "`missing-review`"))
+
+        result = self.invalid_copy(mutate)
+        self.assertIn("invokes missing skill: missing-review", result.stdout)
+
+    def test_agent_without_skill_invocation_is_rejected(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "agents/kmp-a11y-architect.md"
+            path.write_text(path.read_text().replace("Invoke the `kmp-a11y` skill by name.", ""))
+
+        result = self.invalid_copy(mutate)
+        self.assertIn("must invoke at least one skill", result.stdout)
+
+    def test_malformed_rubric_does_not_hide_later_errors(self) -> None:
+        def mutate(root: Path) -> None:
+            (root / "evals/android-compose-review/rubric.json").write_text("{not json")
+            path = root / "evals/regulatory-evidence-review/rubric.json"
+            data = json.loads(path.read_text())
+            data["required_findings"][0]["criteria"] = "  "
+            path.write_text(json.dumps(data))
+
+        result = self.invalid_copy(mutate)
+        self.assertIn("android-compose-review rubric is not valid JSON", result.stdout)
+        self.assertIn("regulatory-evidence-review finding", result.stdout)
+
     def test_reference_without_source_is_rejected(self) -> None:
         def mutate(root: Path) -> None:
             path = root / "skills/kmp-a11y/references/kmp-boundaries.md"
