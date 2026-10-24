@@ -1,6 +1,7 @@
 # KMP accessibility boundaries
 
 Last reviewed: 2026-10-23. Swift export, SKIE, and Compose Multiplatform accessibility change quickly; verify against the Kotlin and Compose Multiplatform versions used by the project.
+Review interval: 180 days.
 
 Two architectures need different rules:
 
