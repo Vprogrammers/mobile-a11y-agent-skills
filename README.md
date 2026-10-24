@@ -45,7 +45,7 @@ Or copy `agents/*` to `.claude/agents/` and `skills/*` to `.claude/skills/`.
 
 The agents invoke skills by name, so they work from plugin installation or copied project directories without repository-relative paths.
 
-For a minimal copy-ready package, use [`mobile-a11y-agent-skills-lite`](https://github.com/vikktorn/mobile-a11y-agent-skills-lite). It is generated from this repository and contains only consumer instructions, agents, skills, references, and license files.
+For a minimal copy-ready package, use [`mobile-a11y-agent-skills-lite`](https://github.com/Vprogrammers/mobile-a11y-agent-skills-lite). It is generated from this repository and contains only consumer instructions, agents, skills, references, and license files.
 
 ## Example prompts
 
@@ -160,7 +160,7 @@ claude plugin eval . --runs 1 --ablation with-without --max-cost-usd 3.00 --no-p
 
 Use the official runner for plugin loading, routing, trace, and baseline evidence. Use the custom suite for the repository's 18 detailed accessibility rubrics and deterministic scoring contract.
 
-The weekly and manually triggered `Agent eval regression` workflow performs both runs only when the repository owner configures `CLAUDE_CODE_OAUTH_TOKEN`. The custom suite uses Sonnet for the agent and Opus as an independent judge to reduce correlated evaluation bias. A scheduled run fails when the secret is missing; a manual run records an explicit skipped summary. Pull-request CI never invokes a paid model. Workflow results are retained as artifacts rather than committed automatically.
+The manually triggered `Agent eval regression` workflow performs both runs only when the repository owner configures `CLAUDE_CODE_OAUTH_TOKEN`. It has no schedule. The custom suite uses Sonnet for the agent and Opus as an independent judge to reduce correlated evaluation bias. Without the secret, a run records an explicit skipped summary. Pull-request CI never invokes a paid model. Workflow results are retained as artifacts rather than committed automatically.
 
 ## Compiled samples
 

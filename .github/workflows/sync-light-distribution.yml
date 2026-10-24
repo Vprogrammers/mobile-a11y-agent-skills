@@ -34,7 +34,7 @@ jobs:
       - name: Check out light repository with its restricted deploy key
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: vikktorn/mobile-a11y-agent-skills-lite
+          repository: Vprogrammers/mobile-a11y-agent-skills-lite
           path: light
           ssh-key: ${{ secrets.LIGHT_REPO_DEPLOY_KEY }}
       - name: Generate and validate distribution

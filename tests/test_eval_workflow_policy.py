@@ -33,9 +33,9 @@ class EvalWorkflowPolicyTests(unittest.TestCase):
         self.assertIn("--ablation with-without", self.workflow)
         self.assertIn("--max-cost-usd 3.00", self.workflow)
 
-    def test_scheduled_run_fails_without_credentials(self) -> None:
-        self.assertIn('if [ "$GITHUB_EVENT_NAME" = "schedule" ]', self.workflow)
-        self.assertIn("exit 1", self.workflow)
+    def test_paid_evals_run_only_on_demand(self) -> None:
+        self.assertNotIn("schedule:", self.workflow)
+        self.assertIn("workflow_dispatch:", self.workflow)
         self.assertIn("GITHUB_STEP_SUMMARY", self.workflow)
 
 

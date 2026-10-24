@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Run the paid `Agent eval regression` workflow only on demand. The weekly schedule failed by design whenever `CLAUDE_CODE_OAUTH_TOKEN` was not configured.
+- Move the light distribution to `Vprogrammers/mobile-a11y-agent-skills-lite` and point the sync workflow and README at it.
+
 ## 0.7.0
 
 - Retain the r3 eval bundles: five harder evals, plugin and baseline, three runs each. The plugin passed 15 of 15 and the baseline 4 of 15; see `evals/results/README.md` for the per-finding analysis and limits.
