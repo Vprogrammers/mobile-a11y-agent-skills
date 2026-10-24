@@ -25,7 +25,7 @@ jobs:
       - name: Run blind agent and judge evals
         if: env.CLAUDE_CODE_OAUTH_TOKEN != ''
         env:
-          EVAL_AGENT_COMMAND: claude -p --model sonnet
+          EVAL_AGENT_COMMAND: claude -p --model sonnet --plugin-dir .
           EVAL_JUDGE_COMMAND: claude -p --model sonnet
           EVAL_MODEL: sonnet
         run: ./scripts/run_eval_suite.py evals/results/ci
