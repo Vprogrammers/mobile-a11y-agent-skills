@@ -28,6 +28,19 @@ ALLOWED_FINDING_KINDS = {
     "testing",
     "verification",
 }
+REQUIRED_DENY_RULES = {
+    "Read(./.claude/settings.local.json)",
+    "Read(./**/*.jks)",
+    "Read(./**/*.p12)",
+    "Read(./**/*.p8)",
+    "Read(./**/*.mobileprovision)",
+    "Bash(git push)",
+    "Bash(git push *)",
+    "Bash(./gradlew *publish*)",
+    "Bash(./gradlew *sign*)",
+    "Bash(xcrun notarytool *)",
+    "Bash(npm publish *)",
+}
 
 
 def frontmatter(path: Path) -> tuple[list[str], dict[str, str]]:
@@ -182,6 +195,21 @@ def main(root: Path) -> int:
             errors.append("plugin.json homepage is missing or incorrect")
     except (FileNotFoundError, json.JSONDecodeError, KeyError, IndexError) as error:
         errors.append(f"Invalid plugin metadata: {error}")
+
+    try:
+        settings = json.loads((root / "templates/claude/settings.json").read_text(encoding="utf-8"))
+        deny = settings["permissions"]["deny"]
+        if not isinstance(deny, list) or not all(isinstance(rule, str) and rule for rule in deny):
+            errors.append("Claude settings permissions.deny must be a non-empty string array")
+        else:
+            duplicates = sorted({rule for rule in deny if deny.count(rule) > 1})
+            if duplicates:
+                errors.append(f"Claude settings contain duplicate deny rules: {', '.join(duplicates)}")
+            missing = sorted(REQUIRED_DENY_RULES - set(deny))
+            if missing:
+                errors.append(f"Claude settings are missing critical deny rules: {', '.join(missing)}")
+    except (FileNotFoundError, json.JSONDecodeError, KeyError, TypeError) as error:
+        errors.append(f"Invalid Claude settings template: {error}")
 
     try:
         evaluations = json.loads((root / "evals/manifest.json").read_text(encoding="utf-8"))["evaluations"]

@@ -180,6 +180,28 @@ class ValidateRepositoryTests(unittest.TestCase):
             result.stdout,
         )
 
+    def test_missing_critical_claude_deny_rule_is_rejected(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "templates/claude/settings.json"
+            data = json.loads(path.read_text())
+            data["permissions"]["deny"].remove("Bash(git push)")
+            path.write_text(json.dumps(data))
+
+        result = self.invalid_copy(mutate)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("missing critical deny rules", result.stdout)
+
+    def test_duplicate_claude_deny_rule_is_rejected(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "templates/claude/settings.json"
+            data = json.loads(path.read_text())
+            data["permissions"]["deny"].append("Bash(git push)")
+            path.write_text(json.dumps(data))
+
+        result = self.invalid_copy(mutate)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("duplicate deny rules", result.stdout)
+
     def test_vague_skill_reference_is_rejected(self) -> None:
         def mutate(root: Path) -> None:
             path = root / "agents/accessibility-reviewer.md"

@@ -122,7 +122,18 @@ EVAL_JUDGE_COMMAND='claude -p' \
   ./scripts/judge_eval.py android-compose-review response.md result.json
 ```
 
-The judge may wrap its JSON in a fenced block or short prose; the adapter extracts it and validates it against the rubric before writing the result file. The judge is deliberately excluded from CI: model evaluation is nondeterministic, costs money, and requires user-managed credentials.
+The judge may wrap its JSON in a fenced block or short prose; the adapter extracts it and validates it against the rubric before writing the result file. The judge is deliberately excluded from pull-request CI because model evaluation is nondeterministic, costs money, and requires user-managed credentials.
+
+Run every eval with separate trusted agent and judge commands and retain a dated result bundle:
+
+```bash
+EVAL_AGENT_COMMAND='claude -p' \
+EVAL_JUDGE_COMMAND='claude -p' \
+EVAL_MODEL='model-id' \
+./scripts/run_eval_suite.py "evals/results/$(date -u +%Y-%m-%dT%H%M%SZ)-model-id"
+```
+
+The weekly and manually triggered `Agent eval regression` workflow performs the same blind run only when the repository owner configures `CLAUDE_CODE_OAUTH_TOKEN`. Pull-request CI never invokes a paid model. Workflow results are retained as artifacts rather than committed automatically.
 
 ## Compiled samples
 
@@ -134,6 +145,8 @@ The judge may wrap its JSON in a fenced block or short prose; the adapter extrac
 ```
 
 See [samples/README.md](samples/README.md) for requirements and limits.
+
+When the iOS job fails, CI uploads its `.xcresult` bundle for diagnosis. Successful runs do not retain the bundle.
 
 The eval set includes defect-bearing Android, iOS, KMP, test-strategy, and regulatory cases; clean Compose, Android Views, SwiftUI, and UIKit cases that penalize invented findings; and an EN 301 549 scenario that tests technology self-scoping.
 
@@ -149,6 +162,10 @@ The eval set includes defect-bearing Android, iOS, KMP, test-strategy, and regul
 ## Security
 
 Review [SECURITY.md](SECURITY.md) before running agents with shell access or using an external eval judge. Projects can optionally start from the [deny-only Claude Code settings template](templates/claude/README.md).
+
+## Distribution
+
+Use the repository directly as a Claude Code plugin or copy `agents/` and `skills/` into a project. GitHub Releases are intentionally not generated; tags may still identify reviewed snapshots if versioned distribution is needed later.
 
 ## License
 

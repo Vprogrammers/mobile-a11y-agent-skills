@@ -1,0 +1,39 @@
+name: Agent eval regression
+
+on:
+  schedule:
+    - cron: "31 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    env:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      DISABLE_AUTOUPDATER: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Explain missing optional credentials
+        if: env.CLAUDE_CODE_OAUTH_TOKEN == ''
+        run: echo "Skipping paid model evals because CLAUDE_CODE_OAUTH_TOKEN is not configured."
+      - name: Install pinned Claude Code
+        if: env.CLAUDE_CODE_OAUTH_TOKEN != ''
+        run: npm install -g @anthropic-ai/claude-code@2.1.89
+      - name: Run blind agent and judge evals
+        if: env.CLAUDE_CODE_OAUTH_TOKEN != ''
+        env:
+          EVAL_AGENT_COMMAND: claude -p --model sonnet --plugin-dir .
+          EVAL_JUDGE_COMMAND: claude -p --model sonnet
+          EVAL_MODEL: sonnet
+        run: ./scripts/run_eval_suite.py evals/results/ci
+      - name: Upload eval evidence
+        if: always() && env.CLAUDE_CODE_OAUTH_TOKEN != ''
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: agent-eval-${{ github.sha }}
+          path: evals/results/ci
+          if-no-files-found: error
+          retention-days: 30

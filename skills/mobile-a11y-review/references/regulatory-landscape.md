@@ -29,6 +29,16 @@ Directive (EU) 2019/882 applies from 28 June 2025 to covered products and servic
 
 The latest published version is **EN 301 549 V4.1.1 (2026-09)**, adopted on 24 August 2026. It updates clauses 9, 10, and 11 to align with WCAG 2.2 and adds annexes that map requirements to Directive (EU) 2016/2102 and Directive (EU) 2019/882.
 
+| Status item | Verified state on 2026-10-24 |
+|---|---|
+| Latest ETSI publication | EN 301 549 V4.1.1 (2026-09) |
+| Publication status | Published by ETSI |
+| Citation for Directive (EU) 2016/2102 | Verify the current Official Journal notice before making a claim |
+| Citation for Directive (EU) 2019/882 | Verify the current Official Journal notice before making a claim |
+| Contract or procurement baseline | Use the edition named by the controlling document |
+
+Treat every Official Journal and contract row as an explicit evidence field in a compliance report. Never infer it from the ETSI publication row.
+
 Publication is not the same as citation in the Official Journal of the European Union. V4.1.1 states that presumption of conformity applies only once the version is cited under the relevant Directive and only within the scope of the cited clauses. Before using the standard for a compliance statement, verify:
 
 - the version cited in the Official Journal for the applicable Directive;

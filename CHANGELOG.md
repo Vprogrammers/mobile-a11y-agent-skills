@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add opt-in scheduled agent evals and result bundles, harden the judge against prompt injection and runaway commands, validate critical Claude deny rules, structure EN 301 549 status evidence, retain failing XCTest bundles, and remove unused release automation.
 - Compile clean platform eval fixtures, add per-reference freshness intervals, expand current US regulatory guidance and eval coverage, validate copied skill links, and provide an optional hardened Claude Code settings template.
 - Add EN 301 549 technology self-scoping guidance and eval coverage, clean SwiftUI/Android Views/UIKit evals, agent execution boundaries, a security policy, and a real-device evidence template.
 - Update EN 301 549 guidance to the latest published V4.1.1 edition, distinguish publication from Official Journal citation, and add an eval guard for unsupported harmonization claims.
