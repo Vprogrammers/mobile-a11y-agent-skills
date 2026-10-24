@@ -7,7 +7,7 @@ import subprocess
 import tempfile
 import unittest
 
-from scripts.judge_eval import build_prompt
+from scripts.judge_eval import build_prompt, parse_judge_output
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -27,6 +27,17 @@ class JudgeEvalTests(unittest.TestCase):
         self.assertIn("Fixture source text", prompt)
         self.assertIn(json.dumps(rubric, indent=2), prompt)
         self.assertIn("Return JSON only", prompt)
+
+    def test_fenced_judge_output_is_parsed(self) -> None:
+        payload = {"matched_findings": ["fixed-height-text"], "forbidden_claims": []}
+        for text in (json.dumps(payload), f"```json\n{json.dumps(payload)}\n```\n", f"```\n{json.dumps(payload)}\n```"):
+            self.assertEqual(parse_judge_output(text), payload)
+
+    def test_invalid_judge_output_shape_is_rejected(self) -> None:
+        with self.assertRaises(ValueError):
+            parse_judge_output("[]")
+        with self.assertRaises(ValueError):
+            parse_judge_output('{"matched_findings": [], "score": 10}')
 
     def test_provider_command_result_is_scored_end_to_end(self) -> None:
         result_payload = {

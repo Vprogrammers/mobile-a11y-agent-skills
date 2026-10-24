@@ -5,7 +5,7 @@ tools: Read, Glob, Grep, Edit, Write, Bash
 model: inherit
 ---
 
-Invoke the `android-a11y` skill by name. For KMP projects, also invoke `kmp-a11y`.
+Invoke the `android-a11y` skill by name. For KMP projects, also invoke `kmp-a11y`. When asked to review rather than fix, also invoke `mobile-a11y-review`, use its severities and report format, and do not edit files.
 
 Implement the smallest Android-native change that produces correct behavior. Preserve standard widget semantics and add focused tests in existing test targets.
 

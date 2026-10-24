@@ -25,6 +25,11 @@ ALLOWED_FINDING_KINDS = {
     "testing",
     "verification",
 }
+SKILL_INVOCATION = re.compile(r"\b[Ii]nvoke (?:the )?`([a-z0-9-]+)`")
+
+
+def invoked_skills(body: str) -> set[str]:
+    return set(SKILL_INVOCATION.findall(body))
 
 
 def frontmatter(path: Path) -> tuple[list[str], dict[str, str]]:
@@ -102,12 +107,11 @@ def main(root: Path) -> int:
                 errors.append(f"Duplicate name {name}: {names[name]} and {relative}")
             names[name] = relative
 
-        body = path.read_text(encoding="utf-8")
-        invoked = re.findall(r"Invoke (?:the )?`([a-z0-9-]+)` skill|also invoke `([a-z0-9-]+)`", body)
-        for pair in invoked:
-            for skill_name in pair:
-                if skill_name and skill_name not in {skill.parent.name for skill in skills}:
-                    errors.append(f"{relative} invokes missing skill: {skill_name}")
+        invoked = invoked_skills(path.read_text(encoding="utf-8"))
+        if not invoked:
+            errors.append(f"{relative} must invoke at least one skill by name")
+        for skill_name in sorted(invoked - {skill.parent.name for skill in skills}):
+            errors.append(f"{relative} invokes missing skill: {skill_name}")
 
     for path in root.rglob("*.md"):
         if BUILD_DIRECTORIES & set(path.parts):
@@ -180,8 +184,12 @@ def main(root: Path) -> int:
                     errors.append(f"Eval {eval_id} missing {field}: {evaluation[field]}")
             rubric_path = root / str(evaluation["rubric"])
             if rubric_path.is_file():
-                rubric = json.loads(rubric_path.read_text(encoding="utf-8"))
-                if set(rubric) != {"required_findings", "forbidden_claims"}:
+                try:
+                    rubric = json.loads(rubric_path.read_text(encoding="utf-8"))
+                except json.JSONDecodeError as error:
+                    errors.append(f"Eval {eval_id} rubric is not valid JSON: {error}")
+                    continue
+                if not isinstance(rubric, dict) or set(rubric) != {"required_findings", "forbidden_claims"}:
                     errors.append(f"Eval {eval_id} rubric must contain only required_findings and forbidden_claims")
                     continue
                 findings = rubric["required_findings"]
