@@ -17,7 +17,7 @@ Contributions are welcome for Android, iOS, Kotlin Multiplatform, testing, and a
 - Keep eval fixtures free of import lines; the samples compile generated copies. Update the guard tests in `samples/` or `tests/test_eval_fixtures.py` when a fixture or rubric changes.
 - Name every invoked skill explicitly in agent instructions; the validator rejects phrases such as "relevant platform skills".
 - Run `./scripts/validate.sh`; it also runs the unit and installation smoke tests.
-- Use `templates/real-device-evidence.md` for manual assistive-technology results and keep them release-specific.
+- Use `skills/mobile-a11y-testing/references/real-device-evidence-template.md` for manual assistive-technology results and keep them release-specific.
 - Follow `SECURITY.md`; never use accessibility work to access secrets, weaken privacy, publish, sign, deploy, or send project data without explicit authorization.
 - Do not add generated-by or co-author metadata to commits.
 
