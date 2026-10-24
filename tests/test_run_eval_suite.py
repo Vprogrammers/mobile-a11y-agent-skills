@@ -7,7 +7,7 @@ import subprocess
 import tempfile
 import unittest
 
-from scripts.run_eval_suite import agent_prompt, format_agent_command
+from scripts.run_eval_suite import agent_prompt, format_agent_command, severity_scale
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -32,6 +32,14 @@ class RunEvalSuiteTests(unittest.TestCase):
     def test_agent_command_requires_agent_placeholder(self) -> None:
         with self.assertRaisesRegex(ValueError, "agent.*placeholder"):
             format_agent_command("claude -p", "accessibility-reviewer", ROOT)
+
+    def test_severity_scale_comes_from_review_skill_and_reaches_both_variants(self) -> None:
+        scale = severity_scale(ROOT)
+        self.assertEqual([line[:8] for line in scale.splitlines()], ["- **P0**", "- **P1**", "- **P2**", "- **P3**"])
+        for variant in ("plugin", "baseline"):
+            prompt = agent_prompt("accessibility-reviewer", "Review this", "fixture", variant, scale)
+            self.assertIn(scale, prompt)
+        self.assertNotIn("**P1**", agent_prompt("accessibility-reviewer", "Review this", "fixture"))
 
     def test_baseline_prompt_omits_plugin_agent(self) -> None:
         task = (ROOT / "evals/android-compose-review.md").read_text(encoding="utf-8")

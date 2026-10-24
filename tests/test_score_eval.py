@@ -76,12 +76,13 @@ class ScoreEvalTests(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 2)
 
-    def test_wrong_severity_is_invalid(self) -> None:
-        result = self.run_score(
-            "android-compose-review",
-            {"matched_findings": [{"id": "fixed-height-text", "severity": "P3"}], "forbidden_claims": []},
-        )
-        self.assertEqual(result.returncode, 2)
+    def test_mismatched_severity_loses_only_that_finding(self) -> None:
+        findings = [dict(item) for item in RATED_PASSING]
+        findings[0]["severity"] = "P3"
+        result = self.run_score("android-compose-review", {"matched_findings": findings, "forbidden_claims": []})
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("android-compose-review: 6/10", result.stdout)
+        self.assertIn("- fixed-height-text: expected P1, received P3", result.stdout)
 
     def test_non_defect_severity_is_invalid(self) -> None:
         result = self.run_score(
