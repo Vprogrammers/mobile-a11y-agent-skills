@@ -11,7 +11,9 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 EXPECTED_REPOSITORY = "https://github.com/Vprogrammers/mobile-a11y-agent-skills"
-MAX_REVIEW_AGE_DAYS = 365
+DEFAULT_REVIEW_INTERVAL_DAYS = 365
+MIN_REVIEW_INTERVAL_DAYS = 30
+MAX_REVIEW_INTERVAL_DAYS = 365
 REVIEW_WARNING_DAYS = 30
 BUILD_DIRECTORIES = {".git", ".claude", ".gradle", ".kotlin", "build", ".build", ".swiftpm", "DerivedData"}
 REQUIRED_EVAL_FIELDS = {"id", "agent", "prompt", "fixture", "rubric", "minimum_score"}
@@ -144,15 +146,26 @@ def main(root: Path) -> int:
         if not match:
             errors.append(f"{path.relative_to(root)} must contain a Last reviewed date")
             continue
+        interval_match = re.search(r"^Review interval:\s*(\d+) days\.$", text, re.MULTILINE)
+        if "Review interval:" in text and not interval_match:
+            errors.append(f"{path.relative_to(root)} has an invalid Review interval")
+            continue
+        interval = int(interval_match.group(1)) if interval_match else DEFAULT_REVIEW_INTERVAL_DAYS
+        if not MIN_REVIEW_INTERVAL_DAYS <= interval <= MAX_REVIEW_INTERVAL_DAYS:
+            errors.append(
+                f"{path.relative_to(root)} review interval must be between "
+                f"{MIN_REVIEW_INTERVAL_DAYS} and {MAX_REVIEW_INTERVAL_DAYS} days"
+            )
+            continue
         reviewed = datetime.strptime(match.group(1), "%Y-%m-%d").date()
         age = (date.today() - reviewed).days
         if age < 0:
             errors.append(f"{path.relative_to(root)} has a future review date")
-        elif age > MAX_REVIEW_AGE_DAYS:
-            errors.append(f"{path.relative_to(root)} review is stale ({age} days)")
-        elif age > MAX_REVIEW_AGE_DAYS - REVIEW_WARNING_DAYS:
+        elif age > interval:
+            errors.append(f"{path.relative_to(root)} review is stale ({age} days; interval {interval})")
+        elif age > interval - REVIEW_WARNING_DAYS:
             warnings.append(
-                f"{path.relative_to(root)} review expires in {MAX_REVIEW_AGE_DAYS - age} days"
+                f"{path.relative_to(root)} review expires in {interval - age} days"
             )
 
     try:

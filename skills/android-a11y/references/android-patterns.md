@@ -1,6 +1,7 @@
 # Android accessibility patterns
 
 Last reviewed: 2026-10-23. Verify exact signatures against the Android and Compose versions used by the project.
+Review interval: 180 days.
 
 ## Compose semantics
 

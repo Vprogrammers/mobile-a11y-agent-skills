@@ -83,7 +83,7 @@ Verify: Compose device test for reachable nodes, then TalkBack navigation on a s
 ./scripts/validate.sh
 ```
 
-`validate.sh` runs the repository validator, compiles the scripts, runs the installation smoke test, and runs the unit tests. The validator checks skill and agent metadata, explicitly named invoked skills, duplicate names, local links, plugin version consistency, required review dates, executable permissions, and typed eval manifests/rubrics. It warns 30 days before a reference review date becomes stale and fails after 365 days. External links are intentionally optional to keep pull-request CI deterministic; a scheduled workflow checks them monthly:
+`validate.sh` runs the repository validator, compiles the scripts, runs the installation smoke test, and runs the unit tests. The validator checks skill and agent metadata, explicitly named invoked skills, duplicate names, local links, plugin version consistency, required review dates, executable permissions, and typed eval manifests/rubrics. It warns 30 days before each reference's declared review interval expires and fails when it is stale. Dynamic platform references use 180 days, regulatory guidance uses 90 days, and references without an override use 365 days. External links are intentionally optional to keep pull-request CI deterministic; a scheduled workflow checks them monthly:
 
 ```bash
 CHECK_EXTERNAL_LINKS=1 ./scripts/validate.sh
@@ -126,7 +126,7 @@ The judge may wrap its JSON in a fenced block or short prose; the adapter extrac
 
 ## Compiled samples
 
-`samples/` compiles the reference examples and the Android and iOS eval fixtures, and runs semantics and property tests. Guard tests fail when a fixture loses a defect its rubric expects. The KMP and SwiftUI fixtures have static guards in `tests/test_eval_fixtures.py`. CI runs both projects on every pull request:
+`samples/` compiles the reference examples and platform code eval fixtures, and runs semantics and property tests. Guard tests fail when a fixture loses a defect its rubric expects. The KMP and SwiftUI fixtures have static guards in `tests/test_eval_fixtures.py`. CI runs both projects on every pull request:
 
 ```bash
 (cd samples/android && ./gradlew assembleDebug testDebugUnitTest)
@@ -148,7 +148,7 @@ The eval set includes defect-bearing Android, iOS, KMP, test-strategy, and regul
 
 ## Security
 
-Review [SECURITY.md](SECURITY.md) before running agents with shell access or using an external eval judge.
+Review [SECURITY.md](SECURITY.md) before running agents with shell access or using an external eval judge. Projects can optionally start from the [deny-only Claude Code settings template](templates/claude/README.md).
 
 ## License
 

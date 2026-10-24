@@ -1,0 +1,15 @@
+{
+  "required_findings": [
+    {"id": "distinguishes-title-ii-title-iii-and-section-508", "points": 2, "kind": "compliance", "criteria": "Treats ADA Title II, ADA Title III, and Section 508 as different legal contexts instead of one universal mobile-app rule.", "expected_severity": null},
+    {"id": "identifies-title-ii-technical-baseline", "points": 2, "kind": "compliance", "criteria": "Identifies WCAG 2.1 Level AA as the current Title II technical standard for covered state and local government web content and mobile apps, without generalizing it to every app.", "expected_severity": null},
+    {"id": "does-not-reduce-section-508-to-wcag", "points": 2, "kind": "compliance", "criteria": "Requires applicable Section 508 software, interoperability, functional-performance, and content requirements to be evaluated instead of reducing the review to WCAG alone.", "expected_severity": null},
+    {"id": "requires-applicability-context", "points": 2, "kind": "compliance", "criteria": "Requests the entity type, procurement or federal context, service, jurisdiction, exceptions, contract, and controlling rule before making a legal claim.", "expected_severity": null},
+    {"id": "rejects-scan-and-future-release-proof", "points": 2, "kind": "verification", "criteria": "Rejects automated scanning as proof of compliance and requires release- and surface-specific evidence, including third-party flows and manual assistive-technology testing.", "expected_severity": null}
+  ],
+  "forbidden_claims": [
+    "States that every United States mobile app is governed by the same rule",
+    "States that ADA Title II or Section 508 universally requires WCAG 2.2",
+    "Treats Section 508 as only a WCAG checklist",
+    "Guarantees current or future compliance from an automated scan"
+  ]
+}
