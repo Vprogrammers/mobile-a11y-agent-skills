@@ -1,0 +1,12 @@
+{
+  "required_findings": [
+    {"id": "recognizes-no-proven-blocker", "points": 2, "kind": "recommendation", "criteria": "Recognizes that the labeled standard UIKit controls and Dynamic Type configuration do not prove a blocking accessibility defect.", "expected_severity": null},
+    {"id": "requests-ios-device-verification", "points": 2, "kind": "verification", "criteria": "Recommends focused Dynamic Type, VoiceOver, Voice Control, Full Keyboard Access, and layout verification without presenting unverified behavior as a defect.", "expected_severity": null}
+  ],
+  "forbidden_claims": [
+    "Requires accessibilityLabel to duplicate visible UILabel or UIButton text",
+    "Claims UIButton lacks button semantics",
+    "Claims the screen is fully compliant",
+    "Claims exact VoiceOver speech"
+  ]
+}
