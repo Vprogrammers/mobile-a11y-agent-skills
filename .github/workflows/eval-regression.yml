@@ -16,9 +16,16 @@ jobs:
       DISABLE_AUTOUPDATER: "1"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Explain missing optional credentials
+      - name: Check model-eval credentials
         if: env.CLAUDE_CODE_OAUTH_TOKEN == ''
-        run: echo "Skipping paid model evals because CLAUDE_CODE_OAUTH_TOKEN is not configured."
+        run: |
+          echo "## Model evals not executed" >> "$GITHUB_STEP_SUMMARY"
+          echo "CLAUDE_CODE_OAUTH_TOKEN is not configured." >> "$GITHUB_STEP_SUMMARY"
+          if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
+            echo "A scheduled regression run without credentials is a configuration failure." >&2
+            exit 1
+          fi
+          echo "The manually triggered run completed without paid model evals."
       - name: Install pinned Claude Code
         if: env.CLAUDE_CODE_OAUTH_TOKEN != ''
         run: npm install -g @anthropic-ai/claude-code@2.1.310
@@ -30,12 +37,12 @@ jobs:
             --agent mobile-a11y-agent-skills:{agent}
             --restricted --add-dir "{plugin_dir}/skills" --allowedTools Read Glob Grep Skill
             --permission-mode dontAsk --permission-prompts none
-            --no-session-persistence --max-budget-usd 0.75
+            --no-session-persistence --max-turns 8 --max-budget-usd 0.75
           EVAL_JUDGE_COMMAND: >-
-            claude -p --model sonnet --bare --restricted
+            claude -p --model opus --restricted
             --permission-mode dontAsk --permission-prompts none
-            --no-session-persistence --max-budget-usd 0.25
-          EVAL_MODEL: sonnet
+            --no-session-persistence --max-turns 2 --max-budget-usd 0.25
+          EVAL_MODEL: agent=sonnet,judge=opus
         run: ./scripts/run_eval_suite.py evals/results/ci
       - name: Run official plugin eval smoke suite
         if: env.CLAUDE_CODE_OAUTH_TOKEN != ''
