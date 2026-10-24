@@ -42,16 +42,16 @@ class BoundedProcessTests(unittest.TestCase):
             )
 
     @unittest.skipUnless(sys.platform != "win32", "POSIX process-group behavior")
-    def test_timeout_terminates_descendant_holding_output_pipe(self) -> None:
+    def test_timeout_terminates_descendant_after_parent_exits(self) -> None:
         started = time.monotonic()
         with self.assertRaises(ProcessTimedOut):
             run_bounded(
                 [
                     sys.executable,
                     "-c",
-                    "import subprocess, sys, time; "
+                    "import subprocess, sys; "
                     "subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(30)']); "
-                    "time.sleep(30)",
+                    "sys.exit(0)",
                 ],
                 input_text="",
                 timeout=1,

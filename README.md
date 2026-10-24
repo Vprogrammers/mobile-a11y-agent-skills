@@ -135,8 +135,8 @@ The judge may wrap its JSON in a fenced block or short prose; the adapter extrac
 Run every custom domain eval with separate trusted agent and judge commands and retain a dated result bundle. The agent command must include `{agent}`; `{plugin_dir}` is optional and resolves to the repository root. This example runs each manifest-selected, namespaced agent in a restricted temporary workspace:
 
 ```bash
-EVAL_AGENT_COMMAND='claude -p --plugin-dir "{plugin_dir}" --agent mobile-a11y-agent-skills:{agent} --restricted --allowedTools Read Glob Grep Skill --permission-mode dontAsk --permission-prompts none --no-session-persistence' \
-EVAL_JUDGE_COMMAND='claude -p' \
+EVAL_AGENT_COMMAND='claude -p --plugin-dir "{plugin_dir}" --agent mobile-a11y-agent-skills:{agent} --restricted --allowedTools Read Glob Grep Skill --permission-mode dontAsk --permission-prompts none --no-session-persistence --max-budget-usd 0.75' \
+EVAL_JUDGE_COMMAND='claude -p --bare --restricted --permission-mode dontAsk --permission-prompts none --no-session-persistence --max-budget-usd 0.25' \
 EVAL_MODEL='model-id' \
 ./scripts/run_eval_suite.py "evals/results/$(date -u +%Y-%m-%dT%H%M%SZ)-model-id"
 ```
@@ -144,7 +144,7 @@ EVAL_MODEL='model-id' \
 The repository also includes a small official Claude plugin eval under `plugin-evals/`. It verifies real namespaced agent routing and evaluates output quality in Claude Code's isolated eval runner:
 
 ```bash
-claude plugin eval . --runs 1 --ablation with-without --no-publish
+claude plugin eval . --runs 1 --ablation with-without --max-cost-usd 3.00 --no-publish
 ```
 
 Use the official runner for plugin loading, routing, trace, and baseline evidence. Use the custom suite for the repository's 13 detailed accessibility rubrics and deterministic scoring contract.
