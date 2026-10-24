@@ -149,7 +149,7 @@ class ValidateRepositoryTests(unittest.TestCase):
             path = root / "skills/mobile-a11y-review/references/regulatory-landscape.md"
             stale = (date.today() - timedelta(days=91)).isoformat()
             path.write_text(
-                re.sub(r"^Last reviewed: \\S+", f"Last reviewed: {stale}", path.read_text(), flags=re.MULTILINE)
+                re.sub(r"^Last reviewed: \S+", f"Last reviewed: {stale}", path.read_text(), flags=re.MULTILINE)
             )
 
         result = self.invalid_copy(mutate)
