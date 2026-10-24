@@ -135,7 +135,7 @@ class ValidateRepositoryTests(unittest.TestCase):
     def test_review_near_expiry_warns_without_failing(self) -> None:
         def mutate(root: Path) -> None:
             path = root / "skills/kmp-a11y/references/kmp-boundaries.md"
-            near_expiry = (date.today() - timedelta(days=350)).isoformat()
+            near_expiry = (date.today() - timedelta(days=165)).isoformat()
             path.write_text(
                 re.sub(r"^Last reviewed: \S+", f"Last reviewed: {near_expiry}", path.read_text(), flags=re.MULTILINE)
             )
@@ -143,6 +143,27 @@ class ValidateRepositoryTests(unittest.TestCase):
         result = self.invalid_copy(mutate)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("kmp-boundaries.md review expires in 15 days", result.stdout)
+
+    def test_reference_custom_review_interval_is_enforced(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "skills/mobile-a11y-review/references/regulatory-landscape.md"
+            stale = (date.today() - timedelta(days=91)).isoformat()
+            path.write_text(
+                re.sub(r"^Last reviewed: \\S+", f"Last reviewed: {stale}", path.read_text(), flags=re.MULTILINE)
+            )
+
+        result = self.invalid_copy(mutate)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("interval 90", result.stdout)
+
+    def test_invalid_review_interval_is_rejected(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "skills/android-a11y/references/android-patterns.md"
+            path.write_text(path.read_text().replace("Review interval: 180 days.", "Review interval: soon."))
+
+        result = self.invalid_copy(mutate)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("invalid Review interval", result.stdout)
 
     def test_invalid_rubric_json_does_not_hide_other_errors(self) -> None:
         def mutate(root: Path) -> None:
