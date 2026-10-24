@@ -1,0 +1,2 @@
+android-views-review: 8/8; minimum 6
+PASS

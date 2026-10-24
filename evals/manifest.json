@@ -103,6 +103,46 @@
       "fixture": "evals/us-regulatory-scope-review/USComplianceClaim.md",
       "rubric": "evals/us-regulatory-scope-review/rubric.json",
       "minimum_score": 8
+    },
+    {
+      "id": "compose-semantics-traps-review",
+      "agent": "accessibility-reviewer",
+      "prompt": "evals/compose-semantics-traps-review.md",
+      "fixture": "evals/compose-semantics-traps-review/OrderCard.kt",
+      "rubric": "evals/compose-semantics-traps-review/rubric.json",
+      "minimum_score": 6
+    },
+    {
+      "id": "android-sdk36-behavior-review",
+      "agent": "android-a11y-engineer",
+      "prompt": "evals/android-sdk36-behavior-review.md",
+      "fixture": "evals/android-sdk36-behavior-review/PinEntryActivity.kt",
+      "rubric": "evals/android-sdk36-behavior-review/rubric.json",
+      "minimum_score": 6
+    },
+    {
+      "id": "uikit-container-traps-review",
+      "agent": "ios-a11y-engineer",
+      "prompt": "evals/uikit-container-traps-review.md",
+      "fixture": "evals/uikit-container-traps-review/ReceiptCell.swift",
+      "rubric": "evals/uikit-container-traps-review/rubric.json",
+      "minimum_score": 6
+    },
+    {
+      "id": "kmp-interop-traps-review",
+      "agent": "kmp-a11y-architect",
+      "prompt": "evals/kmp-interop-traps-review.md",
+      "fixture": "evals/kmp-interop-traps-review/MotionKit.kt",
+      "rubric": "evals/kmp-interop-traps-review/rubric.json",
+      "minimum_score": 6
+    },
+    {
+      "id": "test-evidence-traps-review",
+      "agent": "accessibility-test-engineer",
+      "prompt": "evals/test-evidence-traps-review.md",
+      "fixture": "evals/test-evidence-traps-review/ReleaseEvidence.md",
+      "rubric": "evals/test-evidence-traps-review/rubric.json",
+      "minimum_score": 6
     }
   ]
 }

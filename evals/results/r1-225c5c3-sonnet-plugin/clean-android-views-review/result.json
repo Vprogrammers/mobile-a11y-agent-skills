@@ -1,0 +1,13 @@
+{
+  "matched_findings": [
+    {
+      "id": "recognizes-no-proven-blocker",
+      "severity": null
+    },
+    {
+      "id": "requests-android-device-verification",
+      "severity": null
+    }
+  ],
+  "forbidden_claims": []
+}

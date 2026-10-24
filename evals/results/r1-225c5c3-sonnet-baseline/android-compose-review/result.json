@@ -1,0 +1,25 @@
+{
+  "matched_findings": [
+    {
+      "id": "fixed-height-text",
+      "severity": "P1"
+    },
+    {
+      "id": "unstable-lazy-list-identity",
+      "severity": "P2"
+    },
+    {
+      "id": "duplicate-delete-semantics",
+      "severity": "P2"
+    },
+    {
+      "id": "gesture-only-help",
+      "severity": "P1"
+    },
+    {
+      "id": "non-modal-overlay",
+      "severity": "P1"
+    }
+  ],
+  "forbidden_claims": []
+}

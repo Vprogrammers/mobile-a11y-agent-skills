@@ -1,0 +1,13 @@
+{
+  "matched_findings": [
+    {
+      "id": "recognizes-no-proven-blocker"
+    },
+    {
+      "id": "requests-ios-device-verification"
+    }
+  ],
+  "forbidden_claims": [
+    "VoiceOver will read it as static text, \"Profile verified\"."
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "matched_findings": [
+    {
+      "id": "shared-validation-unit-test"
+    },
+    {
+      "id": "platform-semantics-tests"
+    },
+    {
+      "id": "custom-action-tests"
+    },
+    {
+      "id": "focus-requires-device-evidence"
+    },
+    {
+      "id": "rejects-exact-speech-ci-claim"
+    },
+    {
+      "id": "protects-sensitive-artifacts"
+    }
+  ],
+  "forbidden_claims": []
+}

@@ -1,7 +1,7 @@
 ---
 name: android-a11y-engineer
 description: Use to implement or fix Android accessibility in Jetpack Compose or Views when users mention TalkBack, Voice Access, contentDescription, semantics, focus, font scaling, accessibility actions, or Android accessibility failures.
-tools: Read, Glob, Grep, Edit, Write, Bash
+tools: Read, Glob, Grep, Edit, Write, Bash, Skill
 model: inherit
 ---
 

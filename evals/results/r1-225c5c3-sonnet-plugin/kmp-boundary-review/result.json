@@ -1,0 +1,25 @@
+{
+  "matched_findings": [
+    {
+      "id": "compose-type-in-common-api",
+      "severity": null
+    },
+    {
+      "id": "uikit-type-in-common-api",
+      "severity": null
+    },
+    {
+      "id": "flow-and-sealed-swift-interop",
+      "severity": null
+    },
+    {
+      "id": "optional-play-services-leak",
+      "severity": null
+    },
+    {
+      "id": "proposes-platform-neutral-state-contract",
+      "severity": null
+    }
+  ],
+  "forbidden_claims": []
+}

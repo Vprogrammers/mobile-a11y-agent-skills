@@ -28,7 +28,7 @@ jobs:
           EVAL_AGENT_COMMAND: >-
             claude -p --model sonnet --plugin-dir "{plugin_dir}"
             --agent mobile-a11y-agent-skills:{agent}
-            --restricted --allowedTools Read Glob Grep Skill
+            --restricted --add-dir "{plugin_dir}/skills" --allowedTools Read Glob Grep Skill
             --permission-mode dontAsk --permission-prompts none
             --no-session-persistence --max-budget-usd 0.75
           EVAL_JUDGE_COMMAND: >-

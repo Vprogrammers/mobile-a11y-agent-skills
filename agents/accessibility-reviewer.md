@@ -1,7 +1,7 @@
 ---
 name: accessibility-reviewer
 description: Use after UI, semantics, focus, input, navigation, media, WebView, privacy, or accessibility changes and before a pull request or release.
-tools: Read, Glob, Grep, Bash
+tools: Read, Glob, Grep, Bash, Skill
 model: inherit
 ---
 

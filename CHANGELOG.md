@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+- Add five harder evals built from verified platform traps: `compose-semantics-traps-review`, `android-sdk36-behavior-review`, `uikit-container-traps-review`, `kmp-interop-traps-review`, and `test-evidence-traps-review`. The Android and iOS fixtures compile in `samples/` with runtime guards. The KMP and prose fixtures have static guards.
+- Fix `clean-uikit-review`: its "clean" `UIButton(type: .system)` keeps a fixed 15 pt title at every Dynamic Type size, as measured on the simulator. The plugin reviewer reported it and the unassisted baseline did not. The fixture now uses `UIButton(configuration: .plain())`, a simulator test guards it, and `apple-patterns.md` documents the trap.
+- Add severity calibration examples to `mobile-a11y-review`. A defect proven by code keeps its severity even while device confirmation is pending.
+- Drop a judge's stray severity on non-defect criteria instead of rejecting the whole result. Defect severity mismatches still fail.
+- Add `Skill` to every agent's `tools` list. An explicit list replaces the defaults, so before this change no agent could load the skills it is instructed to invoke. The validator now rejects an agent that invokes skills without `Skill`.
+- Let restricted eval agents read skill references with `--add-dir "{plugin_dir}/skills"`, without exposing the rubrics.
+- Add `samples/kmp`, which compiles the shared validation and reduced-motion contract with Android Compose/Settings and iOS UIKit adapters, common, Robolectric, and simulator tests, and an exported Objective-C header check. CI runs it on macOS.
+- Add `EVAL_VARIANT=baseline` and per-eval points in `summary.json`, so the same rubrics can compare the plugin with an unassisted baseline. Retain the first reviewed baseline bundle.
+- Correct the Compose accessibility-checks guidance: they require API 34+ instrumentation and pass silently on Robolectric. A guard test documents this.
+- Add compiled test examples (commonTest fake, Compose semantics, XCUITest audit triage, UIKit properties) and WebView zoom guidance for Android `WebSettings` and `WKWebViewConfiguration.ignoresViewportScaleLimits`.
+- Handle macOS `EPERM` from `killpg` after an eval subprocess exits.
+
 - Run manifest-selected agents by their namespaced plugin identities in isolated restricted eval workspaces, add an official plugin eval with a no-plugin baseline, validate the plugin with Claude Code 2.1.310, and harden subprocess failure handling.
 - Add opt-in scheduled agent evals and result bundles, harden the judge against prompt injection and runaway commands, validate critical Claude deny rules, structure EN 301 549 status evidence, retain failing XCTest bundles, and remove unused release automation.
 - Compile clean platform eval fixtures, add per-reference freshness intervals, expand current US regulatory guidance and eval coverage, validate copied skill links, and provide an optional hardened Claude Code settings template.

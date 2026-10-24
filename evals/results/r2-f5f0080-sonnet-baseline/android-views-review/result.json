@@ -1,0 +1,19 @@
+{
+  "matched_findings": [
+    {
+      "id": "touch-only-action",
+      "severity": "P1"
+    },
+    {
+      "id": "missing-node-role-state-action",
+      "severity": "P1"
+    },
+    {
+      "id": "custom-view-needs-accessibility-node-contract"
+    },
+    {
+      "id": "requires-device-verification"
+    }
+  ],
+  "forbidden_claims": []
+}

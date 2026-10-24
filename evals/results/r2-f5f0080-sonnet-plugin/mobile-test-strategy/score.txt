@@ -1,0 +1,2 @@
+mobile-test-strategy: 12/12; minimum 8
+PASS

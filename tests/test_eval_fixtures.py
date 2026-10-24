@@ -8,9 +8,10 @@ import unittest
 
 ROOT = Path(__file__).resolve().parent.parent
 
-# Static guards for fixtures that samples/ does not exercise at runtime: kmp-boundary-review cannot
-# compile because it intentionally places platform types in common code, SwiftUI modifiers are not
-# inspectable from XCTest without a third-party dependency, and the regulatory fixture is prose.
+# Static guards for fixtures that samples/ does not exercise at runtime: the KMP fixtures cannot
+# compile because they intentionally mix source sets and platform types, SwiftUI modifiers are not
+# inspectable from XCTest without a third-party dependency, and the regulatory and test-evidence
+# fixtures are prose. Some code findings, such as visual focus indication, cannot be asserted at runtime.
 # Each pattern proves that the fixture still contains the evidence for a rubric finding. Findings in
 # NOT_GUARDED are judged from the response alone or are covered elsewhere.
 GUARDS: dict[str, dict[str, str]] = {
@@ -37,7 +38,7 @@ GUARDS: dict[str, dict[str, str]] = {
         "recognizes-no-proven-blocker": r"Button\(context\)\.apply[\s\S]*setOnClickListener",
     },
     "clean-uikit-review": {
-        "recognizes-no-proven-blocker": r"UIButton\(type: \.system\)[\s\S]*preferredFont\(forTextStyle: \.body\)",
+        "recognizes-no-proven-blocker": r"UIButton\(configuration: \.plain\(\)\)[\s\S]*preferredFont\(forTextStyle: \.body\)",
     },
     "en-301-549-scope-review": {
         "inventories-distinct-technologies": r"native Android and iOS[\s\S]*WebView[\s\S]*tagged PDF",
@@ -50,6 +51,26 @@ GUARDS: dict[str, dict[str, str]] = {
         "identifies-title-ii-technical-baseline": r"all require WCAG 2\.2",
         "does-not-reduce-section-508-to-wcag": r"Section 508 does not require any software interoperability or functional-performance review",
         "rejects-scan-and-future-release-proof": r"same scan proves[\s\S]*future releases",
+    },
+    "compose-semantics-traps-review": {
+        "indication-null-hides-focus": r"\.clickable\(\s*interactionSource = remember \{ MutableInteractionSource\(\) \},\s*indication = null,",
+        "input-focus-is-not-accessibility-focus": r"LaunchedEffect\(errors\) \{\s*if \(errors\.isNotEmpty\(\)\) focusRequester\.requestFocus\(\)",
+    },
+    "android-sdk36-behavior-review": {
+        "on-back-pressed-not-called-on-sdk36": r"override fun onBackPressed\(\)",
+        "per-keystroke-announcement": r"override fun onTextChanged[\s\S]*counter\.announceForAccessibility\(counter\.text\)",
+    },
+    "kmp-interop-traps-review": {
+        "global-context-actual": r"lateinit var appContext: Context\s*\n\s*actual fun isReduceMotionEnabled\(\)",
+        "typealias-trait-escapes-header-check": r"public fun sectionTitleTraits\(\): UIAccessibilityTraits[\s\S]*header mentions UIKit types, and that check passes",
+        "reduce-motion-read-once": r"public fun motionSpec\(\): MotionSpec =\s*\n\s*if \(isReduceMotionEnabled\(\)\)",
+        "accessibility-sync-options-removed": r"Compose Multiplatform 1\.8\.1[\s\S]*accessibilitySyncOptions = AccessibilitySyncOptions\.Always",
+    },
+    "test-evidence-traps-review": {
+        "robolectric-checks-do-not-run": r"app/src/test` and runs on Robolectric[\s\S]*enableAccessibilityChecks\(\)",
+        "audit-handler-suppresses-all-issues": r"performAccessibilityAudit \{ _ in true \}",
+        "identical-scaled-snapshots-indicate-no-scaling": r"2\.0 snapshots are pixel-identical to the 1\.0 snapshots",
+        "green-suites-do-not-prove-assistive-technology": r"TalkBack and VoiceOver work correctly and this release does not need device testing",
     },
 }
 NOT_GUARDED: dict[str, set[str]] = {
@@ -66,6 +87,11 @@ NOT_GUARDED: dict[str, set[str]] = {
     "clean-uikit-review": {"requests-ios-device-verification"},
     "en-301-549-scope-review": {"requires-context-before-legal-claim"},
     "us-regulatory-scope-review": {"requires-applicability-context"},
+    # Guarded at runtime by EvalFixturesTest (Android) and ReceiptCellFixtureTests (iOS).
+    "compose-semantics-traps-review": {"clear-and-set-hides-track-action", "error-not-associated-with-field"},
+    "android-sdk36-behavior-review": {"password-variation-for-visible-code", "requires-android-16-device-verification"},
+    "kmp-interop-traps-review": set(),
+    "test-evidence-traps-review": set(),
 }
 
 

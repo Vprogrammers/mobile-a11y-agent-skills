@@ -6,7 +6,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 # Eval fixtures are shown to agents without import lines; compile copies with a header instead of changing them.
 fixtures="Sources/EvalFixtures"
 rm -rf "$fixtures" && mkdir -p "$fixtures"
-for fixture in ../../evals/ios-swiftui-review/AccountScreen.swift ../../evals/ios-uikit-review/ProfileViewController.swift ../../evals/clean-swiftui-review/AccessibleDownloadRow.swift ../../evals/clean-uikit-review/AccessibleProfileView.swift; do
+for fixture in ../../evals/ios-swiftui-review/AccountScreen.swift ../../evals/ios-uikit-review/ProfileViewController.swift ../../evals/clean-swiftui-review/AccessibleDownloadRow.swift ../../evals/clean-uikit-review/AccessibleProfileView.swift ../../evals/uikit-container-traps-review/ReceiptCell.swift; do
     { printf '// Generated from evals/ by test.sh. Edit the fixture, not this copy.\nimport SwiftUI\nimport UIKit\n\n'; cat "$fixture"; } > "$fixtures/$(basename "$fixture")"
 done
 cp EvalFixtureStubs.swift.txt "$fixtures/EvalFixtureStubs.swift"

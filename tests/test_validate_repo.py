@@ -103,7 +103,7 @@ class ValidateRepositoryTests(unittest.TestCase):
     def test_stale_review_date_is_rejected(self) -> None:
         def mutate(root: Path) -> None:
             path = root / "skills/kmp-a11y/references/kmp-boundaries.md"
-            path.write_text(path.read_text().replace("2026-10-23", "2020-01-01"))
+            path.write_text(re.sub(r"Last reviewed: \d{4}-\d{2}-\d{2}", "Last reviewed: 2020-01-01", path.read_text()))
 
         result = self.invalid_copy(mutate)
         self.assertIn("review is stale", result.stdout)
@@ -115,6 +115,14 @@ class ValidateRepositoryTests(unittest.TestCase):
 
         result = self.invalid_copy(mutate)
         self.assertIn("invokes missing skill", result.stdout)
+
+    def test_agent_without_skill_tool_is_rejected(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "agents/kmp-a11y-architect.md"
+            path.write_text(path.read_text().replace("tools: Read, Glob, Grep, Skill", "tools: Read, Glob, Grep"))
+
+        result = self.invalid_copy(mutate)
+        self.assertIn("omits Skill", result.stdout)
 
     def test_missing_also_invoked_skill_is_rejected(self) -> None:
         def mutate(root: Path) -> None:

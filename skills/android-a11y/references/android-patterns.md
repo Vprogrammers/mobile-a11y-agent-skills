@@ -1,6 +1,6 @@
 # Android accessibility patterns
 
-Last reviewed: 2026-10-23. Verify exact signatures against the Android and Compose versions used by the project.
+Last reviewed: 2026-10-24. Verify exact signatures against the Android and Compose versions used by the project.
 Review interval: 180 days.
 
 ## Compose semantics
@@ -136,6 +136,26 @@ These are requirements for apps that target the stated SDK levels:
 - Provide an accessible title/context for the WebView and test focus entry and exit.
 - Audit DOM semantics separately; native labels do not repair inaccessible web content.
 - Verify keyboard, TalkBack, zoom, errors, and authentication transitions across the native/web boundary.
+- Keep pinch zoom available. Do not hard-code `textZoom`; check that web text follows the 200% font scale on a device.
+- Title the screen in native chrome, such as the top app bar, so TalkBack users know what the web content is before they enter it.
+
+### Bad: disable zoom for a fixed layout
+
+```kotlin
+webView.settings.setSupportZoom(false)
+```
+
+### Better
+
+```kotlin
+webView.settings.apply {
+    setSupportZoom(true)
+    builtInZoomControls = true
+    displayZoomControls = false
+}
+```
+
+`displayZoomControls = false` hides the legacy on-screen buttons and keeps pinch zoom. A page's `user-scalable=no` viewport can still block zoom, so report it as a web content finding.
 
 ## Diagnosis
 
@@ -149,3 +169,4 @@ Official sources:
 - Font scaling: https://developer.android.com/about/versions/14/features#non-linear-font-scaling
 - Edge-to-edge in Compose: https://developer.android.com/develop/ui/compose/system/system-bars
 - Android 16 behavior changes (edge-to-edge opt-out, predictive back): https://developer.android.com/about/versions/16/behavior-changes-16
+- WebView settings: https://developer.android.com/reference/android/webkit/WebSettings

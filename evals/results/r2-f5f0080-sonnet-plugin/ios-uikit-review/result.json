@@ -1,0 +1,20 @@
+{
+  "matched_findings": [
+    {
+      "id": "generic-avatar-label",
+      "severity": "P2"
+    },
+    {
+      "id": "fixed-font-no-dynamic-type",
+      "severity": "P1"
+    },
+    {
+      "id": "gesture-backed-view-not-button",
+      "severity": "P1"
+    },
+    {
+      "id": "verification-covers-voiceover-and-voice-control"
+    }
+  ],
+  "forbidden_claims": []
+}

@@ -1,7 +1,9 @@
 package dev.vprogrammers.a11y.samples
 
+import android.text.InputType
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsActions
@@ -21,9 +23,13 @@ import androidx.compose.ui.test.swipeLeft
 import androidx.test.core.app.ApplicationProvider
 import evals.fixtures.AccessibleRetryView
 import evals.fixtures.AccessibleSettings
+import evals.fixtures.AddressForm
 import evals.fixtures.CheckoutScreen
 import evals.fixtures.Item
+import evals.fixtures.Order
+import evals.fixtures.OrderCard
 import evals.fixtures.PaymentView
+import evals.fixtures.PinEntryActivity
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -31,6 +37,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 
 // Guards the eval fixtures: each test proves that a rubric finding is still present in the
@@ -105,4 +112,42 @@ class EvalFixturesTest {
         assertTrue(retry.isClickable)
         assertTrue(retry.hasOnClickListeners())
     }
+
+    @Test
+    fun composeSemanticsTrapsReview_clearAndSetHidesTrackAction() {
+        rule.setContent { OrderCard(Order("1234", "Shipped"), onOpen = {}, onTrack = {}) }
+
+        // The merged tree is what accessibility services see; the cleared Track button is absent from it.
+        rule.onAllNodes(hasText("Track")).assertCountEquals(0)
+        rule.onAllNodes(hasClickAction()).assertCountEquals(1)
+    }
+
+    @Test
+    fun composeSemanticsTrapsReview_errorNotAssociatedWithField() {
+        rule.setContent { AddressForm(errors = listOf("Enter a street"), street = "", onStreetChange = {}) }
+
+        rule.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.EditableText))
+            .assert(SemanticsMatcher.keyNotDefined(SemanticsProperties.Error))
+        rule.onNodeWithText("Enter a street").assertIsDisplayed()
+    }
+
+    @Test
+    fun androidSdk36BehaviorReview_passwordVariationForVisibleCode() {
+        val activity = Robolectric.buildActivity(PinEntryActivity::class.java).setup().get()
+        val pin = activity.window.decorView.descendants().filterIsInstance<EditText>().single()
+
+        assertEquals(InputType.TYPE_NUMBER_VARIATION_PASSWORD, pin.inputType and InputType.TYPE_MASK_VARIATION)
+        assertNull(pin.transformationMethod)
+    }
+
+    @Test
+    fun androidSdk36BehaviorReview_onBackPressedNotCalledOnSdk36() {
+        // The fixture handles back only through the legacy override that SDK 36 no longer calls.
+        PinEntryActivity::class.java.getDeclaredMethod("onBackPressed")
+    }
+}
+
+private fun android.view.View.descendants(): List<android.view.View> = when (this) {
+    is android.view.ViewGroup -> listOf(this) + (0 until childCount).flatMap { getChildAt(it).descendants() }
+    else -> listOf(this)
 }

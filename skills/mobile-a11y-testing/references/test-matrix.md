@@ -1,6 +1,6 @@
 # Accessibility test matrix
 
-Last reviewed: 2026-10-23. Verify test API availability against the Compose, Robolectric, Xcode, and iOS versions used by the project.
+Last reviewed: 2026-10-24. Verify test API availability against the Compose, Robolectric, Xcode, and iOS versions used by the project.
 Review interval: 180 days.
 
 ## Discover before writing tests
@@ -45,7 +45,7 @@ Adapt workspace/project, scheme, configuration, and destination to the repositor
 ## Android APIs
 
 - Use Compose semantics matchers and assertions against merged and unmerged trees intentionally: roles, text, state, actions, errors, and traversal metadata.
-- Use `enableAccessibilityChecks()` on the Compose test rule from Compose 1.8 with the `ui-test-junit4-accessibility` dependency. Treat results as heuristics and suppress false positives narrowly.
+- Use `enableAccessibilityChecks()` (package `androidx.compose.ui.test.junit4.accessibility`, dependency `ui-test-junit4-accessibility`, Compose 1.8+) in instrumented tests on API 34+ devices or emulators. Its documentation states that it does not work on Robolectric, and in practice it passes silently there even for an unlabeled 16 dp target. Never report a green host-test accessibility check as evidence. Treat device results as heuristics and suppress false positives narrowly.
 - Use `AccessibilityChecks.enable()` for Espresso/View tests.
 - Use Android Accessibility Scanner for exploratory device evidence.
 - Use instrumentation or device tests for IME, autofill, framework focus, WebView, insets, back handling, and window behavior.
@@ -58,6 +58,81 @@ Adapt workspace/project, scheme, configuration, and destination to the repositor
 - Use `performAccessibilityAudit(for:)` on supported Xcode/iOS versions and document issue types or exclusions.
 - Use Accessibility Inspector for hierarchy, hit regions, contrast, and manual auditing.
 - Use XCTest for view-model and UIKit adapter properties (traits, values, custom actions, `accessibilityViewIsModal`); SwiftUI accessibility structure needs XCUITest or Accessibility Inspector.
+
+## Examples
+
+The repository samples compile these examples. The accessibility-checks example uses the same API with a placeholder screen. Adapt names to the project.
+
+### Shared rule with a fake platform capability (`commonTest`)
+
+```kotlin
+private class FakeAccessibilityPreferences(reduceMotion: Boolean) : AccessibilityPreferences {
+    override val reduceMotion = MutableStateFlow(reduceMotion)
+}
+
+@Test
+fun reduceMotion_followsCurrentPreference() {
+    val preferences = FakeAccessibilityPreferences(reduceMotion = false)
+    assertEquals(MotionPolicy.Animated, motionPolicy(preferences))
+
+    preferences.reduceMotion.value = true
+    assertEquals(MotionPolicy.Reduced, motionPolicy(preferences))
+}
+```
+
+### Compose semantics: assert properties, not speech
+
+```kotlin
+@Test
+fun passwordField_exposesErrorAndPasswordSemantics() {
+    rule.setContent { PasswordField(value = "", onValueChange = {}, errorMessage = "Enter your password") }
+
+    rule.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.EditableText))
+        .assert(SemanticsMatcher.expectValue(SemanticsProperties.Error, "Enter your password"))
+        .assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.Password))
+}
+```
+
+Use `useUnmergedTree = true` when the assertion concerns a descendant, such as a decorative icon that must stay hidden.
+
+### Compose accessibility checks (instrumented, API 34+)
+
+```kotlin
+@Test
+fun checkout_passesAccessibilityChecks() {
+    rule.enableAccessibilityChecks()
+    rule.setContent { CheckoutScreen() }
+    rule.onRoot().tryPerformAccessibilityChecks()
+}
+```
+
+Put this in `androidTest` or another device-backed source set, not in a Robolectric host test.
+
+### XCUITest audit with narrow triage
+
+```swift
+try app.performAccessibilityAudit(for: [.dynamicType, .contrast, .hitRegion, .sufficientElementDescription]) { issue in
+    // Return true only for a triaged false positive, matched as narrowly as possible.
+    issue.auditType == .contrast && issue.element?.identifier == "decorative-watermark"
+}
+```
+
+Bad: `try app.performAccessibilityAudit { _ in true }`. That suppresses every issue and turns the audit into a false pass.
+
+### UIKit properties (XCTest)
+
+```swift
+func testModalCardIsModalWithHeaderTitle() {
+    let card = ModalCardView()
+
+    XCTAssertTrue(card.accessibilityViewIsModal)
+    XCTAssertTrue(card.titleLabel.accessibilityTraits.contains(.header))
+}
+```
+
+### Settings-dependent adapters
+
+Test that native adapters read the platform setting. On Android, set `Settings.Global.ANIMATOR_DURATION_SCALE` in a Robolectric test. On iOS, compare with `UIAccessibilityIsReduceMotionEnabled()` on the simulator. These tests prove the mapping only. Verify the visual result with the real setting on a device.
 
 ## Manual device checks
 
@@ -82,6 +157,7 @@ Do not report “accessibility passed” from a green automated suite. Report wh
 Official sources:
 
 - Compose accessibility testing: https://developer.android.com/develop/ui/compose/accessibility/testing
+- Compose accessibility checks API (API 34+, not Robolectric): https://developer.android.com/reference/kotlin/androidx/compose/ui/test/junit4/accessibility/package-summary
 - Espresso accessibility checks: https://developer.android.com/training/testing/espresso/accessibility-checking
 - Robolectric configuration: https://robolectric.org/configuring/
 - XCUITest audits: https://developer.apple.com/documentation/xctest/xcuiapplication/performaccessibilityaudit(for:)

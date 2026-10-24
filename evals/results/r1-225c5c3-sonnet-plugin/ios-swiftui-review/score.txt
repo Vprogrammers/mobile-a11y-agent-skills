@@ -1,0 +1,3 @@
+Judge returned a result that does not match the schema: Severity mismatches:
+- color-only-status: expected P1, received P2
+- repeated-focus-reset: expected P1, received P2

@@ -1,0 +1,2 @@
+us-regulatory-scope-review: 10/10; minimum 8
+PASS

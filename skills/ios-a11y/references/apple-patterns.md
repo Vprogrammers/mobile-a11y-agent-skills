@@ -1,6 +1,6 @@
 # Apple accessibility patterns
 
-Last reviewed: 2026-10-23. Verify availability and signatures against the deployment target and Xcode SDK used by the project.
+Last reviewed: 2026-10-24. Verify availability and signatures against the deployment target and Xcode SDK used by the project.
 Review interval: 180 days.
 
 ## SwiftUI structure
@@ -66,6 +66,7 @@ Update `.accessibilityValue` and move focus only when a new context or blocking 
 ## Dynamic Type and layout
 
 - Use text styles and scalable fonts. In UIKit, use `UIFontMetrics` and set `adjustsFontForContentSizeCategory = true`.
+- `UIButton(type: .system)` with `setTitle` keeps a fixed 15 pt title at every content size. Measured on the iOS 26 simulator, the title was still 15 pt at AX5. Use `UIButton.Configuration`, such as `UIButton(configuration: .plain())`, whose title follows Dynamic Type. Alternatively, set a text-style font with `adjustsFontForContentSizeCategory = true` on the title label.
 - In SwiftUI, use `@ScaledMetric` for dimensions that should scale with text.
 - Use `ViewThatFits`, adaptive stacks, and layout changes at accessibility Dynamic Type sizes instead of shrinking text.
 - Use `dynamicTypeSize` environment information to change layout, not to cap user settings without a documented exceptional reason.
@@ -114,6 +115,23 @@ Text(title)
 
 - Test VoiceOver entry/exit, headings, forms, zoom, keyboard, errors, authentication, and focus restoration in `WKWebView`.
 - Native accessibility modifiers cannot repair inaccessible DOM content.
+- Title the screen in native navigation so VoiceOver users know what the web content is before they enter it.
+
+### Bad: page blocks zoom
+
+```html
+<meta name="viewport" content="width=device-width, user-scalable=no">
+```
+
+### Better: let people zoom regardless of the viewport
+
+```swift
+let configuration = WKWebViewConfiguration()
+configuration.ignoresViewportScaleLimits = true
+let webView = WKWebView(frame: .zero, configuration: configuration)
+```
+
+Still report the restrictive viewport to the web owners. Other browsers and web views do not apply this override.
 
 ## Diagnosis
 
@@ -126,3 +144,5 @@ Official sources:
 - Apple accessibility: https://developer.apple.com/accessibility/
 - SwiftUI accessibility: https://developer.apple.com/documentation/swiftui/accessibility
 - UIKit accessibility: https://developer.apple.com/documentation/uikit/accessibility
+- UIButton.Configuration: https://developer.apple.com/documentation/uikit/uibutton/configuration-swift.struct
+- WKWebViewConfiguration.ignoresViewportScaleLimits: https://developer.apple.com/documentation/webkit/wkwebviewconfiguration/ignoresviewportscalelimits

@@ -132,13 +132,22 @@ EVAL_JUDGE_COMMAND='claude -p' \
 
 The judge may wrap its JSON in a fenced block or short prose; the adapter extracts it and validates it against the rubric before writing the result file. The judge is deliberately excluded from pull-request CI because model evaluation is nondeterministic, costs money, and requires user-managed credentials.
 
-Run every custom domain eval with separate trusted agent and judge commands and retain a dated result bundle. The agent command must include `{agent}`; `{plugin_dir}` is optional and resolves to the repository root. This example runs each manifest-selected, namespaced agent in a restricted temporary workspace:
+Run every custom domain eval with separate trusted agent and judge commands and retain a dated result bundle. The agent command must include `{agent}`; `{plugin_dir}` is optional and resolves to the repository root. This example runs each manifest-selected, namespaced agent in a restricted temporary workspace. `--restricted` confines file tools to that workspace, so `--add-dir "{plugin_dir}/skills"` lets agents read skill references. Add only `skills/`: the repository root also holds the rubrics.
 
 ```bash
-EVAL_AGENT_COMMAND='claude -p --plugin-dir "{plugin_dir}" --agent mobile-a11y-agent-skills:{agent} --restricted --allowedTools Read Glob Grep Skill --permission-mode dontAsk --permission-prompts none --no-session-persistence --max-budget-usd 0.75' \
+EVAL_AGENT_COMMAND='claude -p --plugin-dir "{plugin_dir}" --agent mobile-a11y-agent-skills:{agent} --restricted --add-dir "{plugin_dir}/skills" --allowedTools Read Glob Grep Skill --permission-mode dontAsk --permission-prompts none --no-session-persistence --max-budget-usd 0.75' \
 EVAL_JUDGE_COMMAND='claude -p --bare --restricted --permission-mode dontAsk --permission-prompts none --no-session-persistence --max-budget-usd 0.25' \
 EVAL_MODEL='model-id' \
 ./scripts/run_eval_suite.py "evals/results/$(date -u +%Y-%m-%dT%H%M%SZ)-model-id"
+```
+
+Set `EVAL_VARIANT=baseline` to send the same tasks and fixtures without the plugin. The prompt drops the agent name, and `{agent}` is not required. Score both runs with the same judge and rubrics. `summary.json` records the variant and per-eval points, so the runs compare directly. Reviewed bundles are kept in `evals/results/`; see [the baseline summary](evals/results/README.md).
+
+```bash
+EVAL_VARIANT=baseline \
+EVAL_AGENT_COMMAND='claude -p --restricted --allowedTools Read Glob Grep --permission-mode dontAsk --permission-prompts none --no-session-persistence --max-budget-usd 0.75' \
+EVAL_JUDGE_COMMAND='…same judge…' EVAL_MODEL='model-id' \
+./scripts/run_eval_suite.py "evals/results/$(date -u +%Y-%m-%dT%H%M%SZ)-model-id-baseline"
 ```
 
 The repository also includes a small official Claude plugin eval under `plugin-evals/`. It verifies real namespaced agent routing and evaluates output quality in Claude Code's isolated eval runner:
@@ -147,17 +156,18 @@ The repository also includes a small official Claude plugin eval under `plugin-e
 claude plugin eval . --runs 1 --ablation with-without --max-cost-usd 3.00 --no-publish
 ```
 
-Use the official runner for plugin loading, routing, trace, and baseline evidence. Use the custom suite for the repository's 13 detailed accessibility rubrics and deterministic scoring contract.
+Use the official runner for plugin loading, routing, trace, and baseline evidence. Use the custom suite for the repository's 18 detailed accessibility rubrics and deterministic scoring contract.
 
 The weekly and manually triggered `Agent eval regression` workflow performs both runs only when the repository owner configures `CLAUDE_CODE_OAUTH_TOKEN`. Pull-request CI never invokes a paid model. Workflow results are retained as artifacts rather than committed automatically.
 
 ## Compiled samples
 
-`samples/` compiles the reference examples and platform code eval fixtures, and runs semantics and property tests. Guard tests fail when a fixture loses a defect its rubric expects. The KMP and SwiftUI fixtures have static guards in `tests/test_eval_fixtures.py`. CI runs both projects on every pull request:
+`samples/` compiles the reference examples and platform code eval fixtures, and runs semantics and property tests. Guard tests fail when a fixture loses a defect its rubric expects. The KMP and SwiftUI fixtures have static guards in `tests/test_eval_fixtures.py`. `samples/kmp` compiles the recommended KMP boundary for native UI: a shared contract, native Android and iOS adapters, and a check that the exported Objective-C header leaks no platform UI types. CI runs all three projects on every pull request:
 
 ```bash
 (cd samples/android && ./gradlew assembleDebug testDebugUnitTest)
 ./samples/ios/test.sh
+(cd samples/kmp && ./gradlew check)
 ```
 
 See [samples/README.md](samples/README.md) for requirements and limits.

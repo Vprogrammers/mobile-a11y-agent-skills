@@ -50,6 +50,8 @@ val generateEvalFixtures = tasks.register<GenerateEvalFixtures>("generateEvalFix
         evals.resolve("android-views-review/PaymentView.kt"),
         evals.resolve("clean-compose-review/AccessibleSettings.kt"),
         evals.resolve("clean-android-views-review/AccessibleRetryView.kt"),
+        evals.resolve("compose-semantics-traps-review/OrderCard.kt"),
+        evals.resolve("android-sdk36-behavior-review/PinEntryActivity.kt"),
     )
     header.set(layout.projectDirectory.file("eval-fixture-header.kt.txt"))
     outputDir.set(layout.buildDirectory.dir("generated/evalFixtures"))
@@ -72,6 +74,7 @@ dependencies {
     testImplementation(platform(libs.compose.bom))
     testImplementation(libs.compose.ui.test.junit4)
     testImplementation(libs.compose.ui.test.manifest)
+    testImplementation(libs.compose.ui.test.junit4.accessibility)
     testImplementation(libs.activity.compose)
     testImplementation(libs.junit)
     testImplementation(libs.robolectric)
