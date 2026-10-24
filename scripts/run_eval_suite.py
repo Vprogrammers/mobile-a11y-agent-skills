@@ -9,18 +9,20 @@ import shlex
 import subprocess
 import sys
 
+# Allow both `python3 scripts/run_eval_suite.py` and `import scripts.run_eval_suite` in tests.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from bounded_process import OutputLimitExceeded, ProcessTimedOut, run_bounded  # noqa: E402
+
 DEFAULT_TIMEOUT_SECONDS = 300
 MAX_OUTPUT_BYTES = 1_000_000
 
 
-def run_command(command: str, prompt: str, timeout: int) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(
+def run_command(command: str, prompt: str, timeout: int):
+    return run_bounded(
         shlex.split(command),
-        input=prompt,
-        text=True,
-        capture_output=True,
-        check=False,
+        input_text=prompt,
         timeout=timeout,
+        max_output_bytes=MAX_OUTPUT_BYTES,
     )
 
 
@@ -67,9 +69,14 @@ def main(root: Path, output: Path, selected: list[str]) -> int:
         fixture = (root / evaluation["fixture"]).read_text(encoding="utf-8")
         try:
             completed = run_command(agent_command, agent_prompt(task, fixture), timeout)
-        except subprocess.TimeoutExpired:
+        except ProcessTimedOut:
             print(f"{eval_id}: agent timed out after {timeout} seconds")
             runs.append({"id": eval_id, "status": "agent-timeout"})
+            failed = True
+            continue
+        except OutputLimitExceeded:
+            print(f"{eval_id}: combined agent output exceeds {MAX_OUTPUT_BYTES} bytes")
+            runs.append({"id": eval_id, "status": "agent-output-too-large"})
             failed = True
             continue
         if completed.returncode != 0:
@@ -77,12 +84,6 @@ def main(root: Path, output: Path, selected: list[str]) -> int:
             runs.append({"id": eval_id, "status": "agent-failed", "exit_code": completed.returncode})
             failed = True
             continue
-        if len(completed.stdout.encode("utf-8")) > MAX_OUTPUT_BYTES:
-            print(f"{eval_id}: agent output exceeds {MAX_OUTPUT_BYTES} bytes")
-            runs.append({"id": eval_id, "status": "agent-output-too-large"})
-            failed = True
-            continue
-
         response = eval_dir / "response.md"
         result = eval_dir / "result.json"
         response.write_text(completed.stdout, encoding="utf-8")
