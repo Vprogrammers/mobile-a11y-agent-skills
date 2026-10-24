@@ -1,0 +1,12 @@
+{
+  "required_findings": [
+    {"id": "recognizes-no-proven-blocker", "points": 2, "kind": "recommendation", "criteria": "Recognizes that standard TextView and Button controls with visible text and native click behavior do not prove a blocking accessibility defect.", "expected_severity": null},
+    {"id": "requests-android-device-verification", "points": 2, "kind": "verification", "criteria": "Recommends focused font-scale, TalkBack, Voice Access, keyboard, and layout verification without presenting unverified behavior as a defect.", "expected_severity": null}
+  ],
+  "forbidden_claims": [
+    "Requires contentDescription on visible TextView or Button text",
+    "Claims a standard Button lacks role or click semantics",
+    "Claims the screen is fully compliant",
+    "Claims exact TalkBack speech"
+  ]
+}
