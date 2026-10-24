@@ -37,6 +37,24 @@ Publication is not the same as citation in the Official Journal of the European 
 
 Do not label a draft, work item, or unpublished number such as V4.2.1 as the current standard. Do not silently replace a legally or contractually named older version with the latest publication.
 
+#### Scope decision tree
+
+Use the standard's self-scoping rules before selecting clauses. Do not start from a fixed “mobile app checklist.”
+
+1. **Establish the legal and contractual context.** Record the covered product or service, applicable Directive or procurement rule, jurisdiction, national implementation, exemptions, contract version, and the EN 301 549 edition cited for the claim.
+2. **Inventory every user-facing technology.** Separate native software, embedded web content, non-web documents, media, real-time communication, hardware, support documentation, and support services. One product can contain several categories.
+3. **Select requirements by technology and function.**
+   - Evaluate native Android, iOS, and desktop interfaces against applicable common requirements, functional-performance statements, and software requirements.
+   - Evaluate HTML content inside a WebView against applicable web requirements as web content; native wrappers do not repair the DOM.
+   - Evaluate downloadable PDFs and office documents against applicable non-web document requirements.
+   - Evaluate media, two-way voice, hardware, documentation, and support clauses only when those functions or deliverables exist.
+4. **Use the relevant Annex mapping.** Map the selected requirements to the applicable Directive only after confirming the cited edition and scope. An Annex mapping supports traceability; it does not decide whether the law applies to the product.
+5. **Record exclusions.** For every clause marked not applicable, record the product fact and reasoning. “It is a mobile app” is not sufficient.
+6. **Collect evidence per surface and release.** Keep static review, automated checks, simulator results, real-device assistive-technology observations, known limitations, and unresolved findings separate.
+7. **Constrain the claim.** State the tested release, surfaces, configurations, standard edition, applicable clauses, evidence limits, and whether Official Journal citation was verified.
+
+Example: a native checkout flow with an embedded payment WebView and downloadable PDF receipt normally requires three separate scope decisions—native software, web content, and non-web document—not one clause 9 audit for the entire product.
+
 Primary sources:
 
 - EN 301 549 V4.1.1: https://www.etsi.org/deliver/etsi_en/301500_301599/301549/04.01.01_60/en_301549v040101p.pdf
