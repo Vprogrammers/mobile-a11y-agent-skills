@@ -1,0 +1,4 @@
+test-evidence-traps-review: 6/8; minimum 6
+Forbidden claims:
+- `tryPerformAccessibilityChecks()` is the non-throwing variant. It collects results and doesn't fail the test, so a green run is expected whatever the screens contain.
+FAIL

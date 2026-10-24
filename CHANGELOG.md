@@ -4,6 +4,9 @@
 
 ## 0.7.0
 
+- Retain the r3 eval bundles: five harder evals, plugin and baseline, three runs each. The plugin passed 15 of 15 and the baseline 4 of 15; see `evals/results/README.md` for the per-finding analysis and limits.
+- Rate `on-back-pressed-not-called-on-sdk36` as P2: the lost callback only stops back from hiding an informational notice, and it affects every user rather than an assistive-technology group.
+- List a removed visible focus indicator for keyboard or switch users as a P1 calibration example in `mobile-a11y-review`.
 - Add a code-signal table to the review checklist that maps patterns in changed code, such as unkeyed lazy lists, gesture handlers, custom drawing, and WebViews, to the behavior a reviewer must check.
 - Require severity for matched defects in evals whose prompts ask for it (`severity_required` in the manifest). The suite gives both variants the P0–P3 definitions from `mobile-a11y-review`. An unrated defect earns no points, so omitting severity no longer scores better than a mismatch. The judge records the P0–P3 severity the response assigned, not the rubric's, and drops other scales.
 - Score a severity mismatch as a missed finding instead of rejecting the whole judge result, and keep rejected judge output for diagnosis. In r3, every Compose, Android SDK 36, and UIKit traps run was rejected this way, so those evals produced no score.

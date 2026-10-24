@@ -1,0 +1,2 @@
+Judge returned a result that does not match the schema: Severity mismatches:
+- legacy-button-title-fixed-size: expected P1, received P2

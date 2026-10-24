@@ -1,0 +1,14 @@
+{
+  "matched_findings": [
+    {
+      "id": "global-context-actual"
+    },
+    {
+      "id": "typealias-trait-escapes-header-check"
+    },
+    {
+      "id": "reduce-motion-read-once"
+    }
+  ],
+  "forbidden_claims": []
+}

@@ -34,3 +34,34 @@ Conclusions and limits:
 - The suite is near its ceiling for Sonnet without the plugin. Most evals do not discriminate. Add harder fixtures, for example ones with subtle defects, mixed frameworks, or traps the base model gets wrong, before using pass counts to measure value.
 - Severity scoring is asymmetric. A response without severities cannot have a mismatch, so it is never penalized for severity. Interpret severity-related rejections with that in mind.
 - The clearest verified plugin advantage in these runs is the `UIButton` Dynamic Type defect. The skill-guided review found it, the baseline missed it, and a simulator test now proves it.
+
+## r3: harder evals, three runs per variant, 2026-10-24
+
+The agent was `claude -p --model sonnet` and the judge `claude -p --model opus` (Claude Code 2.1.310), both with `--restricted`, using the commands in the eval workflow. The five `*-traps-review` evals ran three times per variant. Bundles are named `r3-<commit>-run<n>-<variant>`.
+
+- `kmp-interop-traps-review` and `test-evidence-traps-review` come from commit `5e75b41`.
+- The three severity-required evals come from commit `1945941`. In the `5e75b41` bundles, 17 of their 18 judge results were rejected, so those runs have no score. The baseline used High/Medium/Low because the prompt did not define P0–P3, and one plugin severity mismatch rejected each whole result. `1945941` (#28) gives both variants the scale and scores a mismatch per finding. The prompts of the other two evals did not change.
+
+Points per run, as scored at the time:
+
+| Eval | Plugin | Baseline |
+|---|---|---|
+| `kmp-interop-traps-review` | 8, 8, 8 | 6, 4, 4 |
+| `test-evidence-traps-review` | 8, 8, 8 | 6, 6, 6 (two runs fail on forbidden claims) |
+| `compose-semantics-traps-review` | 6, 6, 6 | 2, 2, 2 |
+| `android-sdk36-behavior-review` | 6, 6, 6 | 2, 8, 6 |
+| `uikit-container-traps-review` | 8, 8, 8 | 4, 2, 4 |
+| **Total** | **15/15 passed, 108/120** | **4/15 passed, 64/120** |
+
+After these runs, `on-back-pressed-not-called-on-sdk36` changed from P1 to P2. In the fixture, the lost `onBackPressed` callback only stops back from hiding an informational notice: the code can still be entered, and the change affects every user rather than a specific assistive-technology group. That is P2 under the skill's own calibration. The plugin rated it P2 in all three runs. Re-scoring the stored results with `score_eval.py` gives plugin 8, 8, 8 and baseline 4, 6, 8 on that eval, for totals of 114/120 and 66/120. The summaries keep the original scores.
+
+Findings:
+
+- **Detection is close; calibration and claims differ.** Ignoring severity, the baseline found almost every defect the plugin found. Its consistent detection gaps were `input-focus-is-not-accessibility-focus` (missed in 3 of 3 Compose runs; the plugin missed it once) and the KMP interop criteria. Most of its lost points came from inconsistent severity, such as P0 for a P1 defect in all three UIKit runs, and from unsupported claims about automated evidence.
+- **The plugin is stable.** It scored the same on every run of each eval. Baseline scores varied by up to 6 points between identical runs.
+- **The remaining plugin miss was `indication-null-hides-focus`,** rated P2 instead of P1 in two of three runs. `mobile-a11y-review` now lists a removed visible focus indicator as a P1 example. Because that example was added after this result, a later pass on this eval is not independent evidence.
+
+Limits:
+
+- These evals measure whether the plugin delivers knowledge it contains. The traps were added to the references when the evals were written, and the review checklist's code signals name several of them, so the plugin has an advantage by construction. They do not measure general review ability on unseen defects.
+- One judge model scored every run, and three runs per variant is a minimum, not a benchmark.

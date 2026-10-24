@@ -1,0 +1,4 @@
+android-sdk36-behavior-review: 6/8; minimum 6
+Defects with a mismatched severity earn no points:
+- on-back-pressed-not-called-on-sdk36: expected P1, received P2
+PASS

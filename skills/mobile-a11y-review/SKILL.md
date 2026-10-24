@@ -23,7 +23,7 @@ Use these severities:
 
 Calibrate by the effect on the affected user, not by how likely the code path is:
 
-- P1 when information or functionality is lost for a user group at a supported setting. Examples: text clipped or controls unreachable at large text sizes; a cap below the supported accessibility text sizes; meaning conveyed only by color; an action available only through a gesture; grouping that removes independently operable actions; focus that escapes a modal or is repeatedly moved away from the user.
+- P1 when information or functionality is lost for a user group at a supported setting. Examples: text clipped or controls unreachable at large text sizes; a cap below the supported accessibility text sizes; meaning conveyed only by color; an action available only through a gesture; grouping that removes independently operable actions; a removed visible focus indicator for keyboard or switch users; focus that escapes a modal or is repeatedly moved away from the user.
 - P2 when the user can still complete the task with extra effort or confusion. Examples: redundant announcements, focus-continuity risk on list updates, a missing heading, an inconsistent label.
 - A defect proven by code keeps its severity even when exact assistive-technology behavior still needs device confirmation. Put the device check in **Verify**; do not lower the severity to mark uncertainty.
 
