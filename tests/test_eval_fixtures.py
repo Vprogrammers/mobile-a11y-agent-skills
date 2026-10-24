@@ -45,6 +45,12 @@ GUARDS: dict[str, dict[str, str]] = {
         "distinguishes-publication-from-legal-baseline": r"latest publication, so it is automatically",
         "requires-surface-and-release-evidence": r"One successful automated scan[\s\S]*complete release",
     },
+    "us-regulatory-scope-review": {
+        "distinguishes-title-ii-title-iii-and-section-508": r"ADA Title II, ADA Title III, and Section 508",
+        "identifies-title-ii-technical-baseline": r"all require WCAG 2\\.2",
+        "does-not-reduce-section-508-to-wcag": r"Section 508 does not require any software interoperability or functional-performance review",
+        "rejects-scan-and-future-release-proof": r"same scan proves[\\s\\S]*future releases",
+    },
 }
 NOT_GUARDED: dict[str, set[str]] = {
     "kmp-boundary-review": {"proposes-platform-neutral-state-contract"},
@@ -59,6 +65,7 @@ NOT_GUARDED: dict[str, set[str]] = {
     "clean-android-views-review": {"requests-android-device-verification"},
     "clean-uikit-review": {"requests-ios-device-verification"},
     "en-301-549-scope-review": {"requires-context-before-legal-claim"},
+    "us-regulatory-scope-review": {"requires-applicability-context"},
 }
 
 
