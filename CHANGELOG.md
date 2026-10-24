@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add five harder evals built from verified platform traps: `compose-semantics-traps-review`, `android-sdk36-behavior-review`, `uikit-container-traps-review`, `kmp-interop-traps-review`, and `test-evidence-traps-review`. The Android and iOS fixtures compile in `samples/` with runtime guards. The KMP and prose fixtures have static guards.
 - Fix `clean-uikit-review`: its "clean" `UIButton(type: .system)` keeps a fixed 15 pt title at every Dynamic Type size, as measured on the simulator. The plugin reviewer reported it and the unassisted baseline did not. The fixture now uses `UIButton(configuration: .plain())`, a simulator test guards it, and `apple-patterns.md` documents the trap.
 - Add severity calibration examples to `mobile-a11y-review`. A defect proven by code keeps its severity even while device confirmation is pending.
 - Drop a judge's stray severity on non-defect criteria instead of rejecting the whole result. Defect severity mismatches still fail.

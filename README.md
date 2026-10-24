@@ -156,7 +156,7 @@ The repository also includes a small official Claude plugin eval under `plugin-e
 claude plugin eval . --runs 1 --ablation with-without --max-cost-usd 3.00 --no-publish
 ```
 
-Use the official runner for plugin loading, routing, trace, and baseline evidence. Use the custom suite for the repository's 13 detailed accessibility rubrics and deterministic scoring contract.
+Use the official runner for plugin loading, routing, trace, and baseline evidence. Use the custom suite for the repository's 18 detailed accessibility rubrics and deterministic scoring contract.
 
 The weekly and manually triggered `Agent eval regression` workflow performs both runs only when the repository owner configures `CLAUDE_CODE_OAUTH_TOKEN`. Pull-request CI never invokes a paid model. Workflow results are retained as artifacts rather than committed automatically.
 

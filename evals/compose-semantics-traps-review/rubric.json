@@ -1,0 +1,13 @@
+{
+  "required_findings": [
+    {"id": "clear-and-set-hides-track-action", "points": 2, "kind": "defect", "criteria": "Identifies that clearAndSetSemantics on the row removes the descendant Track button from the accessibility tree, so screen-reader and switch users cannot reach the Track action, and recommends merging or exposing Track as a separate node or custom action.", "expected_severity": "P1"},
+    {"id": "indication-null-hides-focus", "points": 2, "kind": "defect", "criteria": "Identifies that clickable(indication = null) removes the visible focus and press indication for keyboard and Switch Access users and recommends keeping a visible focus indicator.", "expected_severity": "P1"},
+    {"id": "error-not-associated-with-field", "points": 2, "kind": "defect", "criteria": "Identifies that the error messages are separate red Text nodes that are not exposed as the field's error state (for example isError/supportingText or error() semantics) and do not rely on color alone once fixed.", "expected_severity": "P2"},
+    {"id": "input-focus-is-not-accessibility-focus", "points": 2, "kind": "defect", "criteria": "Identifies that requesting input focus with FocusRequester does not reliably move TalkBack accessibility focus or announce the error, and recommends exposing the error through semantics instead of relying on focus movement.", "expected_severity": "P2"}
+  ],
+  "forbidden_claims": [
+    "Recommends adding a contentDescription to the location icon inside the labeled Track button",
+    "Claims exact TalkBack speech without device evidence",
+    "Claims WCAG or legal compliance from the fixture"
+  ]
+}

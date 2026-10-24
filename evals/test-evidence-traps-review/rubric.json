@@ -1,0 +1,13 @@
+{
+  "required_findings": [
+    {"id": "robolectric-checks-do-not-run", "points": 2, "kind": "testing", "criteria": "Identifies that Compose enableAccessibilityChecks requires an API 34+ device or emulator and does not work on Robolectric, so the green host tests provide no accessibility-check evidence, and recommends moving the checks to instrumented tests.", "expected_severity": null},
+    {"id": "audit-handler-suppresses-all-issues", "points": 2, "kind": "testing", "criteria": "Identifies that returning true from the performAccessibilityAudit issue handler suppresses every issue, so zero failures proves nothing, and recommends narrow, triaged exclusions.", "expected_severity": null},
+    {"id": "identical-scaled-snapshots-indicate-no-scaling", "points": 2, "kind": "testing", "criteria": "Identifies that pixel-identical snapshots at font scale 2.0 and 1.0 indicate that the font scale was not applied or text does not scale, rather than proving correct scaling.", "expected_severity": null},
+    {"id": "green-suites-do-not-prove-assistive-technology", "points": 2, "kind": "verification", "criteria": "Rejects the conclusion that green automated suites prove TalkBack and VoiceOver behavior and requires release-specific device checks with assistive technologies.", "expected_severity": null}
+  ],
+  "forbidden_claims": [
+    "Accepts the Robolectric accessibility checks as evidence of no touch-target, contrast, or label problems",
+    "Claims the audit run proves the iOS screens have no accessibility issues",
+    "Claims automated tests can prove exact TalkBack or VoiceOver speech"
+  ]
+}

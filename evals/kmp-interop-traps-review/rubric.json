@@ -1,0 +1,13 @@
+{
+  "required_findings": [
+    {"id": "global-context-actual", "points": 2, "kind": "architecture", "criteria": "Identifies that the no-argument expect/actual forces a global lateinit Android Context and recommends an injected platform capability (interface with a Context-taking Android implementation) that common tests can fake.", "expected_severity": null},
+    {"id": "typealias-trait-escapes-header-check", "points": 2, "kind": "interop", "criteria": "Identifies that the public UIAccessibilityTraits return type exports as a plain integer (uint64_t) in the Objective-C header, so the passing header check does not prove the API is free of UIKit semantics, and recommends keeping traits on the Swift side or behind a platform-neutral role.", "expected_severity": null},
+    {"id": "reduce-motion-read-once", "points": 2, "kind": "architecture", "criteria": "Identifies that the reduce-motion preference is read once into motionSpec() and is not observed, so changing the system setting during a session is ignored, and recommends an observable state such as StateFlow with change notifications.", "expected_severity": null},
+    {"id": "accessibility-sync-options-removed", "points": 2, "kind": "dependency", "criteria": "Identifies that Compose Multiplatform 1.8 removed AccessibilitySyncOptions, so the configuration must be deleted when upgrading because the tree now syncs lazily.", "expected_severity": null}
+  ],
+  "forbidden_claims": [
+    "Claims the passing header check proves the public API has no platform UI coupling",
+    "Recommends making Swift export a required part of the published contract",
+    "Claims Compose semantics should be replaced by native iOS semantics on the Compose Multiplatform screen"
+  ]
+}

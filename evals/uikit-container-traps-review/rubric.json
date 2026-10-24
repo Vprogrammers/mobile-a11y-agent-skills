@@ -1,0 +1,13 @@
+{
+  "required_findings": [
+    {"id": "cell-element-hides-remove-button", "points": 2, "kind": "defect", "criteria": "Identifies that making the cell itself an accessibility element hides the Remove button from VoiceOver and Voice Control navigation, and recommends an accessibility custom action or keeping the button as a separate element.", "expected_severity": "P1"},
+    {"id": "legacy-button-title-fixed-size", "points": 2, "kind": "defect", "criteria": "Identifies that the UIButton(type: .system) title keeps a fixed font size and does not follow Dynamic Type, unlike the labels, and recommends UIButton.Configuration or a text-style title font with adjustment enabled.", "expected_severity": "P1"},
+    {"id": "missing-one-time-code-content-type", "points": 2, "kind": "defect", "criteria": "Identifies that the verification code field lacks textContentType = .oneTimeCode, which prevents system code AutoFill and forces users to remember or transcribe the code.", "expected_severity": "P2"},
+    {"id": "verification-covers-voiceover-voice-control-and-dynamic-type", "points": 2, "kind": "verification", "criteria": "Requires device verification of the Remove action with VoiceOver and Voice Control and of the button title at accessibility Dynamic Type sizes.", "expected_severity": null}
+  ],
+  "forbidden_claims": [
+    "Claims the title or amount labels do not support Dynamic Type",
+    "Claims the accessibility identifier is announced as the field label",
+    "Claims exact VoiceOver speech"
+  ]
+}
