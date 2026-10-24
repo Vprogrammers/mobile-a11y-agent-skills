@@ -31,19 +31,19 @@ GUARDS: dict[str, dict[str, str]] = {
         "distinguishes-published-from-cited-version": r"V4\.1\.1 is the newest published edition, it is automatically harmonized",
     },
     "clean-swiftui-review": {
-        "recognizes-no-proven-blocker": r"ProgressView\\(value: progress\\)[\\s\\S]*Button\\(\"Cancel\", action: onCancel\\)",
+        "recognizes-no-proven-blocker": r"ProgressView\(value: progress\)[\s\S]*Button\(\"Cancel\", action: onCancel\)",
     },
     "clean-android-views-review": {
-        "recognizes-no-proven-blocker": r"Button\\(context\\)\\.apply[\\s\\S]*setOnClickListener",
+        "recognizes-no-proven-blocker": r"Button\(context\)\.apply[\s\S]*setOnClickListener",
     },
     "clean-uikit-review": {
-        "recognizes-no-proven-blocker": r"preferredFont\\(forTextStyle: \\.body\\)[\\s\\S]*UIButton\\(type: \\.system\\)",
+        "recognizes-no-proven-blocker": r"UIButton\(type: \.system\)[\s\S]*preferredFont\(forTextStyle: \.body\)",
     },
     "en-301-549-scope-review": {
-        "inventories-distinct-technologies": r"native Android and iOS[\\s\\S]*WebView[\\s\\S]*tagged PDF",
+        "inventories-distinct-technologies": r"native Android and iOS[\s\S]*WebView[\s\S]*tagged PDF",
         "applies-en-self-scoping": r"only EN 301 549 clause 9",
         "distinguishes-publication-from-legal-baseline": r"latest publication, so it is automatically",
-        "requires-surface-and-release-evidence": r"One successful automated scan[\\s\\S]*complete release",
+        "requires-surface-and-release-evidence": r"One successful automated scan[\s\S]*complete release",
     },
 }
 NOT_GUARDED: dict[str, set[str]] = {
