@@ -11,6 +11,13 @@ import unittest
 from scripts.judge_eval import build_prompt, drop_non_defect_severity, parse_judge_output
 
 ROOT = Path(__file__).resolve().parent.parent
+RATED_COMPOSE_FINDINGS = [
+    {"id": "fixed-height-text", "severity": "P1"},
+    {"id": "unstable-lazy-list-identity", "severity": "P2"},
+    {"id": "duplicate-delete-semantics", "severity": "P2"},
+    {"id": "gesture-only-help", "severity": "P1"},
+    {"id": "non-modal-overlay", "severity": "P1"},
+]
 
 
 class JudgeEvalTests(unittest.TestCase):
@@ -117,7 +124,7 @@ class JudgeEvalTests(unittest.TestCase):
 
     def test_fenced_judge_output_is_scored(self) -> None:
         payload = {
-            "matched_findings": ["fixed-height-text", "duplicate-delete-semantics", "gesture-only-help", "non-modal-overlay"],
+            "matched_findings": RATED_COMPOSE_FINDINGS[:1] + RATED_COMPOSE_FINDINGS[2:],
             "forbidden_claims": [],
         }
         result, output = self.run_judge("```json\n" + json.dumps(payload) + "\n```")
@@ -132,13 +139,7 @@ class JudgeEvalTests(unittest.TestCase):
 
     def test_provider_command_result_is_scored_end_to_end(self) -> None:
         result_payload = {
-            "matched_findings": [
-                "fixed-height-text",
-                "unstable-lazy-list-identity",
-                "duplicate-delete-semantics",
-                "gesture-only-help",
-                "non-modal-overlay",
-            ],
+            "matched_findings": RATED_COMPOSE_FINDINGS,
             "forbidden_claims": [],
         }
         with tempfile.TemporaryDirectory() as directory:
@@ -172,13 +173,7 @@ class JudgeEvalTests(unittest.TestCase):
 
     def test_judge_runs_in_isolated_working_directory(self) -> None:
         result_payload = {
-            "matched_findings": [
-                "fixed-height-text",
-                "unstable-lazy-list-identity",
-                "duplicate-delete-semantics",
-                "gesture-only-help",
-                "non-modal-overlay",
-            ],
+            "matched_findings": RATED_COMPOSE_FINDINGS,
             "forbidden_claims": [],
         }
         with tempfile.TemporaryDirectory() as directory:

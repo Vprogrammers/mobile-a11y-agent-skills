@@ -40,4 +40,4 @@ Verify: <automated layer, then device check>
 
 End with three sections: **Blockers** (P0/P1, or “No blocking finding found”), **Device checks** (assistive technology, settings, and flow), and **Residual risk**.
 
-Read [references/review-checklist.md](references/review-checklist.md). Read [references/regulatory-landscape.md](references/regulatory-landscape.md) before making standards or legal claims.
+Read [references/review-checklist.md](references/review-checklist.md) and start with its code signals. Read [references/regulatory-landscape.md](references/regulatory-landscape.md) before making standards or legal claims.

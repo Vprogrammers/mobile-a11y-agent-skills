@@ -12,8 +12,8 @@ class InvalidResult(ValueError):
     pass
 
 
-def check_result(result: object, rubric: dict[str, object]) -> tuple[set[str], list[str]]:
-    """Validate a judge result against the rubric and return matched ids and forbidden claims."""
+def check_result(result: object, rubric: dict[str, object]) -> tuple[dict[str, str | None], list[str]]:
+    """Validate a judge result against the rubric and return matched severities by id and forbidden claims."""
     if not isinstance(result, dict):
         raise InvalidResult("Result must be a JSON object")
     if set(result) - {"matched_findings", "forbidden_claims"}:
@@ -66,7 +66,7 @@ def check_result(result: object, rubric: dict[str, object]) -> tuple[set[str], l
             )
     if severity_errors:
         raise InvalidResult("Severity mismatches:\n" + "\n".join(f"- {error}" for error in severity_errors))
-    return matched, forbidden
+    return normalized, forbidden
 
 
 def main(root: Path, eval_id: str, result_source: str) -> int:
@@ -82,20 +82,29 @@ def main(root: Path, eval_id: str, result_source: str) -> int:
     rubric = json.loads((root / evaluation["rubric"]).read_text(encoding="utf-8"))
     result_text = sys.stdin.read() if result_source == "-" else Path(result_source).read_text(encoding="utf-8")
     try:
-        matched, forbidden = check_result(json.loads(result_text), rubric)
+        severities, forbidden = check_result(json.loads(result_text), rubric)
     except InvalidResult as error:
         print(error)
         return 2
 
+    # When the prompt asks for severity, an unrated defect earns nothing, so omitting severity never beats a mismatch.
+    unrated = []
+    if evaluation.get("severity_required"):
+        defects = {item["id"] for item in rubric["required_findings"] if item["kind"] == "defect"}
+        unrated = sorted(finding_id for finding_id, severity in severities.items() if finding_id in defects and severity is None)
     score = sum(
         item["points"]
         for item in rubric["required_findings"]
-        if item["id"] in matched
+        if item["id"] in severities and item["id"] not in unrated
     )
     maximum = sum(item["points"] for item in rubric["required_findings"])
     passed = score >= evaluation["minimum_score"] and not forbidden
 
     print(f"{eval_id}: {score}/{maximum}; minimum {evaluation['minimum_score']}")
+    if unrated:
+        print("Defects without the required severity earn no points:")
+        for finding_id in unrated:
+            print(f"- {finding_id}")
     if forbidden:
         print("Forbidden claims:")
         for claim in forbidden:
