@@ -45,6 +45,8 @@ Or copy `agents/*` to `.claude/agents/` and `skills/*` to `.claude/skills/`.
 
 The agents invoke skills by name, so they work from plugin installation or copied project directories without repository-relative paths.
 
+For a minimal copy-ready package, use [`mobile-a11y-agent-skills-lite`](https://github.com/Vprogrammers/mobile-a11y-agent-skills-lite). It is generated from this repository and contains only consumer instructions, agents, skills, references, and license files.
+
 ## Example prompts
 
 Plugin agents are namespaced. When the plugin is installed, invoke them as `<plugin>:<agent>` or with Claude Code's explicit `@agent-...` form. Agents copied directly into `.claude/agents/` keep their unprefixed names.
