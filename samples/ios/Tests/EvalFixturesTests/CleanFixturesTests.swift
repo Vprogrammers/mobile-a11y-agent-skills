@@ -12,13 +12,15 @@ final class CleanFixturesTests: XCTestCase {
     }
 
     func testCleanUIKitFixtureUsesNativeControlsAndDynamicType() {
-        let view = AccessibleProfileView(onSave: {})
+        var didSave = false
+        let view = AccessibleProfileView { didSave = true }
         let status = view.arrangedSubviews[0] as? UILabel
         let save = view.arrangedSubviews[1] as? UIButton
 
         XCTAssertEqual(status?.text, "Profile verified")
         XCTAssertTrue(status?.adjustsFontForContentSizeCategory == true)
         XCTAssertEqual(save?.title(for: .normal), "Save profile")
-        XCTAssertTrue(save?.accessibilityTraits.contains(.button) == true)
+        save?.sendActions(for: .touchUpInside)
+        XCTAssertTrue(didSave)
     }
 }
