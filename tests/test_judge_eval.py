@@ -8,7 +8,7 @@ import subprocess
 import tempfile
 import unittest
 
-from scripts.judge_eval import build_prompt, drop_non_defect_severity, parse_judge_output
+from scripts.judge_eval import build_prompt, drop_unscorable_severity, parse_judge_output
 
 ROOT = Path(__file__).resolve().parent.parent
 RATED_COMPOSE_FINDINGS = [
@@ -28,9 +28,19 @@ class JudgeEvalTests(unittest.TestCase):
         ], "forbidden_claims": []}
         result = {"matched_findings": [{"id": "focus", "severity": "P2"}, {"id": "device", "severity": "P2"}], "forbidden_claims": []}
 
-        drop_non_defect_severity(result, rubric)
+        drop_unscorable_severity(result, rubric)
 
         self.assertEqual(result["matched_findings"], [{"id": "focus", "severity": "P2"}, {"id": "device"}])
+
+    def test_off_scale_defect_severity_is_dropped(self) -> None:
+        rubric = {"required_findings": [
+            {"id": "focus", "points": 2, "kind": "defect", "criteria": "c", "expected_severity": "P1"},
+        ], "forbidden_claims": []}
+        result = {"matched_findings": [{"id": "focus", "severity": "High"}], "forbidden_claims": []}
+
+        drop_unscorable_severity(result, rubric)
+
+        self.assertEqual(result["matched_findings"], [{"id": "focus"}])
 
     def test_prompt_contains_rubric_response_and_json_contract(self) -> None:
         rubric = {"required_findings": [{"id": "focus", "points": 2, "kind": "defect", "criteria": "Identifies the focus defect and proposes restoration.", "expected_severity": "P1"}], "forbidden_claims": ["claims compliance"]}
@@ -136,6 +146,7 @@ class JudgeEvalTests(unittest.TestCase):
         self.assertEqual(result.returncode, 2)
         self.assertIn("does not match the schema", result.stdout)
         self.assertFalse(output.exists())
+        self.assertIn("invented-finding", output.with_name("result.rejected.txt").read_text())
 
     def test_provider_command_result_is_scored_end_to_end(self) -> None:
         result_payload = {

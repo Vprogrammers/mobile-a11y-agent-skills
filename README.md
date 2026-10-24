@@ -103,7 +103,7 @@ Evaluation scenarios live in `evals/`. Each manifest entry points to a prompt, r
 
 Rubrics keep finding `kind` separate from severity. Each finding has explicit acceptance `criteria`. Severity uses the `P0`–`P3` definitions in `mobile-a11y-review`, applies only to defects, and is `null` for architecture, interop, testing, verification, compliance, dependency, or recommendation criteria.
 
-Record the assessment using rubric finding IDs, with the severity the response assigned to each defect. A supplied defect severity must match the rubric. Evals whose prompts ask for severity set `"severity_required": true` in the manifest; there, a matched defect without severity earns no points, so omitting severity never scores better than a mismatch. Elsewhere, severity stays optional:
+Record the assessment using rubric finding IDs, with the P0–P3 severity the response assigned to each defect. A defect whose severity does not match the rubric earns no points; the rest of the result still counts. Evals whose prompts ask for severity set `"severity_required": true` in the manifest. The suite then appends the P0–P3 definitions from `mobile-a11y-review` to the prompt for both the plugin and the baseline, and a matched defect without a P0–P3 severity earns no points, so omitting severity never scores better than a mismatch. Elsewhere, severity stays optional. When the judge's output is rejected, `judge_eval.py` keeps it in `<result>.rejected.txt`:
 
 ```json
 {

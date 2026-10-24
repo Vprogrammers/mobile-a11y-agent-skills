@@ -60,12 +60,8 @@ def check_result(result: object, rubric: dict[str, object]) -> tuple[dict[str, s
         expected = expected_by_id[finding_id]
         if severity is not None and expected is None:
             severity_errors.append(f"{finding_id}: severity must be omitted for a non-defect criterion")
-        elif severity is not None and severity != expected:
-            severity_errors.append(
-                f"{finding_id}: expected {expected}, received {severity}"
-            )
     if severity_errors:
-        raise InvalidResult("Severity mismatches:\n" + "\n".join(f"- {error}" for error in severity_errors))
+        raise InvalidResult("Invalid severities:\n" + "\n".join(f"- {error}" for error in severity_errors))
     return normalized, forbidden
 
 
@@ -87,20 +83,33 @@ def main(root: Path, eval_id: str, result_source: str) -> int:
         print(error)
         return 2
 
-    # When the prompt asks for severity, an unrated defect earns nothing, so omitting severity never beats a mismatch.
+    # A mismatched defect earns nothing. When the prompt asks for severity, neither does an unrated one,
+    # so omitting severity never beats a mismatch.
+    expected = {item["id"]: item["expected_severity"] for item in rubric["required_findings"]}
+    mismatched = {
+        finding_id: severity
+        for finding_id, severity in severities.items()
+        if severity is not None and severity != expected[finding_id]
+    }
     unrated = []
     if evaluation.get("severity_required"):
-        defects = {item["id"] for item in rubric["required_findings"] if item["kind"] == "defect"}
-        unrated = sorted(finding_id for finding_id, severity in severities.items() if finding_id in defects and severity is None)
+        unrated = sorted(
+            finding_id for finding_id, severity in severities.items() if expected[finding_id] and severity is None
+        )
+    uncredited = set(mismatched) | set(unrated)
     score = sum(
         item["points"]
         for item in rubric["required_findings"]
-        if item["id"] in severities and item["id"] not in unrated
+        if item["id"] in severities and item["id"] not in uncredited
     )
     maximum = sum(item["points"] for item in rubric["required_findings"])
     passed = score >= evaluation["minimum_score"] and not forbidden
 
     print(f"{eval_id}: {score}/{maximum}; minimum {evaluation['minimum_score']}")
+    if mismatched:
+        print("Defects with a mismatched severity earn no points:")
+        for finding_id in sorted(mismatched):
+            print(f"- {finding_id}: expected {expected[finding_id]}, received {mismatched[finding_id]}")
     if unrated:
         print("Defects without the required severity earn no points:")
         for finding_id in unrated:

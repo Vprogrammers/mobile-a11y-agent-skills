@@ -5,7 +5,8 @@
 ## 0.7.0
 
 - Add a code-signal table to the review checklist that maps patterns in changed code, such as unkeyed lazy lists, gesture handlers, custom drawing, and WebViews, to the behavior a reviewer must check.
-- Require severity for matched defects in evals whose prompts ask for it (`severity_required` in the manifest). An unrated defect earns no points, so omitting severity no longer scores better than a mismatch. The judge now records the severity the response assigned, not the rubric's.
+- Require severity for matched defects in evals whose prompts ask for it (`severity_required` in the manifest). The suite gives both variants the P0–P3 definitions from `mobile-a11y-review`. An unrated defect earns no points, so omitting severity no longer scores better than a mismatch. The judge records the P0–P3 severity the response assigned, not the rubric's, and drops other scales.
+- Score a severity mismatch as a missed finding instead of rejecting the whole judge result, and keep rejected judge output for diagnosis. In r3, every Compose, Android SDK 36, and UIKit traps run was rejected this way, so those evals produced no score.
 - Add a deterministic, validated light distribution with consumer-only instructions, provenance metadata, owner-attributed synchronization on canonical `main` pushes that change distribution inputs, and a canonical-repository contribution policy.
 - Find the judge result object among prose braces or several JSON objects instead of slicing from the first `{` to the last `}`.
 - Add five harder evals built from verified platform traps: `compose-semantics-traps-review`, `android-sdk36-behavior-review`, `uikit-container-traps-review`, `kmp-interop-traps-review`, and `test-evidence-traps-review`. The Android and iOS fixtures compile in `samples/` with runtime guards. The KMP and prose fixtures have static guards.
