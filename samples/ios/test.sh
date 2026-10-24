@@ -23,4 +23,11 @@ for runtime in sorted(devices, reverse=True):
 sys.exit("No available iPhone simulator")
 ')"
 
-xcodebuild test -scheme ApplePatterns-Package -destination "id=$udid" -quiet
+result_bundle="${IOS_RESULT_BUNDLE_PATH:-build/TestResults.xcresult}"
+simulator_arch="$(uname -m)"
+rm -rf "$result_bundle"
+xcodebuild test \
+    -scheme ApplePatterns-Package \
+    -destination "platform=iOS Simulator,id=$udid,arch=$simulator_arch" \
+    -resultBundlePath "$result_bundle" \
+    -quiet

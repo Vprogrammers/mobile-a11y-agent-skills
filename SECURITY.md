@@ -25,3 +25,5 @@ Accessibility trees, screen-reader output, screenshots, recordings, and test log
 ## Local judge command
 
 `EVAL_JUDGE_COMMAND` is executed locally by `scripts/judge_eval.py`. Configure it only with a trusted executable. Do not pass untrusted repository text into a shell command that performs network, publishing, signing, or credential operations.
+
+The eval adapters mark fixtures and candidate responses as untrusted data, limit captured output, and terminate commands after a configurable timeout. These controls reduce accidental prompt injection and runaway processes; they do not turn a third-party model or CLI into a trusted security boundary.
