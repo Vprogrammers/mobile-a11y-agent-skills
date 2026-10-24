@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-24T14:49:24.091574+00:00",
+  "model": "sonnet",
+  "variant": "baseline",
+  "commit": "f5f0080",
+  "runs": [
+    {
+      "id": "android-compose-review",
+      "status": "failed"
+    },
+    {
+      "id": "ios-swiftui-review",
+      "status": "passed",
+      "score": 8,
+      "maximum": 10
+    },
+    {
+      "id": "kmp-boundary-review",
+      "status": "passed",
+      "score": 10,
+      "maximum": 10
+    },
+    {
+      "id": "clean-compose-review",
+      "status": "passed",
+      "score": 4,
+      "maximum": 4
+    },
+    {
+      "id": "android-views-review",
+      "status": "passed",
+      "score": 8,
+      "maximum": 8
+    },
+    {
+      "id": "ios-uikit-review",
+      "status": "passed",
+      "score": 8,
+      "maximum": 8
+    },
+    {
+      "id": "mobile-test-strategy",
+      "status": "passed",
+      "score": 12,
+      "maximum": 12
+    },
+    {
+      "id": "regulatory-evidence-review",
+      "status": "passed",
+      "score": 10,
+      "maximum": 10
+    },
+    {
+      "id": "clean-swiftui-review",
+      "status": "passed",
+      "score": 4,
+      "maximum": 4
+    },
+    {
+      "id": "clean-android-views-review",
+      "status": "passed",
+      "score": 4,
+      "maximum": 4
+    },
+    {
+      "id": "clean-uikit-review",
+      "status": "failed",
+      "score": 4,
+      "maximum": 4
+    },
+    {
+      "id": "en-301-549-scope-review",
+      "status": "passed",
+      "score": 10,
+      "maximum": 10
+    },
+    {
+      "id": "us-regulatory-scope-review",
+      "status": "passed",
+      "score": 10,
+      "maximum": 10
+    }
+  ]
+}

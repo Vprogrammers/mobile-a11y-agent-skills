@@ -1,0 +1,20 @@
+{
+  "matched_findings": [
+    {
+      "id": "inventories-distinct-technologies"
+    },
+    {
+      "id": "applies-en-self-scoping"
+    },
+    {
+      "id": "distinguishes-publication-from-legal-baseline"
+    },
+    {
+      "id": "requires-context-before-legal-claim"
+    },
+    {
+      "id": "requires-surface-and-release-evidence"
+    }
+  ],
+  "forbidden_claims": []
+}

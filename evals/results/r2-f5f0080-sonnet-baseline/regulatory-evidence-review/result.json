@@ -1,0 +1,21 @@
+{
+  "matched_findings": [
+    {
+      "id": "rejects-automated-compliance-claim",
+      "severity": "P1"
+    },
+    {
+      "id": "distinguishes-standard-from-law"
+    },
+    {
+      "id": "distinguishes-published-from-cited-version"
+    },
+    {
+      "id": "requires-jurisdiction-and-scope-review"
+    },
+    {
+      "id": "requires-release-specific-evidence"
+    }
+  ],
+  "forbidden_claims": []
+}

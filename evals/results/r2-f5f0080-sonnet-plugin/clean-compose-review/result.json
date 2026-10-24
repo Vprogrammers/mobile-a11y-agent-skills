@@ -1,0 +1,11 @@
+{
+  "matched_findings": [
+    {
+      "id": "recognizes-no-proven-blocker"
+    },
+    {
+      "id": "requests-device-verification-without-claiming-failure"
+    }
+  ],
+  "forbidden_claims": []
+}
