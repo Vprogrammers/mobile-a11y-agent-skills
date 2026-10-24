@@ -75,7 +75,7 @@ Verify: Compose device test for reachable nodes, then TalkBack navigation on a s
 2. Use the Android and/or iOS implementation agent.
 3. Use `accessibility-test-engineer` to close evidence gaps.
 4. Use `accessibility-reviewer` for an independent final pass.
-5. Run `./scripts/validate.sh` and report device checks separately using [the real-device evidence template](templates/real-device-evidence.md).
+5. Run `./scripts/validate.sh` and report device checks separately using [the real-device evidence template](skills/mobile-a11y-testing/references/real-device-evidence-template.md).
 
 ## Validation and evals
 
