@@ -1,6 +1,8 @@
 package dev.vprogrammers.a11y.samples
 
 import android.view.accessibility.AccessibilityNodeInfo
+import android.widget.Button
+import android.widget.TextView
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
@@ -17,11 +19,14 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeLeft
 import androidx.test.core.app.ApplicationProvider
+import evals.fixtures.AccessibleRetryView
 import evals.fixtures.AccessibleSettings
 import evals.fixtures.CheckoutScreen
 import evals.fixtures.Item
 import evals.fixtures.PaymentView
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Assert.assertNull
 import org.junit.Rule
 import org.junit.Test
@@ -86,5 +91,18 @@ class EvalFixturesTest {
                 SemanticsMatcher.keyNotDefined(SemanticsProperties.Text) and
                 SemanticsMatcher.keyNotDefined(SemanticsProperties.ContentDescription),
         ).assertCountEquals(0)
+    }
+
+    @Test
+    fun cleanAndroidViewsReview_recognizesNoProvenBlocker() {
+        val view = AccessibleRetryView(ApplicationProvider.getApplicationContext()) {}
+        val status = view.getChildAt(0) as TextView
+        val retry = view.getChildAt(1) as Button
+
+        assertEquals(2, view.childCount)
+        assertEquals("Connection failed", status.text)
+        assertEquals("Retry", retry.text)
+        assertTrue(retry.isClickable)
+        assertTrue(retry.hasOnClickListeners())
     }
 }
