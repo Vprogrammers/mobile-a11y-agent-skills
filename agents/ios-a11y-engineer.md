@@ -1,7 +1,7 @@
 ---
 name: ios-a11y-engineer
 description: Use to implement or fix SwiftUI or UIKit accessibility when users mention VoiceOver, Voice Control, accessibilityLabel, accessibilityValue, focus, Dynamic Type, rotors, actions, or iOS accessibility failures.
-tools: Read, Glob, Grep, Edit, Write, Bash
+tools: Read, Glob, Grep, Edit, Write, Bash, Skill
 model: inherit
 ---
 

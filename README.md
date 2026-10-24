@@ -132,10 +132,10 @@ EVAL_JUDGE_COMMAND='claude -p' \
 
 The judge may wrap its JSON in a fenced block or short prose; the adapter extracts it and validates it against the rubric before writing the result file. The judge is deliberately excluded from pull-request CI because model evaluation is nondeterministic, costs money, and requires user-managed credentials.
 
-Run every custom domain eval with separate trusted agent and judge commands and retain a dated result bundle. The agent command must include `{agent}`; `{plugin_dir}` is optional and resolves to the repository root. This example runs each manifest-selected, namespaced agent in a restricted temporary workspace:
+Run every custom domain eval with separate trusted agent and judge commands and retain a dated result bundle. The agent command must include `{agent}`; `{plugin_dir}` is optional and resolves to the repository root. This example runs each manifest-selected, namespaced agent in a restricted temporary workspace. `--restricted` confines file tools to that workspace, so `--add-dir "{plugin_dir}/skills"` lets agents read skill references. Add only `skills/`: the repository root also holds the rubrics.
 
 ```bash
-EVAL_AGENT_COMMAND='claude -p --plugin-dir "{plugin_dir}" --agent mobile-a11y-agent-skills:{agent} --restricted --allowedTools Read Glob Grep Skill --permission-mode dontAsk --permission-prompts none --no-session-persistence --max-budget-usd 0.75' \
+EVAL_AGENT_COMMAND='claude -p --plugin-dir "{plugin_dir}" --agent mobile-a11y-agent-skills:{agent} --restricted --add-dir "{plugin_dir}/skills" --allowedTools Read Glob Grep Skill --permission-mode dontAsk --permission-prompts none --no-session-persistence --max-budget-usd 0.75' \
 EVAL_JUDGE_COMMAND='claude -p --bare --restricted --permission-mode dontAsk --permission-prompts none --no-session-persistence --max-budget-usd 0.25' \
 EVAL_MODEL='model-id' \
 ./scripts/run_eval_suite.py "evals/results/$(date -u +%Y-%m-%dT%H%M%SZ)-model-id"

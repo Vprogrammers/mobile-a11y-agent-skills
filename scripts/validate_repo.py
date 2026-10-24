@@ -132,6 +132,10 @@ def main(root: Path) -> int:
         invoked = invoked_skills(body)
         if not invoked:
             errors.append(f"{relative} must invoke at least one skill by name")
+        # An explicit tools list replaces the defaults, so an agent without Skill cannot load its skills.
+        tools = {tool.strip() for tool in metadata.get("tools", "").split(",")}
+        if invoked and "Skill" not in tools:
+            errors.append(f"{relative} invokes skills but its tools list omits Skill")
         for skill_name in sorted(invoked - {skill.parent.name for skill in skills}):
             errors.append(f"{relative} invokes missing skill: {skill_name}")
         if re.search(r"\brelevant (?:platform )?skills\b", body, re.IGNORECASE):

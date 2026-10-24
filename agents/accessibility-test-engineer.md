@@ -1,7 +1,7 @@
 ---
 name: accessibility-test-engineer
 description: Use to add or review Android, iOS, or KMP accessibility tests after semantics, focus, input, scaling, navigation, or assistive-technology behavior changes.
-tools: Read, Glob, Grep, Edit, Write, Bash
+tools: Read, Glob, Grep, Edit, Write, Bash, Skill
 model: inherit
 ---
 

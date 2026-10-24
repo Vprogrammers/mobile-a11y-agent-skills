@@ -116,6 +116,14 @@ class ValidateRepositoryTests(unittest.TestCase):
         result = self.invalid_copy(mutate)
         self.assertIn("invokes missing skill", result.stdout)
 
+    def test_agent_without_skill_tool_is_rejected(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "agents/kmp-a11y-architect.md"
+            path.write_text(path.read_text().replace("tools: Read, Glob, Grep, Skill", "tools: Read, Glob, Grep"))
+
+        result = self.invalid_copy(mutate)
+        self.assertIn("omits Skill", result.stdout)
+
     def test_missing_also_invoked_skill_is_rejected(self) -> None:
         def mutate(root: Path) -> None:
             path = root / "agents/android-a11y-engineer.md"

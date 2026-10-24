@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add `Skill` to every agent's `tools` list. An explicit list replaces the defaults, so before this change no agent could load the skills it is instructed to invoke. The validator now rejects an agent that invokes skills without `Skill`.
+- Let restricted eval agents read skill references with `--add-dir "{plugin_dir}/skills"`, without exposing the rubrics.
 - Add `samples/kmp`, which compiles the shared validation and reduced-motion contract with Android Compose/Settings and iOS UIKit adapters, common, Robolectric, and simulator tests, and an exported Objective-C header check. CI runs it on macOS.
 - Add `EVAL_VARIANT=baseline` and per-eval points in `summary.json`, so the same rubrics can compare the plugin with an unassisted baseline. Retain the first reviewed baseline bundle.
 - Correct the Compose accessibility-checks guidance: they require API 34+ instrumentation and pass silently on Robolectric. A guard test documents this.
