@@ -51,6 +51,23 @@ class JudgeEvalTests(unittest.TestCase):
         self.assertEqual(result.returncode, 2)
         self.assertIn("positive integer", result.stdout)
 
+    def test_missing_judge_command_is_reported(self) -> None:
+        temporary = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, temporary, True)
+        (temporary / "response.md").write_text("review response", encoding="utf-8")
+        environment = dict(os.environ)
+        environment["EVAL_JUDGE_COMMAND"] = "missing-a11y-judge-command"
+        result = subprocess.run(
+            ["python3", str(ROOT / "scripts/judge_eval.py"), "android-compose-review", "response.md", "result.json"],
+            cwd=temporary,
+            env=environment,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("Judge could not start", result.stdout)
+
     def test_fenced_or_wrapped_judge_json_is_parsed(self) -> None:
         payload = {"matched_findings": ["fixed-height-text"], "forbidden_claims": []}
         fenced = "Here is the result:\n```json\n" + json.dumps(payload) + "\n```\n"

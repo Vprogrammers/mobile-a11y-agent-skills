@@ -102,6 +102,9 @@ def main(root: Path, eval_id: str, response_path: Path, result_path: Path) -> in
     except OutputLimitExceeded:
         print(f"Combined judge output exceeds {MAX_OUTPUT_BYTES} bytes.")
         return 2
+    except (OSError, ValueError) as error:
+        print(f"Judge could not start: {error}")
+        return 2
     if completed.returncode != 0:
         print(completed.stderr or completed.stdout)
         return completed.returncode

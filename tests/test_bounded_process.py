@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+import time
 import unittest
 
 from scripts.bounded_process import OutputLimitExceeded, ProcessTimedOut, run_bounded
@@ -39,6 +40,24 @@ class BoundedProcessTests(unittest.TestCase):
                 timeout=1,
                 max_output_bytes=100,
             )
+
+    @unittest.skipUnless(sys.platform != "win32", "POSIX process-group behavior")
+    def test_timeout_terminates_descendant_holding_output_pipe(self) -> None:
+        started = time.monotonic()
+        with self.assertRaises(ProcessTimedOut):
+            run_bounded(
+                [
+                    sys.executable,
+                    "-c",
+                    "import subprocess, sys, time; "
+                    "subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(30)']); "
+                    "time.sleep(30)",
+                ],
+                input_text="",
+                timeout=1,
+                max_output_bytes=100,
+            )
+        self.assertLess(time.monotonic() - started, 5)
 
 
 if __name__ == "__main__":

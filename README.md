@@ -47,16 +47,18 @@ The agents invoke skills by name, so they work from plugin installation or copie
 
 ## Example prompts
 
+Plugin agents are namespaced. When the plugin is installed, invoke them as `<plugin>:<agent>` or with Claude Code's explicit `@agent-...` form. Agents copied directly into `.claude/agents/` keep their unprefixed names.
+
 ```text
-Use accessibility-reviewer to review this PR. Separate proven findings from device checks.
+Use @agent-mobile-a11y-agent-skills:accessibility-reviewer to review this PR. Separate proven findings from device checks.
 ```
 
 ```text
-Use android-a11y-engineer to fix the TalkBack order in this Compose screen without changing the shared API.
+Use @agent-mobile-a11y-agent-skills:android-a11y-engineer to fix the TalkBack order in this Compose screen without changing the shared API.
 ```
 
 ```text
-Use kmp-a11y-architect to decide whether reduced-motion state belongs behind an interface or expect/actual.
+Use @agent-mobile-a11y-agent-skills:kmp-a11y-architect to decide whether reduced-motion state belongs behind an interface or expect/actual.
 ```
 
 Example reviewer finding:
@@ -84,6 +86,12 @@ Verify: Compose device test for reachable nodes, then TalkBack navigation on a s
 ```
 
 `validate.sh` runs the repository validator, compiles the scripts, runs the installation smoke test, and runs the unit tests. The validator checks skill and agent metadata, explicitly named invoked skills, duplicate names, local links, plugin version consistency, required review dates, executable permissions, and typed eval manifests/rubrics. It warns 30 days before each reference's declared review interval expires and fails when it is stale. Dynamic platform references use 180 days, regulatory guidance uses 90 days, and references without an override use 365 days. External links are intentionally optional to keep pull-request CI deterministic; a scheduled workflow checks them monthly:
+
+CI also installs the pinned Claude Code version and runs its authoritative manifest check:
+
+```bash
+claude plugin validate --strict .
+```
 
 ```bash
 CHECK_EXTERNAL_LINKS=1 ./scripts/validate.sh
@@ -124,16 +132,24 @@ EVAL_JUDGE_COMMAND='claude -p' \
 
 The judge may wrap its JSON in a fenced block or short prose; the adapter extracts it and validates it against the rubric before writing the result file. The judge is deliberately excluded from pull-request CI because model evaluation is nondeterministic, costs money, and requires user-managed credentials.
 
-Run every eval with separate trusted agent and judge commands and retain a dated result bundle:
+Run every custom domain eval with separate trusted agent and judge commands and retain a dated result bundle. The agent command must include `{agent}`; `{plugin_dir}` is optional and resolves to the repository root. This example runs each manifest-selected, namespaced agent in a restricted temporary workspace:
 
 ```bash
-EVAL_AGENT_COMMAND='claude -p' \
+EVAL_AGENT_COMMAND='claude -p --plugin-dir "{plugin_dir}" --agent mobile-a11y-agent-skills:{agent} --restricted --allowedTools Read Glob Grep Skill --permission-mode dontAsk --permission-prompts none --no-session-persistence' \
 EVAL_JUDGE_COMMAND='claude -p' \
 EVAL_MODEL='model-id' \
 ./scripts/run_eval_suite.py "evals/results/$(date -u +%Y-%m-%dT%H%M%SZ)-model-id"
 ```
 
-The weekly and manually triggered `Agent eval regression` workflow performs the same blind run only when the repository owner configures `CLAUDE_CODE_OAUTH_TOKEN`. Pull-request CI never invokes a paid model. Workflow results are retained as artifacts rather than committed automatically.
+The repository also includes a small official Claude plugin eval under `plugin-evals/`. It verifies real namespaced agent routing and evaluates output quality in Claude Code's isolated eval runner:
+
+```bash
+claude plugin eval . --runs 1 --ablation with-without --no-publish
+```
+
+Use the official runner for plugin loading, routing, trace, and baseline evidence. Use the custom suite for the repository's 13 detailed accessibility rubrics and deterministic scoring contract.
+
+The weekly and manually triggered `Agent eval regression` workflow performs both runs only when the repository owner configures `CLAUDE_CODE_OAUTH_TOKEN`. Pull-request CI never invokes a paid model. Workflow results are retained as artifacts rather than committed automatically.
 
 ## Compiled samples
 

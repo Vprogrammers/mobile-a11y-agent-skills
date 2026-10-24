@@ -1,5 +1,6 @@
 {
   "name": "vprogrammers-mobile-a11y",
+  "description": "Mobile accessibility agents and skills for Android, iOS, and Kotlin Multiplatform.",
   "owner": {
     "name": "VProgrammers"
   },
