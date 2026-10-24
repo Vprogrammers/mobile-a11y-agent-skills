@@ -56,9 +56,17 @@ def parse_judge_output(output: str) -> object:
     fenced = re.search(r"```(?:json)?\s*\n(.*?)\n\s*```", text, re.DOTALL)
     if fenced:
         return json.loads(fenced.group(1))
-    start, end = text.find("{"), text.rfind("}")
-    if start != -1 and end > start:
-        return json.loads(text[start : end + 1])
+    # Prose may contain braces or several objects; take the first one shaped like a result.
+    decoder = json.JSONDecoder()
+    start = text.find("{")
+    while start != -1:
+        try:
+            candidate, _ = decoder.raw_decode(text, start)
+        except json.JSONDecodeError:
+            candidate = None
+        if isinstance(candidate, dict) and "matched_findings" in candidate:
+            return candidate
+        start = text.find("{", start + 1)
     return json.loads(text)
 
 

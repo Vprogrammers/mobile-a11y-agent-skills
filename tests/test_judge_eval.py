@@ -88,6 +88,15 @@ class JudgeEvalTests(unittest.TestCase):
         with self.assertRaises(json.JSONDecodeError):
             parse_judge_output("no json here")
 
+    def test_result_object_is_found_among_prose_braces_and_other_objects(self) -> None:
+        payload = {"matched_findings": [{"id": "focus", "severity": "P1"}], "forbidden_claims": []}
+        braces = "The {focus} criterion matched. " + json.dumps(payload) + " See {notes}."
+        several = 'Draft: {"note": "ignore"}\nFinal: ' + json.dumps(payload) + '\nExtra: {"other": 1}'
+        self.assertEqual(parse_judge_output(braces), payload)
+        self.assertEqual(parse_judge_output(several), payload)
+        with self.assertRaises(json.JSONDecodeError):
+            parse_judge_output('Only {"note": "no result"} here')
+
     def run_judge(self, stdout: str) -> tuple[subprocess.CompletedProcess[str], Path]:
         temporary = Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, temporary, True)
