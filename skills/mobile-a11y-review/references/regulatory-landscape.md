@@ -1,6 +1,7 @@
 # Regulatory and standards landscape
 
 Last reviewed: 2026-10-24.
+Review interval: 90 days.
 
 This is engineering guidance, not legal advice. Applicability depends on jurisdiction, organization, product, service, contract, and national implementation. Verify current primary sources before making a compliance claim.
 
@@ -73,16 +74,22 @@ For native software, inspect applicable EN 301 549 software, functional-performa
 
 ### ADA Title II
 
-The Department of Justice rule for state and local government web content and mobile apps uses WCAG 2.1 Level AA, with compliance dates depending on entity size and current rulemaking. Verify dates at ADA.gov before reporting them.
+The Department of Justice rule for covered state and local government web content and mobile apps uses WCAG 2.1 Level AA. As of this review, an April 2026 Interim Final Rule extends the compliance date to 26 April 2027 for public entities with a population of 50,000 or more, and to 26 April 2028 for public entities below 50,000 and special district governments. Verify the current rule, entity category, exceptions, and later rulemaking at ADA.gov before reporting a deadline.
 
-- Rule overview: https://www.ada.gov/resources/2024-03-08-web-rule/
-- Current Title II resources: https://www.ada.gov/title-ii-web-rule/
+Do not generalize this Title II technical standard to every private, federal, or state-regulated app. Third-party content or mobile apps supplied through contractual, licensing, or other arrangements can still be within a public entity's covered offering.
+
+- Current Title II resources and dates: https://www.ada.gov/title-ii-web-rule/
+- 2026 Interim Final Rule: https://www.ada.gov/assets/pdfs/2026-ifr.pdf
+- Small-entity compliance guide: https://www.ada.gov/resources/small-entity-compliance-guide/
 
 ### Section 508
 
-The refreshed Section 508 Standards apply to federal ICT and incorporate WCAG 2.0 Level A and AA requirements by reference, with additional software and functional-performance provisions. A project may adopt a newer WCAG baseline, but do not misstate that as the incorporated legal version.
+The refreshed Section 508 Standards apply to covered federal ICT and incorporate WCAG 2.0 Level A and AA requirements for applicable content. A native application assessment must not stop at a WCAG checklist: self-scope the applicable functional-performance criteria, software interoperability and application requirements, content, documentation, and support provisions. Record the federal or procurement context, exceptions, equivalent-facilitation decisions, and which provisions were evaluated.
+
+A project may adopt WCAG 2.1 or 2.2 as an engineering baseline, but do not misstate that newer version as the edition incorporated by Section 508.
 
 - US Access Board ICT standards: https://www.access-board.gov/ict/
+- Section 508 standards by chapter: https://www.access-board.gov/ict/#508-chapters-1-and-2-application-and-scoping
 
 ### ADA Title III and other obligations
 
