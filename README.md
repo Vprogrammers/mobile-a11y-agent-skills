@@ -126,7 +126,7 @@ The scorer is deterministic, but classification is intentionally separate: a hum
 For an optional end-to-end run, configure any judge CLI that reads the blind judging prompt from standard input and returns the documented JSON result:
 
 ```bash
-EVAL_JUDGE_COMMAND='claude -p' \
+EVAL_JUDGE_COMMAND='claude -p --model opus --restricted --permission-mode dontAsk --permission-prompts none --no-session-persistence --max-turns 2 --max-budget-usd 0.25' \
   ./scripts/judge_eval.py android-compose-review response.md result.json
 ```
 
@@ -135,19 +135,19 @@ The judge may wrap its JSON in a fenced block or short prose; the adapter extrac
 Run every custom domain eval with separate trusted agent and judge commands and retain a dated result bundle. The agent command must include `{agent}`; `{plugin_dir}` is optional and resolves to the repository root. This example runs each manifest-selected, namespaced agent in a restricted temporary workspace. `--restricted` confines file tools to that workspace, so `--add-dir "{plugin_dir}/skills"` lets agents read skill references. Add only `skills/`: the repository root also holds the rubrics.
 
 ```bash
-EVAL_AGENT_COMMAND='claude -p --plugin-dir "{plugin_dir}" --agent mobile-a11y-agent-skills:{agent} --restricted --add-dir "{plugin_dir}/skills" --allowedTools Read Glob Grep Skill --permission-mode dontAsk --permission-prompts none --no-session-persistence --max-budget-usd 0.75' \
-EVAL_JUDGE_COMMAND='claude -p --bare --restricted --permission-mode dontAsk --permission-prompts none --no-session-persistence --max-budget-usd 0.25' \
-EVAL_MODEL='model-id' \
-./scripts/run_eval_suite.py "evals/results/$(date -u +%Y-%m-%dT%H%M%SZ)-model-id"
+EVAL_AGENT_COMMAND='claude -p --model sonnet --plugin-dir "{plugin_dir}" --agent mobile-a11y-agent-skills:{agent} --restricted --add-dir "{plugin_dir}/skills" --allowedTools Read Glob Grep Skill --permission-mode dontAsk --permission-prompts none --no-session-persistence --max-turns 8 --max-budget-usd 0.75' \
+EVAL_JUDGE_COMMAND='claude -p --model opus --restricted --permission-mode dontAsk --permission-prompts none --no-session-persistence --max-turns 2 --max-budget-usd 0.25' \
+EVAL_MODEL='agent=sonnet,judge=opus' \
+./scripts/run_eval_suite.py "evals/results/$(date -u +%Y-%m-%dT%H%M%SZ)-sonnet-opus"
 ```
 
 Set `EVAL_VARIANT=baseline` to send the same tasks and fixtures without the plugin. The prompt drops the agent name, and `{agent}` is not required. Score both runs with the same judge and rubrics. `summary.json` records the variant and per-eval points, so the runs compare directly. Reviewed bundles are kept in `evals/results/`; see [the baseline summary](evals/results/README.md).
 
 ```bash
 EVAL_VARIANT=baseline \
-EVAL_AGENT_COMMAND='claude -p --restricted --allowedTools Read Glob Grep --permission-mode dontAsk --permission-prompts none --no-session-persistence --max-budget-usd 0.75' \
-EVAL_JUDGE_COMMAND='…same judge…' EVAL_MODEL='model-id' \
-./scripts/run_eval_suite.py "evals/results/$(date -u +%Y-%m-%dT%H%M%SZ)-model-id-baseline"
+EVAL_AGENT_COMMAND='claude -p --model sonnet --restricted --allowedTools Read Glob Grep --permission-mode dontAsk --permission-prompts none --no-session-persistence --max-turns 8 --max-budget-usd 0.75' \
+EVAL_JUDGE_COMMAND='…same Opus judge…' EVAL_MODEL='agent=sonnet,judge=opus' \
+./scripts/run_eval_suite.py "evals/results/$(date -u +%Y-%m-%dT%H%M%SZ)-sonnet-opus-baseline"
 ```
 
 The repository also includes a small official Claude plugin eval under `plugin-evals/`. It verifies real namespaced agent routing and evaluates output quality in Claude Code's isolated eval runner:
@@ -158,7 +158,7 @@ claude plugin eval . --runs 1 --ablation with-without --max-cost-usd 3.00 --no-p
 
 Use the official runner for plugin loading, routing, trace, and baseline evidence. Use the custom suite for the repository's 18 detailed accessibility rubrics and deterministic scoring contract.
 
-The weekly and manually triggered `Agent eval regression` workflow performs both runs only when the repository owner configures `CLAUDE_CODE_OAUTH_TOKEN`. Pull-request CI never invokes a paid model. Workflow results are retained as artifacts rather than committed automatically.
+The weekly and manually triggered `Agent eval regression` workflow performs both runs only when the repository owner configures `CLAUDE_CODE_OAUTH_TOKEN`. The custom suite uses Sonnet for the agent and Opus as an independent judge to reduce correlated evaluation bias. A scheduled run fails when the secret is missing; a manual run records an explicit skipped summary. Pull-request CI never invokes a paid model. Workflow results are retained as artifacts rather than committed automatically.
 
 ## Compiled samples
 
