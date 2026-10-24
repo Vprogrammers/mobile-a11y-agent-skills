@@ -12,7 +12,8 @@ from urllib.request import Request, urlopen
 
 EXPECTED_REPOSITORY = "https://github.com/Vprogrammers/mobile-a11y-agent-skills"
 MAX_REVIEW_AGE_DAYS = 365
-BUILD_DIRECTORIES = {".git", ".gradle", ".kotlin", "build", ".build", ".swiftpm", "DerivedData"}
+REVIEW_WARNING_DAYS = 30
+BUILD_DIRECTORIES = {".git", ".claude", ".gradle", ".kotlin", "build", ".build", ".swiftpm", "DerivedData"}
 REQUIRED_EVAL_FIELDS = {"id", "agent", "prompt", "fixture", "rubric", "minimum_score"}
 ALLOWED_SEVERITIES = {"P0", "P1", "P2", "P3"}
 ALLOWED_FINDING_KINDS = {
@@ -25,11 +26,6 @@ ALLOWED_FINDING_KINDS = {
     "testing",
     "verification",
 }
-SKILL_INVOCATION = re.compile(r"\b[Ii]nvoke (?:the )?`([a-z0-9-]+)`")
-
-
-def invoked_skills(body: str) -> set[str]:
-    return set(SKILL_INVOCATION.findall(body))
 
 
 def frontmatter(path: Path) -> tuple[list[str], dict[str, str]]:
@@ -48,6 +44,15 @@ def frontmatter(path: Path) -> tuple[list[str], dict[str, str]]:
     return lines, values
 
 
+def invoked_skills(body: str) -> set[str]:
+    """Return every backticked name on a line that tells the agent to invoke skills."""
+    names: set[str] = set()
+    for line in body.splitlines():
+        if re.search(r"\binvoke\b", line, re.IGNORECASE):
+            names.update(re.findall(r"`([a-z0-9-]+)`", line))
+    return names
+
+
 def check_external_links(urls: set[str], errors: list[str]) -> None:
     for url in sorted(urls):
         request = Request(url, headers={"User-Agent": "mobile-a11y-agent-skills-validator"})
@@ -63,6 +68,7 @@ def check_external_links(urls: set[str], errors: list[str]) -> None:
 
 def main(root: Path) -> int:
     errors: list[str] = []
+    warnings: list[str] = []
     names: dict[str, Path] = {}
     external_urls: set[str] = set()
     evaluations: list[dict[str, object]] = []
@@ -107,11 +113,14 @@ def main(root: Path) -> int:
                 errors.append(f"Duplicate name {name}: {names[name]} and {relative}")
             names[name] = relative
 
-        invoked = invoked_skills(path.read_text(encoding="utf-8"))
+        body = path.read_text(encoding="utf-8")
+        invoked = invoked_skills(body)
         if not invoked:
             errors.append(f"{relative} must invoke at least one skill by name")
         for skill_name in sorted(invoked - {skill.parent.name for skill in skills}):
             errors.append(f"{relative} invokes missing skill: {skill_name}")
+        if re.search(r"\brelevant (?:platform )?skills\b", body, re.IGNORECASE):
+            errors.append(f"{relative} must name invoked skills explicitly")
 
     for path in root.rglob("*.md"):
         if BUILD_DIRECTORIES & set(path.parts):
@@ -141,6 +150,10 @@ def main(root: Path) -> int:
             errors.append(f"{path.relative_to(root)} has a future review date")
         elif age > MAX_REVIEW_AGE_DAYS:
             errors.append(f"{path.relative_to(root)} review is stale ({age} days)")
+        elif age > MAX_REVIEW_AGE_DAYS - REVIEW_WARNING_DAYS:
+            warnings.append(
+                f"{path.relative_to(root)} review expires in {MAX_REVIEW_AGE_DAYS - age} days"
+            )
 
     try:
         plugin = json.loads((root / ".claude-plugin/plugin.json").read_text(encoding="utf-8"))
@@ -187,7 +200,7 @@ def main(root: Path) -> int:
                 try:
                     rubric = json.loads(rubric_path.read_text(encoding="utf-8"))
                 except json.JSONDecodeError as error:
-                    errors.append(f"Eval {eval_id} rubric is not valid JSON: {error}")
+                    errors.append(f"Eval {eval_id} rubric is invalid JSON: {error}")
                     continue
                 if not isinstance(rubric, dict) or set(rubric) != {"required_findings", "forbidden_claims"}:
                     errors.append(f"Eval {eval_id} rubric must contain only required_findings and forbidden_claims")
@@ -251,6 +264,11 @@ def main(root: Path) -> int:
 
     if os.environ.get("CHECK_EXTERNAL_LINKS") == "1":
         check_external_links(external_urls, errors)
+
+    if warnings:
+        print("Warnings:")
+        for warning in warnings:
+            print(f"- {warning}")
 
     if errors:
         print("Validation failed:")

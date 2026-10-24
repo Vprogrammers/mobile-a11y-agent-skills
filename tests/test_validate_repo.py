@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import date, timedelta
 from pathlib import Path
 import json
 import re
@@ -29,7 +30,7 @@ class ValidateRepositoryTests(unittest.TestCase):
                 ROOT,
                 copy,
                 ignore=shutil.ignore_patterns(
-                    "__pycache__", "*.pyc", ".gradle", ".kotlin", "build", ".build", ".swiftpm", "DerivedData"
+                    "__pycache__", "*.pyc", ".claude", ".gradle", ".kotlin", "build", ".build", ".swiftpm", "DerivedData"
                 ),
             )
             mutate(copy)
@@ -123,26 +124,6 @@ class ValidateRepositoryTests(unittest.TestCase):
         result = self.invalid_copy(mutate)
         self.assertIn("invokes missing skill: missing-review", result.stdout)
 
-    def test_agent_without_skill_invocation_is_rejected(self) -> None:
-        def mutate(root: Path) -> None:
-            path = root / "agents/kmp-a11y-architect.md"
-            path.write_text(path.read_text().replace("Invoke the `kmp-a11y` skill by name.", ""))
-
-        result = self.invalid_copy(mutate)
-        self.assertIn("must invoke at least one skill", result.stdout)
-
-    def test_malformed_rubric_does_not_hide_later_errors(self) -> None:
-        def mutate(root: Path) -> None:
-            (root / "evals/android-compose-review/rubric.json").write_text("{not json")
-            path = root / "evals/regulatory-evidence-review/rubric.json"
-            data = json.loads(path.read_text())
-            data["required_findings"][0]["criteria"] = "  "
-            path.write_text(json.dumps(data))
-
-        result = self.invalid_copy(mutate)
-        self.assertIn("android-compose-review rubric is not valid JSON", result.stdout)
-        self.assertIn("regulatory-evidence-review finding", result.stdout)
-
     def test_reference_without_source_is_rejected(self) -> None:
         def mutate(root: Path) -> None:
             path = root / "skills/kmp-a11y/references/kmp-boundaries.md"
@@ -150,6 +131,49 @@ class ValidateRepositoryTests(unittest.TestCase):
 
         result = self.invalid_copy(mutate)
         self.assertIn("must cite at least one https source", result.stdout)
+
+    def test_review_near_expiry_warns_without_failing(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "skills/kmp-a11y/references/kmp-boundaries.md"
+            near_expiry = (date.today() - timedelta(days=350)).isoformat()
+            path.write_text(
+                re.sub(r"^Last reviewed: \S+", f"Last reviewed: {near_expiry}", path.read_text(), flags=re.MULTILINE)
+            )
+
+        result = self.invalid_copy(mutate)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("kmp-boundaries.md review expires in 15 days", result.stdout)
+
+    def test_invalid_rubric_json_does_not_hide_other_errors(self) -> None:
+        def mutate(root: Path) -> None:
+            (root / "evals/android-compose-review/rubric.json").write_text("{not json")
+            path = root / "evals/ios-swiftui-review/rubric.json"
+            data = json.loads(path.read_text())
+            data["required_findings"][0]["points"] = 0
+            path.write_text(json.dumps(data))
+
+        result = self.invalid_copy(mutate)
+        self.assertIn("Eval android-compose-review rubric is invalid JSON", result.stdout)
+        self.assertIn(
+            "Eval ios-swiftui-review finding combined-unrelated-actions points must be a positive integer",
+            result.stdout,
+        )
+
+    def test_vague_skill_reference_is_rejected(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "agents/accessibility-reviewer.md"
+            path.write_text(path.read_text().replace("Also invoke", "Use relevant platform skills. Also invoke"))
+
+        result = self.invalid_copy(mutate)
+        self.assertIn("must name invoked skills explicitly", result.stdout)
+
+    def test_agent_without_invoked_skill_is_rejected(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "agents/kmp-a11y-architect.md"
+            path.write_text(path.read_text().replace("Invoke the `kmp-a11y` skill by name.", ""))
+
+        result = self.invalid_copy(mutate)
+        self.assertIn("must invoke at least one skill by name", result.stdout)
 
 
 if __name__ == "__main__":

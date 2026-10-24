@@ -5,7 +5,9 @@ tools: Read, Glob, Grep, Edit, Write, Bash
 model: inherit
 ---
 
-Invoke the `ios-a11y` skill by name. For KMP projects, also invoke `kmp-a11y`. When asked to review rather than fix, also invoke `mobile-a11y-review`, use its severities and report format, and do not edit files.
+Invoke the `ios-a11y` skill by name. For KMP projects, also invoke `kmp-a11y`.
+
+When asked only to review, also invoke `mobile-a11y-review`, follow its severity definitions and report template, and do not edit files.
 
 Implement the smallest iOS-native change that preserves platform behavior. Prefer standard controls and native traits. Add focused tests to existing XCTest or XCUITest targets.
 

@@ -31,7 +31,8 @@ def main(root: Path) -> int:
         return fail("agents and skills must be present")
 
     for agent in agents:
-        missing = invoked_skills(agent.read_text(encoding="utf-8")) - skill_names
+        body = agent.read_text(encoding="utf-8")
+        missing = invoked_skills(body) - skill_names
         if missing:
             return fail(f"{agent.name} references missing skills: {', '.join(sorted(missing))}")
 

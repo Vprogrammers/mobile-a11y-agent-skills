@@ -3,11 +3,15 @@ from __future__ import annotations
 
 import json
 import os
-import re
 from pathlib import Path
+import re
 import shlex
 import subprocess
 import sys
+
+# Allow both `python3 scripts/judge_eval.py` and `import scripts.judge_eval` in tests.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from score_eval import InvalidResult, check_result  # noqa: E402
 
 
 def build_prompt(
@@ -34,19 +38,20 @@ def build_prompt(
     )
 
 
-def parse_judge_output(text: str) -> dict[str, object]:
-    """Extract the judge's JSON object, tolerating a surrounding Markdown code fence."""
-    stripped = text.strip()
-    fenced = re.fullmatch(r"```(?:json)?\s*\n(.*?)\n?```", stripped, re.DOTALL)
+def parse_judge_output(output: str) -> object:
+    """Parse the judge's JSON, accepting a fenced ```json block or surrounding prose."""
+    text = output.strip()
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        pass
+    fenced = re.search(r"```(?:json)?\s*\n(.*?)\n\s*```", text, re.DOTALL)
     if fenced:
-        stripped = fenced.group(1).strip()
-    result = json.loads(stripped)
-    if not isinstance(result, dict):
-        raise ValueError("judge output must be a JSON object")
-    unknown = set(result) - {"matched_findings", "forbidden_claims"}
-    if unknown:
-        raise ValueError(f"judge output has unknown fields: {', '.join(sorted(unknown))}")
-    return result
+        return json.loads(fenced.group(1))
+    start, end = text.find("{"), text.rfind("}")
+    if start != -1 and end > start:
+        return json.loads(text[start : end + 1])
+    return json.loads(text)
 
 
 def main(root: Path, eval_id: str, response_path: Path, result_path: Path) -> int:
@@ -78,8 +83,13 @@ def main(root: Path, eval_id: str, response_path: Path, result_path: Path) -> in
         return completed.returncode
     try:
         result = parse_judge_output(completed.stdout)
-    except (json.JSONDecodeError, ValueError) as error:
-        print(f"Judge returned invalid output: {error}")
+    except json.JSONDecodeError as error:
+        print(f"Judge returned invalid JSON: {error}")
+        return 2
+    try:
+        check_result(result, rubric)
+    except InvalidResult as error:
+        print(f"Judge returned a result that does not match the schema: {error}")
         return 2
     result_path.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     scorer = subprocess.run(

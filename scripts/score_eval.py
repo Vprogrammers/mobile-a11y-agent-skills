@@ -8,30 +8,22 @@ import sys
 ALLOWED_SEVERITIES = {"P0", "P1", "P2", "P3"}
 
 
-def main(root: Path, eval_id: str, result_source: str) -> int:
-    manifest = json.loads((root / "evals/manifest.json").read_text(encoding="utf-8"))
-    evaluation = next(
-        (item for item in manifest["evaluations"] if item["id"] == eval_id),
-        None,
-    )
-    if evaluation is None:
-        print(f"Unknown eval id: {eval_id}")
-        return 2
+class InvalidResult(ValueError):
+    pass
 
-    rubric = json.loads((root / evaluation["rubric"]).read_text(encoding="utf-8"))
-    result_text = sys.stdin.read() if result_source == "-" else Path(result_source).read_text(encoding="utf-8")
-    result = json.loads(result_text)
+
+def check_result(result: object, rubric: dict[str, object]) -> tuple[set[str], list[str]]:
+    """Validate a judge result against the rubric and return matched ids and forbidden claims."""
     if not isinstance(result, dict):
-        print("Result must be a JSON object")
-        return 2
+        raise InvalidResult("Result must be a JSON object")
     if set(result) - {"matched_findings", "forbidden_claims"}:
-        print(f"Unknown result fields: {', '.join(sorted(set(result) - {'matched_findings', 'forbidden_claims'}))}")
-        return 2
+        raise InvalidResult(
+            f"Unknown result fields: {', '.join(sorted(set(result) - {'matched_findings', 'forbidden_claims'}))}"
+        )
     if not isinstance(result.get("matched_findings", []), list) or not isinstance(
         result.get("forbidden_claims", []), list
     ):
-        print("matched_findings and forbidden_claims must be arrays")
-        return 2
+        raise InvalidResult("matched_findings and forbidden_claims must be arrays")
 
     matched_entries = result.get("matched_findings", [])
     normalized: dict[str, str | None] = {}
@@ -46,26 +38,21 @@ def main(root: Path, eval_id: str, result_source: str) -> int:
             finding_id = entry["id"]
             severity = entry.get("severity")
             if severity is not None and severity not in ALLOWED_SEVERITIES:
-                print(f"Invalid severity for {finding_id}: {severity}")
-                return 2
+                raise InvalidResult(f"Invalid severity for {finding_id}: {severity}")
         else:
-            print("Each matched finding must be an id string or an object with id and optional severity")
-            return 2
+            raise InvalidResult("Each matched finding must be an id string or an object with id and optional severity")
         if finding_id in normalized:
-            print(f"Duplicate matched finding id: {finding_id}")
-            return 2
+            raise InvalidResult(f"Duplicate matched finding id: {finding_id}")
         normalized[finding_id] = severity
 
     matched = set(normalized)
     forbidden = result.get("forbidden_claims", [])
     if not all(isinstance(claim, str) and claim.strip() for claim in forbidden):
-        print("Each forbidden claim must be a non-empty string")
-        return 2
+        raise InvalidResult("Each forbidden claim must be a non-empty string")
     known = {item["id"] for item in rubric["required_findings"]}
     unknown = matched - known
     if unknown:
-        print(f"Unknown finding ids: {', '.join(sorted(unknown))}")
-        return 2
+        raise InvalidResult(f"Unknown finding ids: {', '.join(sorted(unknown))}")
 
     severity_errors = []
     expected_by_id = {item["id"]: item["expected_severity"] for item in rubric["required_findings"]}
@@ -78,9 +65,26 @@ def main(root: Path, eval_id: str, result_source: str) -> int:
                 f"{finding_id}: expected {expected}, received {severity}"
             )
     if severity_errors:
-        print("Severity mismatches:")
-        for error in severity_errors:
-            print(f"- {error}")
+        raise InvalidResult("Severity mismatches:\n" + "\n".join(f"- {error}" for error in severity_errors))
+    return matched, forbidden
+
+
+def main(root: Path, eval_id: str, result_source: str) -> int:
+    manifest = json.loads((root / "evals/manifest.json").read_text(encoding="utf-8"))
+    evaluation = next(
+        (item for item in manifest["evaluations"] if item["id"] == eval_id),
+        None,
+    )
+    if evaluation is None:
+        print(f"Unknown eval id: {eval_id}")
+        return 2
+
+    rubric = json.loads((root / evaluation["rubric"]).read_text(encoding="utf-8"))
+    result_text = sys.stdin.read() if result_source == "-" else Path(result_source).read_text(encoding="utf-8")
+    try:
+        matched, forbidden = check_result(json.loads(result_text), rubric)
+    except InvalidResult as error:
+        print(error)
         return 2
 
     score = sum(
