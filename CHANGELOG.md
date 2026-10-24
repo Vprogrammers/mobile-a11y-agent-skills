@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Run manifest-selected agents by their namespaced plugin identities in isolated restricted eval workspaces, add an official plugin eval with a no-plugin baseline, validate the plugin with Claude Code 2.1.310, and harden subprocess failure handling.
 - Add opt-in scheduled agent evals and result bundles, harden the judge against prompt injection and runaway commands, validate critical Claude deny rules, structure EN 301 549 status evidence, retain failing XCTest bundles, and remove unused release automation.
 - Compile clean platform eval fixtures, add per-reference freshness intervals, expand current US regulatory guidance and eval coverage, validate copied skill links, and provide an optional hardened Claude Code settings template.
 - Add EN 301 549 technology self-scoping guidance and eval coverage, clean SwiftUI/Android Views/UIKit evals, agent execution boundaries, a security policy, and a real-device evidence template.

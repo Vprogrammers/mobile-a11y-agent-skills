@@ -7,6 +7,7 @@
   },
   "repository": "https://github.com/Vprogrammers/mobile-a11y-agent-skills",
   "homepage": "https://github.com/Vprogrammers/mobile-a11y-agent-skills#readme",
+  "icon": "./.claude-plugin/icon.png",
   "license": "MIT",
   "keywords": [
     "accessibility",
@@ -16,5 +17,8 @@
     "talkback",
     "voiceover",
     "wcag"
-  ]
+  ],
+  "experimental": {
+    "evals": "plugin-evals"
+  }
 }

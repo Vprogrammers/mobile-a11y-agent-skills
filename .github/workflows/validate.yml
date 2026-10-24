@@ -18,6 +18,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Validate structure, links, scripts, and tests
         run: ./scripts/validate.sh
+      - name: Install pinned Claude Code
+        run: npm install -g @anthropic-ai/claude-code@2.1.310
+      - name: Validate Claude plugin manifest
+        run: claude plugin validate --strict .
       - name: Check external references on schedule
         if: github.event_name == 'schedule'
         env:

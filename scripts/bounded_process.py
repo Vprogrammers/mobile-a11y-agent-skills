@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import os
 from queue import Empty, Queue
+import signal
 import subprocess
 import threading
 import time
+from pathlib import Path
 
 
 class OutputLimitExceeded(Exception):
@@ -27,6 +30,7 @@ def run_bounded(
     input_text: str,
     timeout: int,
     max_output_bytes: int,
+    cwd: Path | None = None,
     poll_interval: float = 0.02,
 ) -> BoundedResult:
     """Run a command with a shared byte budget for stdout and stderr."""
@@ -35,6 +39,8 @@ def run_bounded(
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
+        cwd=cwd,
+        start_new_session=os.name == "posix",
     )
     chunks: Queue[tuple[str, bytes | None]] = Queue(maxsize=4)
 
@@ -70,11 +76,23 @@ def run_bounded(
     deadline = time.monotonic() + timeout
     finished_streams = 0
     failure: type[Exception] | None = None
+
+    def kill_process_tree() -> None:
+        if process.poll() is not None:
+            return
+        if os.name == "posix":
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+        else:
+            process.kill()
+
     while finished_streams < len(readers):
         remaining = deadline - time.monotonic()
         if remaining <= 0 and failure is None:
             failure = ProcessTimedOut
-            process.kill()
+            kill_process_tree()
         try:
             name, chunk = chunks.get(timeout=poll_interval if failure else min(poll_interval, max(remaining, 0.001)))
         except Empty:
@@ -87,7 +105,7 @@ def run_bounded(
         captured_bytes = len(output["stdout"]) + len(output["stderr"])
         if captured_bytes + len(chunk) > max_output_bytes:
             failure = OutputLimitExceeded
-            process.kill()
+            kill_process_tree()
             continue
         output[name].extend(chunk)
 
