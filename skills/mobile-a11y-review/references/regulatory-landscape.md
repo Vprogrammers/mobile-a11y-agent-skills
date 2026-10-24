@@ -1,6 +1,6 @@
 # Regulatory and standards landscape
 
-Last reviewed: 2026-10-23.
+Last reviewed: 2026-10-24.
 
 This is engineering guidance, not legal advice. Applicability depends on jurisdiction, organization, product, service, contract, and national implementation. Verify current primary sources before making a compliance claim.
 
@@ -24,14 +24,32 @@ Directive (EU) 2019/882 applies from 28 June 2025 to covered products and servic
 - Directive: https://eur-lex.europa.eu/eli/dir/2019/882/oj/eng
 - Commission overview: https://commission.europa.eu/strategy-and-policy/policies/justice-and-fundamental-rights/disability/european-accessibility-act-eaa_en
 
+### EN 301 549 version status
+
+The latest published version is **EN 301 549 V4.1.1 (2026-09)**, adopted on 24 August 2026. It updates clauses 9, 10, and 11 to align with WCAG 2.2 and adds annexes that map requirements to Directive (EU) 2016/2102 and Directive (EU) 2019/882.
+
+Publication is not the same as citation in the Official Journal of the European Union. V4.1.1 states that presumption of conformity applies only once the version is cited under the relevant Directive and only within the scope of the cited clauses. Before using the standard for a compliance statement, verify:
+
+- the version cited in the Official Journal for the applicable Directive;
+- national transposition and enforcement;
+- the version named by the contract, procurement terms, or customer policy;
+- which self-scoping software, web, document, hardware, and functional-performance clauses apply.
+
+Do not label a draft, work item, or unpublished number such as V4.2.1 as the current standard. Do not silently replace a legally or contractually named older version with the latest publication.
+
+Primary sources:
+
+- EN 301 549 V4.1.1: https://www.etsi.org/deliver/etsi_en/301500_301599/301549/04.01.01_60/en_301549v040101p.pdf
+- ETSI Human Factors overview: https://www.etsi.org/technical-groups/hf/
+- Previous EN 301 549 V3.2.1: https://www.etsi.org/deliver/etsi_en/301500_301599/301549/03.02.01_60/en_301549v030201p.pdf
+
 ### Public-sector apps
 
-Directive (EU) 2016/2102 covers public-sector websites and mobile applications. EN 301 549 provides testable ICT requirements. Confirm the currently harmonized version before citing it. Do not treat drafts of a future EN 301 549 revision as adopted requirements.
+Directive (EU) 2016/2102 covers public-sector websites and mobile applications. EN 301 549 provides testable ICT requirements, but the latest published edition must not be described as the legally cited edition without checking the Official Journal.
 
 - Directive: https://eur-lex.europa.eu/eli/dir/2016/2102/oj/eng
-- Published EN 301 549 V3.2.1: https://www.etsi.org/deliver/etsi_en/301500_301599/301549/03.02.01_60/
 
-For native software, inspect applicable EN 301 549 software and generic clauses rather than mapping only web clauses. Document clause applicability and evidence; do not produce a blanket pass/fail from a code scan.
+For native software, inspect applicable EN 301 549 software, functional-performance, and generic clauses rather than mapping only web clauses. Document clause applicability and evidence; do not produce a blanket pass/fail from a code scan.
 
 ## United States
 
@@ -60,10 +78,12 @@ Use:
 - “finding maps to…”
 - “automated check passed; manual verification remains”
 - “applicability requires legal or contractual review”
+- “latest published version; Official Journal citation not yet verified”
 
 Avoid:
 
 - “certified accessible”
 - “fully compliant”
 - “EAA compliant because WCAG passed”
+- “latest published means legally harmonized”
 - “ADA requires WCAG 2.2 for every app”
