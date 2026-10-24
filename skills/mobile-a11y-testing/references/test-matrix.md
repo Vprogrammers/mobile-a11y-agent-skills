@@ -1,6 +1,7 @@
 # Accessibility test matrix
 
 Last reviewed: 2026-10-23. Verify test API availability against the Compose, Robolectric, Xcode, and iOS versions used by the project.
+Review interval: 180 days.
 
 ## Discover before writing tests
 
