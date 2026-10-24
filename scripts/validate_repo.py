@@ -146,7 +146,7 @@ def main(root: Path) -> int:
         if not match:
             errors.append(f"{path.relative_to(root)} must contain a Last reviewed date")
             continue
-        interval_match = re.search(r"^Review interval:\\s*(\\d+) days\\.$", text, re.MULTILINE)
+        interval_match = re.search(r"^Review interval:\s*(\d+) days\.$", text, re.MULTILINE)
         if "Review interval:" in text and not interval_match:
             errors.append(f"{path.relative_to(root)} has an invalid Review interval")
             continue
