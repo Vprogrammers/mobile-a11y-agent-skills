@@ -75,7 +75,7 @@ Verify: Compose device test for reachable nodes, then TalkBack navigation on a s
 2. Use the Android and/or iOS implementation agent.
 3. Use `accessibility-test-engineer` to close evidence gaps.
 4. Use `accessibility-reviewer` for an independent final pass.
-5. Run `./scripts/validate.sh` and report device checks separately.
+5. Run `./scripts/validate.sh` and report device checks separately using [the real-device evidence template](templates/real-device-evidence.md).
 
 ## Validation and evals
 
@@ -135,7 +135,7 @@ The judge may wrap its JSON in a fenced block or short prose; the adapter extrac
 
 See [samples/README.md](samples/README.md) for requirements and limits.
 
-The eval set includes positive Android, iOS, KMP, test-strategy, and regulatory cases plus a clean-screen case that penalizes invented findings.
+The eval set includes defect-bearing Android, iOS, KMP, test-strategy, and regulatory cases; clean Compose, Android Views, SwiftUI, and UIKit cases that penalize invented findings; and an EN 301 549 scenario that tests technology self-scoping.
 
 ## Non-goals
 
@@ -145,6 +145,10 @@ The eval set includes positive Android, iOS, KMP, test-strategy, and regulatory 
 - Forcing identical Android and iOS accessibility implementations.
 - Flutter, React Native, and other non-Kotlin cross-platform UI frameworks.
 - Providing legal advice.
+
+## Security
+
+Review [SECURITY.md](SECURITY.md) before running agents with shell access or using an external eval judge.
 
 ## License
 
