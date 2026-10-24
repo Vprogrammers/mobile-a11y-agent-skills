@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Update EN 301 549 guidance to the latest published V4.1.1 edition, distinguish publication from Official Journal citation, and add an eval guard for unsupported harmonization claims.
 - Replace the `Note` severity with `P3` so the review skill, validator, and scorer share one `P0`–`P3` scale.
 - Have the Android and iOS engineer agents also invoke `mobile-a11y-review` for review-only tasks, and name the fixture path and forbid fixture edits in every eval prompt.
 - Name platform skills explicitly in agents and share one invoked-skill parser between the validator and the installation smoke test.
