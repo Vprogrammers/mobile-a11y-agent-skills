@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Replace the review skill's `Note` severity with `P3` so the skill, validator, scorer, and README share one `P0`–`P3` scale.
+- Make the Android and iOS engineer agents invoke `mobile-a11y-review` and avoid edits when asked to review.
+- Name the fixture path and forbid fixture edits in the Android Views and UIKit eval prompts.
+- Run script compilation, the install smoke test, and unit tests from `scripts/validate.sh` and the Linux CI job instead of the macOS job.
+- Skip Android and iOS sample builds on the monthly scheduled link check.
+
 ## 0.6.0
 
 - Add `samples/android` and `samples/ios`, which compile the reference examples and the Android and iOS eval fixtures, with guard tests tied to rubric finding ids. CI runs both.
