@@ -125,3 +125,48 @@ public struct OneTimeCodeField: View {
             .keyboardType(.numberPad)
     }
 }
+
+public struct Sale: Identifiable {
+    public let month: String
+    public let value: Int
+    public var id: String { month }
+
+    public init(month: String, value: Int) {
+        self.month = month
+        self.value = value
+    }
+}
+
+/// A Canvas chart with a synthetic accessibility element per bar.
+public struct SalesChart: View {
+    let sales: [Sale]
+
+    public init(sales: [Sale]) {
+        self.sales = sales
+    }
+
+    public var body: some View {
+        Canvas { context, size in drawBars(sales, in: &context, size: size) }
+            .frame(height: 160)
+            .accessibilityLabel("Monthly sales")
+            .accessibilityChildren {
+                HStack {
+                    ForEach(sales) { sale in
+                        Rectangle()
+                            .accessibilityLabel(sale.month)
+                            .accessibilityValue("\(sale.value)")
+                    }
+                }
+            }
+    }
+}
+
+private func drawBars(_ sales: [Sale], in context: inout GraphicsContext, size: CGSize) {
+    guard let maximum = sales.map(\.value).max(), maximum > 0 else { return }
+    let barWidth = size.width / CGFloat(sales.count * 2)
+    for (index, sale) in sales.enumerated() {
+        let height = size.height * CGFloat(sale.value) / CGFloat(maximum)
+        let bar = CGRect(x: CGFloat(index * 2) * barWidth, y: size.height - height, width: barWidth, height: height)
+        context.fill(Path(bar), with: .color(.gray))
+    }
+}

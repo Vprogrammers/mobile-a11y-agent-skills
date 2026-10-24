@@ -18,6 +18,7 @@ Contributions are welcome for Android, iOS, Kotlin Multiplatform, testing, and a
 - Name every invoked skill explicitly in agent instructions; the validator rejects phrases such as "relevant platform skills".
 - Run `./scripts/validate.sh`; it also runs the unit and installation smoke tests.
 - Treat `mobile-a11y-agent-skills-lite` as generated output. Change agents, skills, consumer instructions, and distribution templates only in this canonical repository.
+- Do not add a `heldout-*` eval's `held_out_terms` to `skills/`; the validator rejects it. If guidance must cover such a defect, remove the eval's held-out status in the same pull request and say so.
 - Keep paid or nondeterministic model evals outside pull-request CI. Use `claude plugin eval .` for plugin routing evidence and `scripts/run_eval_suite.py` for the detailed domain rubrics. Retain generated summaries and never commit credentials or private project data with eval evidence.
 - Use `skills/mobile-a11y-testing/references/real-device-evidence-template.md` for manual assistive-technology results and keep them release-specific.
 - Follow `SECURITY.md`; never use accessibility work to access secrets, weaken privacy, publish, sign, deploy, or send project data without explicit authorization.

@@ -111,6 +111,53 @@ class RunEvalSuiteTests(unittest.TestCase):
                 [{"id": "clean-compose-review", "status": "passed", "score": 4, "maximum": 4}],
             )
 
+    def test_second_judge_must_also_pass(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            temporary = Path(directory)
+            output = temporary / "run"
+            agent = temporary / "agent.py"
+            agent.write_text("import sys\nsys.stdin.read()\nprint('No proven blocker; verify on device.')\n", encoding="utf-8")
+            judges = []
+            for name, findings in (
+                ("first.py", ["recognizes-no-proven-blocker", "requests-device-verification-without-claiming-failure"]),
+                ("second.py", ["recognizes-no-proven-blocker"]),
+            ):
+                path = temporary / name
+                path.write_text(
+                    "import json, sys\nsys.stdin.read()\n"
+                    f"print(json.dumps({{'matched_findings': {findings!r}, 'forbidden_claims': []}}))\n",
+                    encoding="utf-8",
+                )
+                judges.append(path)
+            environment = dict(os.environ)
+            environment["EVAL_AGENT_COMMAND"] = f"python3 {agent} --agent {{agent}}"
+            environment["EVAL_JUDGE_COMMAND"] = f"python3 {judges[0]}"
+            environment["EVAL_SECOND_JUDGE_COMMAND"] = f"python3 {judges[1]}"
+            result = subprocess.run(
+                ["python3", "scripts/run_eval_suite.py", str(output), "clean-compose-review"],
+                cwd=ROOT,
+                env=environment,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            summary = json.loads((output / "summary.json").read_text(encoding="utf-8"))
+            self.assertTrue(summary["second_judge"])
+            self.assertEqual(
+                summary["runs"],
+                [{
+                    "id": "clean-compose-review",
+                    "status": "failed",
+                    "score": 4,
+                    "maximum": 4,
+                    "second_judge": {"status": "failed", "score": 2, "maximum": 4},
+                    "judges_agree": False,
+                }],
+            )
+            self.assertTrue((output / "clean-compose-review/result-2.json").is_file())
+            self.assertTrue((output / "clean-compose-review/score-2.txt").is_file())
+
     def test_excessive_stderr_is_recorded_in_summary(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             temporary = Path(directory)

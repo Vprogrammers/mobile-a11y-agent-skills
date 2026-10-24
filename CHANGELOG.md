@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Add two held-out evals, `heldout-compose-review` and `heldout-swiftui-review`, built from defects whose patterns and fix APIs appear nowhere in `skills/`. Their manifest entries list `held_out_terms`, and the validator fails when a term appears in a skill file. The Compose fixture compiles in `samples/` with runtime guards; the SwiftUI fixture compiles and has static guards.
+- Add an optional second judge (`EVAL_SECOND_JUDGE_COMMAND`). A run passes only when both judges pass it, and `summary.json` records both scores and whether they agree.
+- Expand guidance for charts, custom drawing, maps, and media on Android and iOS: `ExploreByTouchHelper`, Canvas semantics, Swift Charts, `accessibilityChartDescriptor`, `accessibilityChildren`, Media3 caption preferences, and `AVPlayer` media selection, with compiled chart samples. Add code signals for charts, maps, and media.
+- Record which iOS accessibility features the Compose Multiplatform documentation names as supported, and which it does not mention.
+
 ## 0.7.0
 
 - Retain the r3 eval bundles: five harder evals, plugin and baseline, three runs each. The plugin passed 15 of 15 and the baseline 4 of 15; see `evals/results/README.md` for the per-finding analysis and limits.

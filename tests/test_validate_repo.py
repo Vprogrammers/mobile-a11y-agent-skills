@@ -63,6 +63,14 @@ class ValidateRepositoryTests(unittest.TestCase):
         self.assertIn("requires severity but its prompt does not ask for it", result.stdout)
         self.assertIn("requires severity but its rubric has no defect", result.stdout)
 
+    def test_held_out_term_in_skills_is_rejected(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "skills/ios-a11y/references/apple-patterns.md"
+            path.write_text(path.read_text() + "\n- Opt photos out of Smart Invert.\n")
+
+        result = self.invalid_copy(mutate)
+        self.assertIn("heldout-swiftui-review held-out term appears in skills/: Smart Invert", result.stdout)
+
     def test_duplicate_finding_id_is_rejected(self) -> None:
         def mutate(root: Path) -> None:
             path = root / "evals/android-compose-review/rubric.json"

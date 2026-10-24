@@ -1,0 +1,13 @@
+{
+  "required_findings": [
+    {"id": "carousel-auto-advances-without-pause", "points": 2, "kind": "defect", "criteria": "Identifies that the featured photo advances every four seconds with no pause or stop control, that the VoiceOver check runs once on appear and does not follow later changes, and that Switch Control, Voice Control, and other users still get moving content; recommends a pause control for everyone and observing state (for example accessibilityVoiceOverEnabled) instead of a one-time check.", "expected_severity": "P1"},
+    {"id": "filter-selection-only-visual", "points": 2, "kind": "defect", "criteria": "Identifies that the selected filter is conveyed only by background and text color, with no selected trait, and recommends adding the isSelected trait to the selected option or using a native Picker with the segmented style.", "expected_severity": "P1"},
+    {"id": "photos-inverted-by-smart-invert", "points": 2, "kind": "defect", "criteria": "Identifies that the photos do not opt out of Smart Invert and recommends accessibilityIgnoresInvertColors on photo content.", "expected_severity": "P2"},
+    {"id": "verification-covers-voiceover-switch-control-and-smart-invert", "points": 2, "kind": "verification", "criteria": "Requires device verification with VoiceOver, Switch Control, and Smart Invert, including turning VoiceOver on after the screen appears.", "expected_severity": null}
+  ],
+  "forbidden_claims": [
+    "Claims automated tests can prove exact VoiceOver speech",
+    "Claims that reading UIAccessibility.isVoiceOverRunning is prohibited in every case",
+    "Claims the photos have no accessibility label"
+  ]
+}

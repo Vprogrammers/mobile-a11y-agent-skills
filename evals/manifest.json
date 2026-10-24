@@ -150,6 +150,45 @@
       "fixture": "evals/test-evidence-traps-review/ReleaseEvidence.md",
       "rubric": "evals/test-evidence-traps-review/rubric.json",
       "minimum_score": 6
+    },
+    {
+      "id": "heldout-compose-review",
+      "agent": "accessibility-reviewer",
+      "prompt": "evals/heldout-compose-review.md",
+      "fixture": "evals/heldout-compose-review/MessageThread.kt",
+      "rubric": "evals/heldout-compose-review/rubric.json",
+      "minimum_score": 6,
+      "severity_required": true,
+      "held_out_terms": [
+        "ClickableText",
+        "LinkAnnotation",
+        "withLink",
+        "calculateRecommendedTimeoutMillis",
+        "getRecommendedTimeoutMillis",
+        "Time to take action",
+        "toggleable",
+        "Role.Switch"
+      ]
+    },
+    {
+      "id": "heldout-swiftui-review",
+      "agent": "accessibility-reviewer",
+      "prompt": "evals/heldout-swiftui-review.md",
+      "fixture": "evals/heldout-swiftui-review/PhotoFeedView.swift",
+      "rubric": "evals/heldout-swiftui-review/rubric.json",
+      "minimum_score": 6,
+      "severity_required": true,
+      "held_out_terms": [
+        "isVoiceOverRunning",
+        "accessibilityVoiceOverEnabled",
+        "voiceOverStatusDidChangeNotification",
+        "Pause, Stop, Hide",
+        "2.2.2",
+        "carousel",
+        "isSelected",
+        "Smart Invert",
+        "accessibilityIgnoresInvertColors"
+      ]
     }
   ]
 }

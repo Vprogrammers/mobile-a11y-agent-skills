@@ -76,12 +76,32 @@ def agent_prompt(agent: str, task: str, fixture: str, variant: str = "plugin", s
     )
 
 
+def judge(root: Path, eval_id: str, response: Path, result: Path, command: str) -> tuple[bool, dict[str, int]]:
+    """Score one response with one judge command; write <result>.json and <result>.score.txt."""
+    scored = subprocess.run(
+        [sys.executable, str(root / "scripts/judge_eval.py"), eval_id, str(response), str(result)],
+        cwd=root,
+        env={**os.environ, "EVAL_JUDGE_COMMAND": command},
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    result.with_name(result.stem.replace("result", "score") + ".txt").write_text(
+        scored.stdout + scored.stderr, encoding="utf-8"
+    )
+    score = SCORE.search(scored.stdout)
+    points = {"score": int(score.group(1)), "maximum": int(score.group(2))} if score else {}
+    return scored.returncode == 0, points
+
+
 def main(root: Path, output: Path, selected: list[str]) -> int:
     agent_command = os.environ.get("EVAL_AGENT_COMMAND")
     judge_command = os.environ.get("EVAL_JUDGE_COMMAND")
     if not agent_command or not judge_command:
         print("Set EVAL_AGENT_COMMAND and EVAL_JUDGE_COMMAND to trusted CLIs that read prompts from stdin.")
         return 2
+    # An optional second judge scores the same response; a run passes only when both judges pass it.
+    second_judge_command = os.environ.get("EVAL_SECOND_JUDGE_COMMAND")
     try:
         timeout = int(os.environ.get("EVAL_COMMAND_TIMEOUT_SECONDS", DEFAULT_TIMEOUT_SECONDS))
         if timeout <= 0:
@@ -148,28 +168,25 @@ def main(root: Path, output: Path, selected: list[str]) -> int:
         response = eval_dir / "response.md"
         result = eval_dir / "result.json"
         response.write_text(completed.stdout, encoding="utf-8")
-        scored = subprocess.run(
-            [sys.executable, str(root / "scripts/judge_eval.py"), eval_id, str(response), str(result)],
-            cwd=root,
-            env=os.environ,
-            text=True,
-            capture_output=True,
-            check=False,
-        )
-        (eval_dir / "score.txt").write_text(scored.stdout + scored.stderr, encoding="utf-8")
-        status = "passed" if scored.returncode == 0 else "failed"
-        run: dict[str, object] = {"id": eval_id, "status": status}
-        score = SCORE.search(scored.stdout)
-        if score:
-            run["score"], run["maximum"] = int(score.group(1)), int(score.group(2))
+        passed, points = judge(root, eval_id, response, result, judge_command)
+        run: dict[str, object] = {"id": eval_id, "status": "", **points}
+        if second_judge_command:
+            second_passed, second_points = judge(
+                root, eval_id, response, eval_dir / "result-2.json", second_judge_command
+            )
+            run["second_judge"] = {"status": "passed" if second_passed else "failed", **second_points}
+            run["judges_agree"] = passed == second_passed and points == second_points
+            passed = passed and second_passed
+        run["status"] = "passed" if passed else "failed"
         runs.append(run)
-        failed |= scored.returncode != 0
-        print(f"{eval_id}: {status}")
+        failed |= not passed
+        print(f"{eval_id}: {run['status']}")
 
     summary = {
         "schema_version": 1,
         "created_at": datetime.now(timezone.utc).isoformat(),
         "model": os.environ.get("EVAL_MODEL", "unspecified"),
+        "second_judge": bool(second_judge_command),
         "variant": variant,
         "commit": os.environ.get("GITHUB_SHA", "local"),
         "runs": runs,

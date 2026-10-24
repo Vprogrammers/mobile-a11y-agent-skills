@@ -1,0 +1,13 @@
+{
+  "required_findings": [
+    {"id": "clickable-text-links-not-accessible", "points": 2, "kind": "defect", "criteria": "Identifies that ClickableText resolves the terms and privacy links from tap offsets, so the links are not exposed as links or actions to TalkBack, Switch Access, or keyboard users, and recommends Text with an AnnotatedString that uses LinkAnnotation (for example withLink) or separate accessible link controls.", "expected_severity": "P1"},
+    {"id": "undo-banner-fixed-timeout", "points": 2, "kind": "defect", "criteria": "Identifies that the Undo banner disappears after a fixed three seconds, so users who need more time cannot reach or activate Undo, and recommends honoring the user's accessibility timeout (for example calculateRecommendedTimeoutMillis) or keeping the action until the user dismisses it.", "expected_severity": "P1"},
+    {"id": "toggle-row-without-role-or-state", "points": 2, "kind": "defect", "criteria": "Identifies that the clickable Row and the Switch are separate actionable nodes and that the row exposes no switch role or checked state, and recommends making the row toggleable with Role.Switch and passing null to the Switch's onCheckedChange.", "expected_severity": "P2"},
+    {"id": "verification-covers-talkback-links-and-timeout", "points": 2, "kind": "verification", "criteria": "Requires device verification with TalkBack and Switch Access or a keyboard for activating both links and the Undo action, including with the Android Time to take action setting increased.", "expected_severity": null}
+  ],
+  "forbidden_claims": [
+    "Claims automated tests can prove exact TalkBack speech",
+    "Claims the message list lacks stable item keys",
+    "Claims the read-receipts Switch cannot be operated at all"
+  ]
+}

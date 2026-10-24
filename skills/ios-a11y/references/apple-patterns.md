@@ -90,10 +90,42 @@ Text(title)
 ## Custom controls, charts, and media
 
 - Make custom adjustable controls expose current value, bounds, and increment/decrement actions.
-- Provide structured summaries and data access for charts; do not rely only on colored paths or canvas pixels.
-- Ensure custom-drawn elements have meaningful accessibility elements and frames in screen coordinates when using UIKit containers.
-- Provide captions, transcripts, audio description, and accessible playback controls when required by the content.
+- Provide structured summaries and data access for charts; do not rely only on colored paths or canvas pixels. Do not distinguish series by color alone, and check 3:1 non-text contrast (WCAG 1.4.11).
+- Swift Charts supports accessibility by default. When the default description of a mark is not meaningful, set `accessibilityLabel` and `accessibilityValue` on the marks.
+- For a chart drawn another way, including an `Image` of a chart, attach `accessibilityChartDescriptor(_:)` with an `AXChartDescriptor` (iOS 15+). It describes the chart's axes and series so VoiceOver users can explore the data.
+- SwiftUI `Canvas` offers no accessibility for individual drawn elements. Add synthetic elements with `accessibilityChildren(children:)`, or use `accessibilityRepresentation(representation:)` when a native control describes the drawing better.
+- In UIKit, represent each meaningful drawn item with a `UIAccessibilityElement` in an accessibility container, with frames in screen coordinates.
+- For maps, give each annotation a meaningful title and provide a list of the places shown with the same actions. Verify with VoiceOver that annotations are reachable instead of assuming it.
+- Provide captions for prerecorded video with speech (WCAG 1.2.2) and audio description when important visual information is not in the soundtrack (WCAG 1.2.5). Mark caption tracks with `transcribesSpokenDialogForAccessibility` and description tracks with `describesVideoForAccessibility`.
+- `AVPlayer` applies media selection from the system accessibility preferences by default (`appliesMediaSelectionCriteriaAutomatically`). Do not turn that off without replacing it. When you render captions yourself, read the caption preferences through the Media Accessibility framework.
+- Give custom playback controls labels and keep them reachable with VoiceOver, Switch Control, and Full Keyboard Access. Audio that plays automatically for more than three seconds needs a control to pause or stop it, or to change its volume independently (WCAG 1.4.2).
 - Respect Reduce Motion and provide a non-motion equivalent for state changes conveyed by animation.
+
+### Bad: drawing only
+
+```swift
+Canvas { context, size in drawBars(sales, in: &context, size: size) }
+    .frame(height: 160)
+```
+
+VoiceOver finds no elements for the bars.
+
+### Better: synthetic elements for the data
+
+```swift
+Canvas { context, size in drawBars(sales, in: &context, size: size) }
+    .frame(height: 160)
+    .accessibilityLabel("Monthly sales")
+    .accessibilityChildren {
+        HStack {
+            ForEach(sales) { sale in
+                Rectangle()
+                    .accessibilityLabel(sale.month)
+                    .accessibilityValue("\(sale.value)")
+            }
+        }
+    }
+```
 
 ## UIKit details
 
@@ -146,3 +178,10 @@ Official sources:
 - UIKit accessibility: https://developer.apple.com/documentation/uikit/accessibility
 - UIButton.Configuration: https://developer.apple.com/documentation/uikit/uibutton/configuration-swift.struct
 - WKWebViewConfiguration.ignoresViewportScaleLimits: https://developer.apple.com/documentation/webkit/wkwebviewconfiguration/ignoresviewportscalelimits
+- Swift Charts: https://developer.apple.com/documentation/charts
+- accessibilityChartDescriptor(_:): https://developer.apple.com/documentation/swiftui/view/accessibilitychartdescriptor(_:)
+- accessibilityChildren(children:): https://developer.apple.com/documentation/swiftui/view/accessibilitychildren(children:)
+- Canvas: https://developer.apple.com/documentation/swiftui/canvas
+- AVPlayer.appliesMediaSelectionCriteriaAutomatically: https://developer.apple.com/documentation/avfoundation/avplayer/appliesmediaselectioncriteriaautomatically
+- Media Accessibility: https://developer.apple.com/documentation/mediaaccessibility
+- WCAG 2.2 captions, audio description, audio control, and non-text contrast: https://www.w3.org/TR/WCAG22/

@@ -15,6 +15,8 @@ Scan the changed code for these signals before reading it line by line. Each one
 | `AccessibilityDelegateCompat`, `accessibilityTraits =`, `accessibilityElements =` | Superclass actions and traits are preserved and order matches dynamic content |
 | Fixed `height`/`frame(height:)`, `maxLines = 1`, `lineLimit(1)`, `UIButton(type: .system)` titles | Text scales and reflows at the largest font and Dynamic Type sizes |
 | Custom overlay, sheet, or dialog built from `Box`/`ZStack`/plain views | Modal boundary, system back or escape dismissal, and focus restoration |
+| Compose `Canvas`, SwiftUI `Canvas`, `Chart`, or map views | A summary, reachable values or places, and color-independent series |
+| Media3 `PlayerView`, `AVPlayer`, `VideoPlayer`, or custom playback controls | Captions follow system preferences, audio description where needed, and labeled, reachable controls |
 | `WebView`, `WKWebView`, `loadUrl`, `loadHTMLString` | Native title for the web content and a separate audit of the DOM and focus transitions |
 | `announceForAccessibility`, `UIAccessibility.post`, `liveRegion` on frequently changing text | Announcements are limited to important asynchronous changes |
 | `FocusRequester` or `@AccessibilityFocusState` driven by ordinary state | Focus moves only for meaningful context changes |

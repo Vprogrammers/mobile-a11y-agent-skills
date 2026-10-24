@@ -15,6 +15,7 @@ import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -26,6 +27,8 @@ import evals.fixtures.AccessibleSettings
 import evals.fixtures.AddressForm
 import evals.fixtures.CheckoutScreen
 import evals.fixtures.Item
+import evals.fixtures.Message
+import evals.fixtures.MessageThread
 import evals.fixtures.Order
 import evals.fixtures.OrderCard
 import evals.fixtures.PaymentView
@@ -144,6 +147,37 @@ class EvalFixturesTest {
     fun androidSdk36BehaviorReview_onBackPressedNotCalledOnSdk36() {
         // The fixture handles back only through the legacy override that SDK 36 no longer calls.
         PinEntryActivity::class.java.getDeclaredMethod("onBackPressed")
+    }
+
+    @Test
+    fun heldoutComposeReview_clickableTextLinksNotAccessible() {
+        rule.setContent { MessageThread(emptyList(), false, {}, {}, {}, {}) }
+
+        // ClickableText resolves links from tap offsets, so the text exposes no click action or link.
+        rule.onNode(hasText("Messages follow our terms and privacy policy."))
+            .assert(SemanticsMatcher.keyNotDefined(SemanticsActions.OnClick))
+    }
+
+    @Test
+    fun heldoutComposeReview_toggleRowWithoutRoleOrState() {
+        rule.setContent { MessageThread(emptyList(), true, {}, {}, {}, {}) }
+
+        rule.onNode(hasText("Send read receipts") and hasClickAction())
+            .assert(SemanticsMatcher.keyNotDefined(SemanticsProperties.Role))
+            .assert(SemanticsMatcher.keyNotDefined(SemanticsProperties.ToggleableState))
+        rule.onAllNodes(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Switch)).assertCountEquals(1)
+    }
+
+    @Test
+    fun heldoutComposeReview_undoBannerFixedTimeout() {
+        rule.mainClock.autoAdvance = false
+        rule.setContent { MessageThread(listOf(Message(1, "Hello")), false, {}, {}, {}, {}) }
+
+        rule.onNodeWithText("Delete").performClick()
+        rule.mainClock.advanceTimeBy(100)
+        rule.onNodeWithText("Undo").assertIsDisplayed()
+        rule.mainClock.advanceTimeBy(3_100)
+        rule.onNodeWithText("Undo").assertDoesNotExist()
     }
 }
 

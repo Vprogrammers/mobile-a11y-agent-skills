@@ -37,6 +37,14 @@ class ComposePatternsTest {
     }
 
     @Test
+    fun salesChart_hasSummaryAndReachableValues() {
+        rule.setContent { SalesChart(listOf("May" to 3, "June" to 5), summary = "Sales rose from 3 to 5") }
+
+        rule.onAllNodesWithContentDescription("Sales rose from 3 to 5").assertCountEquals(1)
+        rule.onNodeWithText("June: 5").assertExists()
+    }
+
+    @Test
     fun sectionHeading_isHeading() {
         rule.setContent { SectionHeading("Shipping") }
 

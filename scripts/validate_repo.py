@@ -220,6 +220,9 @@ def main(root: Path) -> int:
         if len(evaluations) < 5:
             errors.append("At least five evaluation scenarios are required")
         eval_ids: set[str] = set()
+        skill_text = "\n".join(
+            path.read_text(encoding="utf-8").lower() for path in sorted((root / "skills").rglob("*.md"))
+        )
         for evaluation in evaluations:
             missing = REQUIRED_EVAL_FIELDS - set(evaluation)
             if missing:
@@ -239,6 +242,16 @@ def main(root: Path) -> int:
             severity_required = evaluation.get("severity_required", False)
             if not isinstance(severity_required, bool):
                 errors.append(f"Eval {eval_id} severity_required must be a boolean")
+            # A held-out eval measures defects the skills do not teach; any of its terms in skills/ breaks that.
+            held_out_terms = evaluation.get("held_out_terms", [])
+            if not isinstance(held_out_terms, list) or not all(
+                isinstance(term, str) and term.strip() for term in held_out_terms
+            ):
+                errors.append(f"Eval {eval_id} held_out_terms must be a list of non-empty strings")
+            else:
+                for term in held_out_terms:
+                    if term.lower() in skill_text:
+                        errors.append(f"Eval {eval_id} held-out term appears in skills/: {term}")
             prompt_path = root / str(evaluation["prompt"])
             if severity_required and prompt_path.is_file() and "severity" not in prompt_path.read_text(encoding="utf-8").lower():
                 errors.append(f"Eval {eval_id} requires severity but its prompt does not ask for it")

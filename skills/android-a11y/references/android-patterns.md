@@ -119,8 +119,39 @@ These are requirements for apps that target the stated SDK levels:
 - Use `ViewCompat.setAccessibilityDelegate` only when native widget exposure is insufficient.
 - Use `ViewCompat.setAccessibilityHeading`, `ViewCompat.setStateDescription`, `android:labelFor`, and `importantForAccessibility` for their intended relationships.
 - In `AccessibilityDelegateCompat`, initialize node info without removing actions or metadata supplied by the superclass.
-- For custom views, expose virtual descendants through the appropriate compatibility helper rather than one opaque canvas node.
+- For custom views with separately meaningful or clickable regions, such as a calendar, implement a virtual view hierarchy with `ExploreByTouchHelper` and attach it with `ViewCompat.setAccessibilityDelegate`. One opaque node for the whole drawing gives services only the container's description.
+- Send an `AccessibilityEvent` when a custom view's content changes, and handle `KEYCODE_DPAD_CENTER` and `KEYCODE_ENTER` like a tap.
 - Do not set `contentDescription` on editable text to repeat its content; preserve hint, label, value, and editing behavior.
+
+## Charts, custom drawing, media, and maps
+
+- A composable that draws on `Canvas` or uses a custom `Layout` exposes nothing until you add semantics. Give the drawing a `contentDescription` that states its takeaway, and expose each part that carries its own meaning or action as a separate semantics node. Use `collectionInfo` and `collectionItemInfo` when the parts are indexed.
+- For charts, provide a text summary of the trend and a way to reach exact values, such as a list or table of the data. Do not distinguish series by color alone, and check that bars, lines, and their boundaries meet 3:1 non-text contrast (WCAG 1.4.11).
+- For maps, provide a list of the places shown with the same actions, such as details or directions. Whether individual markers are reachable depends on the map SDK, so verify it with TalkBack instead of assuming it.
+- Provide captions for prerecorded video with speech (WCAG 1.2.2) and audio description when important visual information is not in the soundtrack (WCAG 1.2.5). With Media3, `PlayerView` renders subtitle tracks. Call `setUserDefaultStyle()` and `setUserDefaultTextSize()` on its `SubtitleView` so captions follow the system caption preferences.
+- Give custom playback controls labels, and keep them reachable with TalkBack, Switch Access, and a keyboard. Audio that plays automatically for more than three seconds needs a control to pause or stop it, or to change its volume independently (WCAG 1.4.2).
+
+### Bad: drawing only
+
+```kotlin
+Canvas(Modifier.fillMaxWidth().height(160.dp)) { drawBars(sales) }
+```
+
+TalkBack has no node to focus and no data to read.
+
+### Better: summary plus reachable values
+
+```kotlin
+Column {
+    Canvas(
+        Modifier
+            .fillMaxWidth()
+            .height(160.dp)
+            .semantics { contentDescription = summary },
+    ) { drawBars(sales) }
+    sales.forEach { (month, value) -> Text("$month: $value") }
+}
+```
 
 ## Input, autofill, and sensitive data
 
@@ -170,3 +201,6 @@ Official sources:
 - Edge-to-edge in Compose: https://developer.android.com/develop/ui/compose/system/system-bars
 - Android 16 behavior changes (edge-to-edge opt-out, predictive back): https://developer.android.com/about/versions/16/behavior-changes-16
 - WebView settings: https://developer.android.com/reference/android/webkit/WebSettings
+- Custom views and virtual view hierarchies: https://developer.android.com/guide/topics/ui/accessibility/views/custom-views
+- Media3 `SubtitleView`: https://developer.android.com/reference/androidx/media3/ui/SubtitleView
+- WCAG 2.2 captions, audio description, audio control, and non-text contrast: https://www.w3.org/TR/WCAG22/
