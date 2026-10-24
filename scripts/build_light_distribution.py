@@ -21,8 +21,8 @@ def source_commit(root: Path) -> str:
 def build(root: Path, output: Path, commit: str | None = None) -> None:
     root = root.resolve()
     output = output.resolve()
-    if output == root or root in output.parents:
-        raise ValueError("Output must be outside the canonical repository.")
+    if output == root or root in output.parents or output in root.parents:
+        raise ValueError("Output must be outside and must not contain the canonical repository.")
     if output.exists():
         shutil.rmtree(output)
 
