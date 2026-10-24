@@ -1,6 +1,7 @@
 # Apple accessibility patterns
 
 Last reviewed: 2026-10-23. Verify availability and signatures against the deployment target and Xcode SDK used by the project.
+Review interval: 180 days.
 
 ## SwiftUI structure
 
