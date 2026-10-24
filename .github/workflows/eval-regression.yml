@@ -1,8 +1,7 @@
 name: Agent eval regression
 
+# Paid model evals run only on demand; there is no schedule.
 on:
-  schedule:
-    - cron: "31 4 * * 1"
   workflow_dispatch:
 
 permissions:
@@ -21,11 +20,7 @@ jobs:
         run: |
           echo "## Model evals not executed" >> "$GITHUB_STEP_SUMMARY"
           echo "CLAUDE_CODE_OAUTH_TOKEN is not configured." >> "$GITHUB_STEP_SUMMARY"
-          if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
-            echo "A scheduled regression run without credentials is a configuration failure." >&2
-            exit 1
-          fi
-          echo "The manually triggered run completed without paid model evals."
+          echo "The run completed without paid model evals."
       - name: Install pinned Claude Code
         if: env.CLAUDE_CODE_OAUTH_TOKEN != ''
         run: npm install -g @anthropic-ai/claude-code@2.1.310
