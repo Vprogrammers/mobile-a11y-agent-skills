@@ -35,10 +35,6 @@ def build(root: Path, output: Path, commit: str | None = None) -> None:
     shutil.copy2(root / "distribution/light/CONTRIBUTING.md", output / "CONTRIBUTING.md")
     shutil.copy2(root / "LICENSE", output / "LICENSE")
 
-    workflows = output / ".github/workflows"
-    workflows.mkdir(parents=True)
-    shutil.copy2(root / "distribution/light/sync.yml", workflows / "sync.yml")
-
     provenance = {
         "generated": True,
         "source_repository": REPOSITORY,

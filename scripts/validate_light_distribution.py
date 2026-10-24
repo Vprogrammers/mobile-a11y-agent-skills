@@ -7,7 +7,7 @@ import re
 import sys
 
 
-ALLOWED_ROOT = {".claude", ".github", ".source.json", "CONTRIBUTING.md", "LICENSE", "README.md"}
+ALLOWED_ROOT = {".claude", ".source.json", "CONTRIBUTING.md", "LICENSE", "README.md"}
 FORBIDDEN_CONSUMER_INSTRUCTIONS = ("./scripts/validate.sh", "update samples/", "update evals/")
 
 

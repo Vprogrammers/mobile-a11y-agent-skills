@@ -1,31 +1,31 @@
-name: Sync canonical distribution
+name: Sync light distribution
 
 on:
-  schedule:
-    - cron: "23 4 * * *"
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: canonical-sync
+  group: light-distribution-sync
   cancel-in-progress: false
 
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out light repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          path: light
       - name: Check out canonical repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: Vprogrammers/mobile-a11y-agent-skills
-          ref: main
           path: source
+      - name: Check out light repository with its restricted deploy key
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: vikktorn/mobile-a11y-agent-skills-lite
+          path: light
+          ssh-key: ${{ secrets.LIGHT_REPO_DEPLOY_KEY }}
       - name: Generate and validate distribution
         run: |
           python3 source/scripts/build_light_distribution.py generated

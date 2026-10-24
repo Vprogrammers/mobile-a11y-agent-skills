@@ -22,6 +22,7 @@ class LightDistributionTests(unittest.TestCase):
             self.assertFalse((output / "evals").exists())
             self.assertFalse((output / "samples").exists())
             self.assertFalse((output / "scripts").exists())
+            self.assertFalse((output / ".github").exists())
             self.assertEqual(json.loads((output / ".source.json").read_text())["source_commit"], SOURCE_COMMIT)
 
     def test_validator_rejects_unexpected_content(self) -> None:
