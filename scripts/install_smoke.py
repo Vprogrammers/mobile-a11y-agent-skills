@@ -21,7 +21,7 @@ def missing_local_links(root: Path) -> list[str]:
     resolved_root = root.resolve()
     for path in root.rglob("*.md"):
         text = path.read_text(encoding="utf-8")
-        for target in re.findall(r"\\[[^\\]]+\\]\\(([^)]+)\\)", text):
+        for target in re.findall(r"\[[^\]]+\]\(([^)]+)\)", text):
             if target.startswith(("https://", "http://", "mailto:", "#")):
                 continue
             target_path = (path.parent / target.split("#", 1)[0]).resolve()
