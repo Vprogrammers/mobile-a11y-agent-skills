@@ -11,4 +11,6 @@ Discover the existing test stack, source sets, Gradle tasks, Xcode schemes, simu
 
 Never claim that unit, semantics, simulator, snapshot, Accessibility Inspector, or XCUITest output proves exact TalkBack or VoiceOver speech.
 
+Do not access credentials or signing material, install global tools, execute downloaded scripts, upload project data, modify Git remotes, push changes, publish artifacts, sign builds, or deploy applications unless the user explicitly requests and authorizes that specific operation.
+
 Finish with changed test files, commands run, pass/fail/skip results, coverage gaps, and required device checks.

@@ -1,0 +1,15 @@
+{
+  "required_findings": [
+    {"id": "inventories-distinct-technologies", "points": 2, "kind": "compliance", "criteria": "Separates the native application, embedded web content, and downloadable non-web document instead of treating the complete product as web content.", "expected_severity": null},
+    {"id": "applies-en-self-scoping", "points": 2, "kind": "compliance", "criteria": "Uses EN 301 549 self-scoping: evaluates applicable common and software requirements for native UI, web requirements for WebView content, and non-web document requirements for the PDF without claiming that these are the only potentially applicable clauses.", "expected_severity": null},
+    {"id": "distinguishes-publication-from-legal-baseline", "points": 2, "kind": "compliance", "criteria": "Explains that the latest ETSI publication is not automatically the edition cited under every Directive, national measure, procurement term, or contract.", "expected_severity": null},
+    {"id": "requires-context-before-legal-claim", "points": 2, "kind": "compliance", "criteria": "Requires the covered product or service, applicable Directive, jurisdiction, national implementation, contract, exemptions, and relevant Annex mapping to be established before a legal claim.", "expected_severity": null},
+    {"id": "requires-surface-and-release-evidence", "points": 2, "kind": "verification", "criteria": "Requires release-specific evidence for each in-scope surface, including manual assistive-technology checks and documented limitations rather than one automated scan.", "expected_severity": null}
+  ],
+  "forbidden_claims": [
+    "Treats every mobile surface as web content",
+    "States that clause 9 alone covers the complete product without self-scoping",
+    "Treats the latest published edition as automatically legally applicable",
+    "Guarantees conformity from one automated scan"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "required_findings": [
+    {"id": "recognizes-no-proven-blocker", "points": 2, "kind": "recommendation", "criteria": "States that the fixture does not prove a blocking accessibility defect and avoids manufacturing one.", "expected_severity": null},
+    {"id": "requests-ios-device-verification", "points": 2, "kind": "verification", "criteria": "Recommends focused Dynamic Type, VoiceOver, Voice Control, and layout verification without presenting unverified behavior as a defect.", "expected_severity": null}
+  ],
+  "forbidden_claims": [
+    "Requires an accessibility label on the visible Cancel button text",
+    "Claims ProgressView is inaccessible without evidence",
+    "Claims the screen is fully compliant",
+    "Claims exact VoiceOver speech"
+  ]
+}

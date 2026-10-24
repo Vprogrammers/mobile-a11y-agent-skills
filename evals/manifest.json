@@ -63,6 +63,38 @@
       "fixture": "evals/regulatory-evidence-review/AuditClaim.md",
       "rubric": "evals/regulatory-evidence-review/rubric.json",
       "minimum_score": 8
+    },
+    {
+      "id": "clean-swiftui-review",
+      "agent": "accessibility-reviewer",
+      "prompt": "evals/clean-swiftui-review.md",
+      "fixture": "evals/clean-swiftui-review/AccessibleDownloadRow.swift",
+      "rubric": "evals/clean-swiftui-review/rubric.json",
+      "minimum_score": 4
+    },
+    {
+      "id": "clean-android-views-review",
+      "agent": "android-a11y-engineer",
+      "prompt": "evals/clean-android-views-review.md",
+      "fixture": "evals/clean-android-views-review/AccessibleRetryView.kt",
+      "rubric": "evals/clean-android-views-review/rubric.json",
+      "minimum_score": 4
+    },
+    {
+      "id": "clean-uikit-review",
+      "agent": "ios-a11y-engineer",
+      "prompt": "evals/clean-uikit-review.md",
+      "fixture": "evals/clean-uikit-review/AccessibleProfileView.swift",
+      "rubric": "evals/clean-uikit-review/rubric.json",
+      "minimum_score": 4
+    },
+    {
+      "id": "en-301-549-scope-review",
+      "agent": "accessibility-reviewer",
+      "prompt": "evals/en-301-549-scope-review.md",
+      "fixture": "evals/en-301-549-scope-review/ScopeClaim.md",
+      "rubric": "evals/en-301-549-scope-review/rubric.json",
+      "minimum_score": 8
     }
   ]
 }

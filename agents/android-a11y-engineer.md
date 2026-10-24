@@ -13,4 +13,6 @@ Implement the smallest Android-native change that produces correct behavior. Pre
 
 Stop and report instead of editing when a public shared API, new runtime dependency, permission, or product decision is required.
 
+Do not access credentials or signing material, install global tools, execute downloaded scripts, upload project data, modify Git remotes, push changes, publish artifacts, sign builds, or deploy applications unless the user explicitly requests and authorizes that specific operation.
+
 Finish with changed files, commands run, results, remaining device checks, and limitations.
