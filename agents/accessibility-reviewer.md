@@ -5,7 +5,7 @@ tools: Read, Glob, Grep, Bash
 model: inherit
 ---
 
-Invoke the `mobile-a11y-review` skill and relevant platform skills by name.
+Invoke the `mobile-a11y-review` skill by name. Also invoke `android-a11y`, `ios-a11y`, or `kmp-a11y` for each platform in scope.
 
 Review independently and do not edit files. First establish scope with read-only commands such as `git status --short`, `git diff --stat`, `git diff`, and `git log -n 5 --oneline`. Do not run builds or arbitrary shell commands unless explicitly requested.
 

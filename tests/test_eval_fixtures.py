@@ -1,0 +1,58 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+import re
+import unittest
+
+
+ROOT = Path(__file__).resolve().parent.parent
+
+# Static guards for fixtures that samples/ does not exercise at runtime: kmp-boundary-review cannot
+# compile because it intentionally places platform types in common code, and SwiftUI modifiers are
+# not inspectable from XCTest without a third-party dependency. Each pattern proves that the fixture
+# still contains the evidence for a rubric finding. Findings in NOT_GUARDED are judged from the
+# response alone (for example, a recommendation) and have no fixture evidence to check.
+GUARDS: dict[str, dict[str, str]] = {
+    "kmp-boundary-review": {
+        "compose-type-in-common-api": r"import androidx\.compose\.ui\.semantics\.SemanticsPropertyReceiver[\s\S]*fun applyComposeSemantics\(receiver: SemanticsPropertyReceiver\)",
+        "uikit-type-in-common-api": r"import platform\.UIKit\.UIAccessibilityTraits[\s\S]*val iosTraits: UIAccessibilityTraits",
+        "flow-and-sealed-swift-interop": r"public sealed interface SharedAccessibilityError[\s\S]*val events: Flow<SharedAccessibilityError>",
+        "optional-play-services-leak": r"public fun enableSmsRetriever\(\)",
+    },
+    "ios-swiftui-review": {
+        "combined-unrelated-actions": r'Button\("Edit"[^\n]*\n\s*Button\("Delete"[^\n]*\n\s*\}\n\s*\.accessibilityElement\(children: \.combine\)',
+        "color-only-status": r"Circle\(\)\s*\.fill\(message\.isEmpty \? \.red : \.green\)",
+        "dynamic-type-cap": r"\.dynamicTypeSize\(\.\.\.DynamicTypeSize\.large\)",
+        "repeated-focus-reset": r"\.onChange\(of: message\) \{ focused = true \}",
+        "webview-needs-separate-audit": r"WebView\(url:",
+    },
+}
+NOT_GUARDED: dict[str, set[str]] = {
+    "kmp-boundary-review": {"proposes-platform-neutral-state-contract"},
+    "ios-swiftui-review": set(),
+}
+
+
+class EvalFixtureGuardTests(unittest.TestCase):
+    def evaluation(self, eval_id: str) -> dict[str, str]:
+        manifest = json.loads((ROOT / "evals/manifest.json").read_text(encoding="utf-8"))
+        return next(item for item in manifest["evaluations"] if item["id"] == eval_id)
+
+    def test_every_rubric_finding_is_guarded_or_explicitly_exempt(self) -> None:
+        for eval_id, guards in GUARDS.items():
+            with self.subTest(eval_id=eval_id):
+                rubric = json.loads((ROOT / self.evaluation(eval_id)["rubric"]).read_text(encoding="utf-8"))
+                finding_ids = {item["id"] for item in rubric["required_findings"]}
+                self.assertEqual(set(guards) | NOT_GUARDED[eval_id], finding_ids)
+
+    def test_fixture_still_contains_rubric_evidence(self) -> None:
+        for eval_id, guards in GUARDS.items():
+            fixture = (ROOT / self.evaluation(eval_id)["fixture"]).read_text(encoding="utf-8")
+            for finding_id, pattern in guards.items():
+                with self.subTest(eval_id=eval_id, finding_id=finding_id):
+                    self.assertRegex(fixture, re.compile(pattern))
+
+
+if __name__ == "__main__":
+    unittest.main()

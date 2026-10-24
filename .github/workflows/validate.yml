@@ -16,11 +16,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Validate skill structure and links
+      - name: Validate structure, links, scripts, and tests
         run: ./scripts/validate.sh
+      - name: Check external references on schedule
+        if: github.event_name == 'schedule'
+        env:
+          CHECK_EXTERNAL_LINKS: "1"
+        run: python3 scripts/validate_repo.py .
 
   android-samples:
     name: Android samples and eval fixtures
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -36,18 +42,8 @@ jobs:
 
   ios-samples:
     name: iOS samples and eval fixtures
+    if: github.event_name != 'schedule'
     runs-on: macos-15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: ./samples/ios/test.sh
-      - name: Compile repository scripts
-        run: python3 -m py_compile scripts/*.py
-      - name: Smoke-test plugin installation layout
-        run: python3 scripts/install_smoke.py .
-      - name: Run validator and scorer tests
-        run: python3 -m unittest discover -s tests -v
-      - name: Check external references on schedule
-        if: github.event_name == 'schedule'
-        env:
-          CHECK_EXTERNAL_LINKS: "1"
-        run: ./scripts/validate.sh

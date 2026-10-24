@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+- Replace the `Note` severity with `P3` so the review skill, validator, and scorer share one `P0`–`P3` scale.
+- Have the Android and iOS engineer agents also invoke `mobile-a11y-review` for review-only tasks, and name the fixture path and forbid fixture edits in every eval prompt.
+- Name platform skills explicitly in agents and share one invoked-skill parser between the validator and the installation smoke test.
+- Lower `duplicate-delete-semantics` to P2, matching the skill's definition of degraded usability.
+- Run script compilation, the installation smoke test, and unit tests from `validate.sh`, in the Ubuntu CI job instead of the macOS job.
+- Skip the sample builds on the monthly link-check schedule, and build both samples before a release is created.
+- Report an invalid rubric per eval without stopping validation of the others.
+- Accept fenced or wrapped judge JSON and validate it before writing the result file.
+- Warn 30 days before a reference review date becomes stale.
+- Add static guards for the KMP and SwiftUI eval fixtures, and Dependabot updates for the Android sample's Gradle dependencies.
+
 ## 0.6.0
 
 - Add `samples/android` and `samples/ios`, which compile the reference examples and the Android and iOS eval fixtures, with guard tests tied to rubric finding ids. CI runs both.

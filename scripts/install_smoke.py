@@ -3,10 +3,11 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-import re
 import shutil
 import sys
 import tempfile
+
+from validate_repo import invoked_skills
 
 
 def fail(message: str) -> int:
@@ -31,9 +32,7 @@ def main(root: Path) -> int:
 
     for agent in agents:
         body = agent.read_text(encoding="utf-8")
-        invoked = re.findall(r"Invoke (?:the )?`([a-z0-9-]+)` skill|also invoke `([a-z0-9-]+)`", body)
-        referenced = {name for pair in invoked for name in pair if name}
-        missing = referenced - skill_names
+        missing = invoked_skills(body) - skill_names
         if missing:
             return fail(f"{agent.name} references missing skills: {', '.join(sorted(missing))}")
 

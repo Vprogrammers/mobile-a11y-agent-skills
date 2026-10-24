@@ -19,7 +19,7 @@ Use these severities:
 - **P0**: blocks a critical flow, exposes sensitive data, or makes functionality unavailable without a reasonable alternative.
 - **P1**: creates a substantial barrier for an affected user group.
 - **P2**: degrades usability, consistency, resilience, or maintainability.
-- **Note**: optional improvement without a demonstrated barrier.
+- **P3**: optional improvement without a demonstrated barrier.
 
 Report each finding in this format:
 

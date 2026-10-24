@@ -4,9 +4,14 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+import re
 import shlex
 import subprocess
 import sys
+
+# Allow both `python3 scripts/judge_eval.py` and `import scripts.judge_eval` in tests.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from score_eval import InvalidResult, check_result  # noqa: E402
 
 
 def build_prompt(
@@ -31,6 +36,22 @@ def build_prompt(
         f"Rubric:\n{json.dumps(rubric, indent=2)}\n\n"
         f"Candidate response:\n{response}"
     )
+
+
+def parse_judge_output(output: str) -> object:
+    """Parse the judge's JSON, accepting a fenced ```json block or surrounding prose."""
+    text = output.strip()
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        pass
+    fenced = re.search(r"```(?:json)?\s*\n(.*?)\n\s*```", text, re.DOTALL)
+    if fenced:
+        return json.loads(fenced.group(1))
+    start, end = text.find("{"), text.rfind("}")
+    if start != -1 and end > start:
+        return json.loads(text[start : end + 1])
+    return json.loads(text)
 
 
 def main(root: Path, eval_id: str, response_path: Path, result_path: Path) -> int:
@@ -61,9 +82,14 @@ def main(root: Path, eval_id: str, response_path: Path, result_path: Path) -> in
         print(completed.stderr or completed.stdout)
         return completed.returncode
     try:
-        result = json.loads(completed.stdout)
+        result = parse_judge_output(completed.stdout)
     except json.JSONDecodeError as error:
         print(f"Judge returned invalid JSON: {error}")
+        return 2
+    try:
+        check_result(result, rubric)
+    except InvalidResult as error:
+        print(f"Judge returned a result that does not match the schema: {error}")
         return 2
     result_path.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     scorer = subprocess.run(

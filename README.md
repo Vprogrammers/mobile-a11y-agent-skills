@@ -83,7 +83,7 @@ Verify: Compose device test for reachable nodes, then TalkBack navigation on a s
 ./scripts/validate.sh
 ```
 
-The validator checks skill and agent metadata, invoked skill names, duplicate names, local links, plugin version consistency, required review dates, executable permissions, and typed eval manifests/rubrics. External links are intentionally optional to keep pull-request CI deterministic; a scheduled workflow checks them monthly:
+`validate.sh` runs the repository validator, compiles the scripts, runs the installation smoke test, and runs the unit tests. The validator checks skill and agent metadata, explicitly named invoked skills, duplicate names, local links, plugin version consistency, required review dates, executable permissions, and typed eval manifests/rubrics. It warns 30 days before a reference review date becomes stale and fails after 365 days. External links are intentionally optional to keep pull-request CI deterministic; a scheduled workflow checks them monthly:
 
 ```bash
 CHECK_EXTERNAL_LINKS=1 ./scripts/validate.sh
@@ -91,7 +91,7 @@ CHECK_EXTERNAL_LINKS=1 ./scripts/validate.sh
 
 Evaluation scenarios live in `evals/`. Each manifest entry points to a prompt, raw code fixture, scoring rubric, minimum score, and forbidden claims. Give only the prompt and fixture to the agent; score the result afterward with the rubric to avoid leaking expected findings.
 
-Rubrics keep finding `kind` separate from severity. Each finding has explicit acceptance `criteria`. Severity is limited to `P0`–`P3` for defects and is `null` for architecture, interop, testing, verification, compliance, dependency, or recommendation criteria.
+Rubrics keep finding `kind` separate from severity. Each finding has explicit acceptance `criteria`. Severity uses the `P0`–`P3` definitions in `mobile-a11y-review`, applies only to defects, and is `null` for architecture, interop, testing, verification, compliance, dependency, or recommendation criteria.
 
 Record the assessment using rubric finding IDs. Severity is optional for backward compatibility; when supplied for a defect, it must match the rubric:
 
@@ -111,6 +111,8 @@ Then calculate deterministic pass/fail:
 ./scripts/score_eval.py android-compose-review result.json
 ```
 
+`clean-compose-review` intentionally requires both of its criteria (4 of 4): a clean control passes only when the agent both declines to manufacture a blocker and asks for device verification.
+
 The scorer is deterministic, but classification is intentionally separate: a human or independent evaluator must map the raw agent response to finding IDs and forbidden claims. This avoids pretending that substring matching can judge review quality.
 
 For an optional end-to-end run, configure any judge CLI that reads the blind judging prompt from standard input and returns the documented JSON result:
@@ -120,18 +122,11 @@ EVAL_JUDGE_COMMAND='claude -p' \
   ./scripts/judge_eval.py android-compose-review response.md result.json
 ```
 
-The judge is deliberately excluded from CI: model evaluation is nondeterministic, costs money, and requires user-managed credentials. The deterministic scorer still validates its output.
-
-Run repository tests with:
-
-```bash
-python3 -m unittest discover -s tests -v
-python3 scripts/install_smoke.py .
-```
+The judge may wrap its JSON in a fenced block or short prose; the adapter extracts it and validates it against the rubric before writing the result file. The judge is deliberately excluded from CI: model evaluation is nondeterministic, costs money, and requires user-managed credentials.
 
 ## Compiled samples
 
-`samples/` compiles the reference examples and the Android and iOS eval fixtures, and runs semantics and property tests. Guard tests fail when a fixture loses a defect its rubric expects. CI runs both projects on every pull request:
+`samples/` compiles the reference examples and the Android and iOS eval fixtures, and runs semantics and property tests. Guard tests fail when a fixture loses a defect its rubric expects. The KMP and SwiftUI fixtures have static guards in `tests/test_eval_fixtures.py`. CI runs both projects on every pull request:
 
 ```bash
 (cd samples/android && ./gradlew assembleDebug testDebugUnitTest)
