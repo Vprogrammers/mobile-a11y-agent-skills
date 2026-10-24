@@ -60,6 +60,16 @@ GUARDS: dict[str, dict[str, str]] = {
         "on-back-pressed-not-called-on-sdk36": r"override fun onBackPressed\(\)",
         "per-keystroke-announcement": r"override fun onTextChanged[\s\S]*counter\.announceForAccessibility\(counter\.text\)",
     },
+    "heldout-compose-review": {
+        "clickable-text-links-not-accessible": r"pushStringAnnotation\(tag = \"url\"[\s\S]*ClickableText\(policy\)",
+        "undo-banner-fixed-timeout": r"delay\(3_000\)\s*\n\s*deleted = null[\s\S]*Text\(\"Undo\"\)",
+        "toggle-row-without-role-or-state": r"\.clickable \{ onReadReceiptsChange\(!readReceipts\) \}[\s\S]*Switch\(checked = readReceipts, onCheckedChange = onReadReceiptsChange\)",
+    },
+    "heldout-swiftui-review": {
+        "carousel-auto-advances-without-pause": r"\A(?![\s\S]*(?:accessibilityVoiceOverEnabled|voiceOverStatusDidChange))[\s\S]*\.onAppear \{ autoAdvance = !UIAccessibility\.isVoiceOverRunning \}[\s\S]*Task\.sleep\(for: \.seconds\(4\)\)",
+        "filter-selection-only-visual": r"\A(?![\s\S]*isSelected)[\s\S]*\.background\(filter == option \? Color\.accentColor : Color\.clear\)",
+        "photos-inverted-by-smart-invert": r"\A(?![\s\S]*IgnoresInvertColors)[\s\S]*Image\(photo\.imageName\)\s*\n\s*\.resizable\(\)",
+    },
     "kmp-interop-traps-review": {
         "global-context-actual": r"lateinit var appContext: Context\s*\n\s*actual fun isReduceMotionEnabled\(\)",
         "typealias-trait-escapes-header-check": r"public fun sectionTitleTraits\(\): UIAccessibilityTraits[\s\S]*header mentions UIKit types, and that check passes",
@@ -92,6 +102,9 @@ NOT_GUARDED: dict[str, set[str]] = {
     "android-sdk36-behavior-review": {"password-variation-for-visible-code", "requires-android-16-device-verification"},
     "kmp-interop-traps-review": set(),
     "test-evidence-traps-review": set(),
+    # The Compose defects are also guarded at runtime by EvalFixturesTest.
+    "heldout-compose-review": {"verification-covers-talkback-links-and-timeout"},
+    "heldout-swiftui-review": {"verification-covers-voiceover-switch-control-and-smart-invert"},
 }
 
 

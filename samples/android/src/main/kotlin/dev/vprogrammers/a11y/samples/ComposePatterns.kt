@@ -1,8 +1,12 @@
 package dev.vprogrammers.a11y.samples
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Star
@@ -13,17 +17,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.contentType
 import androidx.compose.ui.semantics.error
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.liveRegion
-import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.unit.dp
 
 // Compiled counterparts of the "Better" examples in android-patterns.md.
@@ -108,4 +116,28 @@ fun OneTimeCodeField(value: String, onValueChange: (String) -> Unit) {
 @Composable
 fun EdgeToEdgeContent(content: @Composable () -> Unit) {
     Column(Modifier.safeDrawingPadding()) { content() }
+}
+
+/** A drawn chart with a summary and the exact values reachable as text. */
+@Composable
+fun SalesChart(sales: List<Pair<String, Int>>, summary: String) {
+    Column {
+        Canvas(
+            Modifier
+                .fillMaxWidth()
+                .height(160.dp)
+                .semantics { contentDescription = summary },
+        ) { drawBars(sales) }
+        sales.forEach { (month, value) -> Text("$month: $value") }
+    }
+}
+
+private fun DrawScope.drawBars(sales: List<Pair<String, Int>>) {
+    if (sales.isEmpty()) return
+    val barWidth = size.width / (sales.size * 2)
+    val max = sales.maxOf { it.second }.coerceAtLeast(1)
+    sales.forEachIndexed { index, (_, value) ->
+        val height = size.height * value / max
+        drawRect(Color.Gray, topLeft = Offset(index * 2 * barWidth, size.height - height), size = Size(barWidth, height))
+    }
 }

@@ -123,6 +123,8 @@ Then calculate deterministic pass/fail:
 
 `clean-compose-review` intentionally requires both of its criteria (4 of 4): a clean control passes only when the agent both declines to manufacture a blocker and asks for device verification.
 
+Most evals test defects that the skills describe, so they show whether the plugin delivers its own guidance. The `heldout-*` evals instead use defects whose patterns and fix APIs appear nowhere in `skills/`, which measures review on defects the plugin was not taught. General principles, such as exposing state or giving users enough time, may still apply. Their manifest entries list `held_out_terms`, and the validator fails when any of those terms appears in a skill file. If guidance must later cover one of them, drop the eval's held-out status instead of the guidance.
+
 The scorer is deterministic, but classification is intentionally separate: a human or independent evaluator must map the raw agent response to finding IDs and forbidden claims. This avoids pretending that substring matching can judge review quality.
 
 For an optional end-to-end run, configure any judge CLI that reads the blind judging prompt from standard input and returns the documented JSON result:
@@ -143,7 +145,7 @@ EVAL_MODEL='agent=sonnet,judge=opus' \
 ./scripts/run_eval_suite.py "evals/results/$(date -u +%Y-%m-%dT%H%M%SZ)-sonnet-opus"
 ```
 
-Set `EVAL_VARIANT=baseline` to send the same tasks and fixtures without the plugin. The prompt drops the agent name, and `{agent}` is not required. Score both runs with the same judge and rubrics. `summary.json` records the variant and per-eval points, so the runs compare directly. Reviewed bundles are kept in `evals/results/`; see [the baseline summary](evals/results/README.md).
+Set `EVAL_VARIANT=baseline` to send the same tasks and fixtures without the plugin. The prompt drops the agent name, and `{agent}` is not required. Score both runs with the same judge and rubrics. `summary.json` records the variant and per-eval points, so the runs compare directly. Set `EVAL_SECOND_JUDGE_COMMAND` to score every response with a second judge as well. A run then passes only when both judges pass it. The second judge writes `result-2.json` and `score-2.txt`, and `summary.json` records both scores and whether the judges agree. Reviewed bundles are kept in `evals/results/`; see [the baseline summary](evals/results/README.md).
 
 ```bash
 EVAL_VARIANT=baseline \

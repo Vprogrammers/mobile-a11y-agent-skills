@@ -104,6 +104,8 @@ This section is draft guidance. The official documentation does not list iOS acc
 - Before relying on an iOS-only capability (rotors, Voice Control input labels, Large Content Viewer, UIKit notifications, modal containment), verify that it works on the Compose screen. When it does not, host that part in a native SwiftUI/UIKit view through interop, or record the gap and its affected users.
 - Keep platform preference reads (reduced motion, increased contrast, font scale) behind the same injected interfaces described above.
 - Compose Multiplatform 1.8.0 removed the `AccessibilitySyncOptions` tree-synchronization setting; the tree now syncs lazily. Remove that configuration when upgrading.
+- The official iOS page names VoiceOver, native gestures, AssistiveTouch, and Full Keyboard Access as supported. It does not mention Switch Control, Voice Control, or Dynamic Type, so test those on a device and record each result before claiming support.
+- Shared `Canvas` drawings and charts need the same explicit semantics as on Android. Verify on iOS that VoiceOver reaches each exposed part; Android semantics tests do not establish it.
 
 Official sources:
 
