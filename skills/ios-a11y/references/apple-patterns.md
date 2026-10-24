@@ -1,6 +1,6 @@
 # Apple accessibility patterns
 
-Last reviewed: 2026-10-23. Verify availability and signatures against the deployment target and Xcode SDK used by the project.
+Last reviewed: 2026-10-24. Verify availability and signatures against the deployment target and Xcode SDK used by the project.
 Review interval: 180 days.
 
 ## SwiftUI structure
@@ -114,6 +114,23 @@ Text(title)
 
 - Test VoiceOver entry/exit, headings, forms, zoom, keyboard, errors, authentication, and focus restoration in `WKWebView`.
 - Native accessibility modifiers cannot repair inaccessible DOM content.
+- Title the screen in native navigation so VoiceOver users know what the web content is before they enter it.
+
+### Bad: page blocks zoom
+
+```html
+<meta name="viewport" content="width=device-width, user-scalable=no">
+```
+
+### Better: let people zoom regardless of the viewport
+
+```swift
+let configuration = WKWebViewConfiguration()
+configuration.ignoresViewportScaleLimits = true
+let webView = WKWebView(frame: .zero, configuration: configuration)
+```
+
+Still report the restrictive viewport to the web owners. Other browsers and web views do not apply this override.
 
 ## Diagnosis
 
@@ -126,3 +143,4 @@ Official sources:
 - Apple accessibility: https://developer.apple.com/accessibility/
 - SwiftUI accessibility: https://developer.apple.com/documentation/swiftui/accessibility
 - UIKit accessibility: https://developer.apple.com/documentation/uikit/accessibility
+- WKWebViewConfiguration.ignoresViewportScaleLimits: https://developer.apple.com/documentation/webkit/wkwebviewconfiguration/ignoresviewportscalelimits

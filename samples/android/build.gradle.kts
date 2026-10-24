@@ -72,6 +72,7 @@ dependencies {
     testImplementation(platform(libs.compose.bom))
     testImplementation(libs.compose.ui.test.junit4)
     testImplementation(libs.compose.ui.test.manifest)
+    testImplementation(libs.compose.ui.test.junit4.accessibility)
     testImplementation(libs.activity.compose)
     testImplementation(libs.junit)
     testImplementation(libs.robolectric)

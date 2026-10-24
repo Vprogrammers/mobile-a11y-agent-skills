@@ -141,6 +141,15 @@ EVAL_MODEL='model-id' \
 ./scripts/run_eval_suite.py "evals/results/$(date -u +%Y-%m-%dT%H%M%SZ)-model-id"
 ```
 
+Set `EVAL_VARIANT=baseline` to send the same tasks and fixtures without the plugin. The prompt drops the agent name, and `{agent}` is not required. Score both runs with the same judge and rubrics. `summary.json` records the variant and per-eval points, so the runs compare directly. Reviewed bundles are kept in `evals/results/`; see [the baseline summary](evals/results/README.md).
+
+```bash
+EVAL_VARIANT=baseline \
+EVAL_AGENT_COMMAND='claude -p --restricted --allowedTools Read Glob Grep --permission-mode dontAsk --permission-prompts none --no-session-persistence --max-budget-usd 0.75' \
+EVAL_JUDGE_COMMAND='…same judge…' EVAL_MODEL='model-id' \
+./scripts/run_eval_suite.py "evals/results/$(date -u +%Y-%m-%dT%H%M%SZ)-model-id-baseline"
+```
+
 The repository also includes a small official Claude plugin eval under `plugin-evals/`. It verifies real namespaced agent routing and evaluates output quality in Claude Code's isolated eval runner:
 
 ```bash
@@ -153,11 +162,12 @@ The weekly and manually triggered `Agent eval regression` workflow performs both
 
 ## Compiled samples
 
-`samples/` compiles the reference examples and platform code eval fixtures, and runs semantics and property tests. Guard tests fail when a fixture loses a defect its rubric expects. The KMP and SwiftUI fixtures have static guards in `tests/test_eval_fixtures.py`. CI runs both projects on every pull request:
+`samples/` compiles the reference examples and platform code eval fixtures, and runs semantics and property tests. Guard tests fail when a fixture loses a defect its rubric expects. The KMP and SwiftUI fixtures have static guards in `tests/test_eval_fixtures.py`. `samples/kmp` compiles the recommended KMP boundary for native UI: a shared contract, native Android and iOS adapters, and a check that the exported Objective-C header leaks no platform UI types. CI runs all three projects on every pull request:
 
 ```bash
 (cd samples/android && ./gradlew assembleDebug testDebugUnitTest)
 ./samples/ios/test.sh
+(cd samples/kmp && ./gradlew check)
 ```
 
 See [samples/README.md](samples/README.md) for requirements and limits.

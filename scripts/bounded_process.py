@@ -83,6 +83,10 @@ def run_bounded(
                 os.killpg(process.pid, signal.SIGKILL)
             except ProcessLookupError:
                 pass
+            except PermissionError:
+                # macOS reports EPERM instead of ESRCH once the group leader has exited.
+                if process.poll() is None:
+                    process.kill()
         elif process.poll() is None:
             process.kill()
 

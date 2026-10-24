@@ -33,6 +33,24 @@ class RunEvalSuiteTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "agent.*placeholder"):
             format_agent_command("claude -p", "accessibility-reviewer", ROOT)
 
+    def test_baseline_prompt_omits_plugin_agent(self) -> None:
+        task = (ROOT / "evals/android-compose-review.md").read_text(encoding="utf-8")
+        prompt = agent_prompt("accessibility-reviewer", task, "fixture", "baseline")
+        self.assertNotIn("accessibility-reviewer", prompt)
+        self.assertNotIn("mobile-a11y-agent-skills", prompt)
+        self.assertIn("Review `evals/android-compose-review/CheckoutScreen.kt`", prompt)
+        self.assertIn("<untrusted_fixture>", prompt)
+
+    def test_baseline_command_does_not_require_agent_placeholder(self) -> None:
+        self.assertEqual(format_agent_command("claude -p", "accessibility-reviewer", ROOT, "baseline"), ["claude", "-p"])
+
+    def test_every_eval_prompt_supports_baseline(self) -> None:
+        manifest = json.loads((ROOT / "evals/manifest.json").read_text(encoding="utf-8"))
+        for evaluation in manifest["evaluations"]:
+            task = (ROOT / evaluation["prompt"]).read_text(encoding="utf-8")
+            with self.subTest(evaluation["id"]):
+                agent_prompt(evaluation["agent"], task, "fixture", "baseline")
+
     def test_unknown_eval_is_rejected_before_output_creation(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "run"
@@ -79,7 +97,11 @@ class RunEvalSuiteTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             summary = json.loads((output / "summary.json").read_text(encoding="utf-8"))
             self.assertEqual(summary["model"], "stub")
-            self.assertEqual(summary["runs"], [{"id": "clean-compose-review", "status": "passed"}])
+            self.assertEqual(summary["variant"], "plugin")
+            self.assertEqual(
+                summary["runs"],
+                [{"id": "clean-compose-review", "status": "passed", "score": 4, "maximum": 4}],
+            )
 
     def test_excessive_stderr_is_recorded_in_summary(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

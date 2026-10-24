@@ -1,6 +1,6 @@
 # KMP accessibility boundaries
 
-Last reviewed: 2026-10-23. Swift export, SKIE, and Compose Multiplatform accessibility change quickly; verify against the Kotlin and Compose Multiplatform versions used by the project.
+Last reviewed: 2026-10-24. Swift export, SKIE, and Compose Multiplatform accessibility change quickly; verify against the Kotlin and Compose Multiplatform versions used by the project.
 Review interval: 180 days.
 
 Two architectures need different rules:
@@ -44,6 +44,8 @@ expect fun platformAccessibilityPreferences(): AccessibilityPreferences
 
 Do not use `expect`/`actual` merely to hide poor ownership or to export native UI types through common code.
 
+A no-argument Android `actual` needs a global `Context` to read settings. Prefer constructor injection, such as `AndroidAccessibilityPreferences(context)` and `IosAccessibilityPreferences()`, created by each app and passed to shared code.
+
 ## State contract example
 
 Good shared API:
@@ -63,7 +65,8 @@ Android maps it to Compose `error()`/state semantics; iOS maps it to native labe
 - Avoid leaking Compose, Android, UIKit, or SwiftUI types.
 - Review default arguments, overloads, generic variance, nullable primitives, sealed classes, value classes, suspend functions, `Flow`, and Kotlin collections from Swift.
 - Retain Kotlin objects that own native state for as long as Swift views use them.
-- Verify generated headers/interfaces and a real Swift consumer sample.
+- Verify generated headers/interfaces and a real Swift consumer sample. Automate a header check that fails when exported declarations mention UIKit or Compose types. Strip comments first, because KDoc is copied into the header.
+- Header checks cannot catch typealiased platform types: `UIAccessibilityTraits` exports as `uint64_t`. Review common and iOS source for platform imports as well.
 - Treat Objective-C export annotations and naming as public API.
 
 ## Swift export and SKIE
@@ -78,6 +81,17 @@ Android maps it to Compose `error()`/state semantics; iOS maps it to native labe
 - Keep Play Services, analytics, message retrieval, platform test frameworks, and optional interop plugins out of the core runtime artifact unless every consumer requires them.
 - Review API/ABI compatibility when public state, enum values, constructors, exported names, or framework packaging changes.
 - Verify Android publication, iOS framework/XCFramework export, linker settings, and sample-app consumption.
+
+## Reference sample
+
+The repository's `samples/kmp` project compiles this file's native-UI pattern:
+
+- `commonMain`: `ValidationState`, the `AccessibilityPreferences` interface, a Swift-friendly `MotionPolicy` enum;
+- `androidMain`: Compose `error()` mapping and animator-scale preferences;
+- `iosMain`: `UIAccessibilityIsReduceMotionEnabled` with its change notification;
+- tests: common tests with a fake, a Robolectric host test, iOS simulator tests, and an exported-header check.
+
+It does not cover Compose Multiplatform shared UI.
 
 ## Compose Multiplatform shared UI
 

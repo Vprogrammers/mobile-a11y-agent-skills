@@ -13,7 +13,7 @@ Contributions are welcome for Android, iOS, Kotlin Multiplatform, testing, and a
 - Include the platform, OS version, UI framework, assistive technology, and verification method when reporting behavior.
 - Avoid project-specific package names, paths, secrets, signing configuration, or credentials.
 - Start every reference file with `Last reviewed: YYYY-MM-DD` and cite official https sources. Add `Review interval: N days.` when the reference needs a shorter cadence than the 365-day default.
-- When you change a code example in a reference, update the matching code in `samples/` and run its tests.
+- When you change a code example in a reference, update the matching code in `samples/` and run its tests: `./gradlew assembleDebug testDebugUnitTest` in `samples/android`, `./samples/ios/test.sh`, or `./gradlew check` in `samples/kmp`.
 - Keep eval fixtures free of import lines; the samples compile generated copies. Update the guard tests in `samples/` or `tests/test_eval_fixtures.py` when a fixture or rubric changes.
 - Name every invoked skill explicitly in agent instructions; the validator rejects phrases such as "relevant platform skills".
 - Run `./scripts/validate.sh`; it also runs the unit and installation smoke tests.
