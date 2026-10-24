@@ -11,6 +11,14 @@ ROOT = Path(__file__).resolve().parent.parent
 SCRIPT = ROOT / "scripts/score_eval.py"
 
 
+RATED_PASSING = [
+    {"id": "fixed-height-text", "severity": "P1"},
+    {"id": "duplicate-delete-semantics", "severity": "P2"},
+    {"id": "gesture-only-help", "severity": "P1"},
+    {"id": "non-modal-overlay", "severity": "P1"},
+]
+
+
 class ScoreEvalTests(unittest.TestCase):
     def run_score(self, evaluation: str, result: dict[str, object]) -> subprocess.CompletedProcess[str]:
         with tempfile.NamedTemporaryFile("w", suffix=".json", encoding="utf-8") as file:
@@ -27,9 +35,25 @@ class ScoreEvalTests(unittest.TestCase):
     def test_passing_result(self) -> None:
         result = self.run_score(
             "android-compose-review",
-            {"matched_findings": ["fixed-height-text", "duplicate-delete-semantics", "gesture-only-help", "non-modal-overlay"], "forbidden_claims": []},
+            {"matched_findings": RATED_PASSING, "forbidden_claims": []},
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_unrated_defects_earn_no_points_when_severity_is_required(self) -> None:
+        result = self.run_score(
+            "android-compose-review",
+            {"matched_findings": ["fixed-height-text", "duplicate-delete-semantics", "gesture-only-help", "non-modal-overlay"], "forbidden_claims": []},
+        )
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("android-compose-review: 0/10", result.stdout)
+        self.assertIn("- gesture-only-help", result.stdout)
+
+    def test_unrated_defect_still_counts_when_severity_is_not_required(self) -> None:
+        rubric = json.loads((ROOT / "evals/regulatory-evidence-review/rubric.json").read_text(encoding="utf-8"))
+        defect = next(item for item in rubric["required_findings"] if item["kind"] == "defect")
+        result = self.run_score("regulatory-evidence-review", {"matched_findings": [defect["id"]], "forbidden_claims": []})
+        self.assertIn(f"regulatory-evidence-review: {defect['points']}/", result.stdout)
+        self.assertNotIn("without the required severity", result.stdout)
 
     def test_below_threshold_fails(self) -> None:
         result = self.run_score(
@@ -41,7 +65,7 @@ class ScoreEvalTests(unittest.TestCase):
     def test_forbidden_claim_fails(self) -> None:
         result = self.run_score(
             "android-compose-review",
-            {"matched_findings": ["fixed-height-text", "duplicate-delete-semantics", "gesture-only-help", "non-modal-overlay"], "forbidden_claims": ["Claims compliance"]},
+            {"matched_findings": RATED_PASSING, "forbidden_claims": ["Claims compliance"]},
         )
         self.assertEqual(result.returncode, 1)
 
@@ -52,12 +76,13 @@ class ScoreEvalTests(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 2)
 
-    def test_wrong_severity_is_invalid(self) -> None:
-        result = self.run_score(
-            "android-compose-review",
-            {"matched_findings": [{"id": "fixed-height-text", "severity": "P3"}], "forbidden_claims": []},
-        )
-        self.assertEqual(result.returncode, 2)
+    def test_mismatched_severity_loses_only_that_finding(self) -> None:
+        findings = [dict(item) for item in RATED_PASSING]
+        findings[0]["severity"] = "P3"
+        result = self.run_score("android-compose-review", {"matched_findings": findings, "forbidden_claims": []})
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("android-compose-review: 6/10", result.stdout)
+        self.assertIn("- fixed-height-text: expected P1, received P3", result.stdout)
 
     def test_non_defect_severity_is_invalid(self) -> None:
         result = self.run_score(

@@ -1,0 +1,17 @@
+{
+  "matched_findings": [
+    {
+      "id": "audit-handler-suppresses-all-issues"
+    },
+    {
+      "id": "identical-scaled-snapshots-indicate-no-scaling"
+    },
+    {
+      "id": "green-suites-do-not-prove-assistive-technology"
+    }
+  ],
+  "forbidden_claims": [
+    "In Compose test, `tryPerformAccessibilityChecks()` does not fail the test. It is the non-throwing variant, so a violation wouldn't fail it. Only `performAccessibilityChecks()` throws.",
+    "**Supported:** For the 38 screens as rendered in the test, the checks found nothing they are able to flag."
+  ]
+}

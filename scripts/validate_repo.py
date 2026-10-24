@@ -236,6 +236,12 @@ def main(root: Path) -> int:
             minimum_score = evaluation["minimum_score"]
             if not isinstance(minimum_score, int) or isinstance(minimum_score, bool) or minimum_score < 0:
                 errors.append(f"Eval {eval_id} minimum_score must be a non-negative integer")
+            severity_required = evaluation.get("severity_required", False)
+            if not isinstance(severity_required, bool):
+                errors.append(f"Eval {eval_id} severity_required must be a boolean")
+            prompt_path = root / str(evaluation["prompt"])
+            if severity_required and prompt_path.is_file() and "severity" not in prompt_path.read_text(encoding="utf-8").lower():
+                errors.append(f"Eval {eval_id} requires severity but its prompt does not ask for it")
             for field in ("prompt", "fixture", "rubric"):
                 path = root / str(evaluation[field])
                 if not path.is_file():
@@ -294,6 +300,10 @@ def main(root: Path) -> int:
                         errors.append(
                             f"Eval {eval_id} non-defect {finding_id} must use null expected_severity"
                         )
+                if severity_required is True and not any(
+                    isinstance(item, dict) and item.get("kind") == "defect" for item in findings
+                ):
+                    errors.append(f"Eval {eval_id} requires severity but its rubric has no defect")
                 if isinstance(minimum_score, int) and minimum_score > max_score:
                     errors.append(f"Eval {eval_id} minimum score exceeds rubric maximum")
                 if not isinstance(forbidden, list) or not forbidden or not all(

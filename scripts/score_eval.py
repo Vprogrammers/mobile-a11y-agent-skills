@@ -12,8 +12,8 @@ class InvalidResult(ValueError):
     pass
 
 
-def check_result(result: object, rubric: dict[str, object]) -> tuple[set[str], list[str]]:
-    """Validate a judge result against the rubric and return matched ids and forbidden claims."""
+def check_result(result: object, rubric: dict[str, object]) -> tuple[dict[str, str | None], list[str]]:
+    """Validate a judge result against the rubric and return matched severities by id and forbidden claims."""
     if not isinstance(result, dict):
         raise InvalidResult("Result must be a JSON object")
     if set(result) - {"matched_findings", "forbidden_claims"}:
@@ -60,13 +60,9 @@ def check_result(result: object, rubric: dict[str, object]) -> tuple[set[str], l
         expected = expected_by_id[finding_id]
         if severity is not None and expected is None:
             severity_errors.append(f"{finding_id}: severity must be omitted for a non-defect criterion")
-        elif severity is not None and severity != expected:
-            severity_errors.append(
-                f"{finding_id}: expected {expected}, received {severity}"
-            )
     if severity_errors:
-        raise InvalidResult("Severity mismatches:\n" + "\n".join(f"- {error}" for error in severity_errors))
-    return matched, forbidden
+        raise InvalidResult("Invalid severities:\n" + "\n".join(f"- {error}" for error in severity_errors))
+    return normalized, forbidden
 
 
 def main(root: Path, eval_id: str, result_source: str) -> int:
@@ -82,20 +78,42 @@ def main(root: Path, eval_id: str, result_source: str) -> int:
     rubric = json.loads((root / evaluation["rubric"]).read_text(encoding="utf-8"))
     result_text = sys.stdin.read() if result_source == "-" else Path(result_source).read_text(encoding="utf-8")
     try:
-        matched, forbidden = check_result(json.loads(result_text), rubric)
+        severities, forbidden = check_result(json.loads(result_text), rubric)
     except InvalidResult as error:
         print(error)
         return 2
 
+    # A mismatched defect earns nothing. When the prompt asks for severity, neither does an unrated one,
+    # so omitting severity never beats a mismatch.
+    expected = {item["id"]: item["expected_severity"] for item in rubric["required_findings"]}
+    mismatched = {
+        finding_id: severity
+        for finding_id, severity in severities.items()
+        if severity is not None and severity != expected[finding_id]
+    }
+    unrated = []
+    if evaluation.get("severity_required"):
+        unrated = sorted(
+            finding_id for finding_id, severity in severities.items() if expected[finding_id] and severity is None
+        )
+    uncredited = set(mismatched) | set(unrated)
     score = sum(
         item["points"]
         for item in rubric["required_findings"]
-        if item["id"] in matched
+        if item["id"] in severities and item["id"] not in uncredited
     )
     maximum = sum(item["points"] for item in rubric["required_findings"])
     passed = score >= evaluation["minimum_score"] and not forbidden
 
     print(f"{eval_id}: {score}/{maximum}; minimum {evaluation['minimum_score']}")
+    if mismatched:
+        print("Defects with a mismatched severity earn no points:")
+        for finding_id in sorted(mismatched):
+            print(f"- {finding_id}: expected {expected[finding_id]}, received {mismatched[finding_id]}")
+    if unrated:
+        print("Defects without the required severity earn no points:")
+        for finding_id in unrated:
+            print(f"- {finding_id}")
     if forbidden:
         print("Forbidden claims:")
         for claim in forbidden:

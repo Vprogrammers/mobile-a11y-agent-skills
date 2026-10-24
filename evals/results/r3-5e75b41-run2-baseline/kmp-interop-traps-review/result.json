@@ -1,0 +1,11 @@
+{
+  "matched_findings": [
+    {
+      "id": "typealias-trait-escapes-header-check"
+    },
+    {
+      "id": "reduce-motion-read-once"
+    }
+  ],
+  "forbidden_claims": []
+}

@@ -1,0 +1,20 @@
+{
+  "matched_findings": [
+    {
+      "id": "cell-element-hides-remove-button",
+      "severity": "P0"
+    },
+    {
+      "id": "legacy-button-title-fixed-size",
+      "severity": "P1"
+    },
+    {
+      "id": "missing-one-time-code-content-type",
+      "severity": "P1"
+    },
+    {
+      "id": "verification-covers-voiceover-voice-control-and-dynamic-type"
+    }
+  ],
+  "forbidden_claims": []
+}

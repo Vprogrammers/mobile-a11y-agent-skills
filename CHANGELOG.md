@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 0.7.0
+
+- Retain the r3 eval bundles: five harder evals, plugin and baseline, three runs each. The plugin passed 15 of 15 and the baseline 4 of 15; see `evals/results/README.md` for the per-finding analysis and limits.
+- Rate `on-back-pressed-not-called-on-sdk36` as P2: the lost callback only stops back from hiding an informational notice, and it affects every user rather than an assistive-technology group.
+- List a removed visible focus indicator for keyboard or switch users as a P1 calibration example in `mobile-a11y-review`.
+- Add a code-signal table to the review checklist that maps patterns in changed code, such as unkeyed lazy lists, gesture handlers, custom drawing, and WebViews, to the behavior a reviewer must check.
+- Require severity for matched defects in evals whose prompts ask for it (`severity_required` in the manifest). The suite gives both variants the P0–P3 definitions from `mobile-a11y-review`. An unrated defect earns no points, so omitting severity no longer scores better than a mismatch. The judge records the P0–P3 severity the response assigned, not the rubric's, and drops other scales.
+- Score a severity mismatch as a missed finding instead of rejecting the whole judge result, and keep rejected judge output for diagnosis. In r3, every Compose, Android SDK 36, and UIKit traps run was rejected this way, so those evals produced no score.
+- Add a deterministic, validated light distribution with consumer-only instructions, provenance metadata, owner-attributed synchronization on canonical `main` pushes that change distribution inputs, and a canonical-repository contribution policy.
+- Find the judge result object among prose braces or several JSON objects instead of slicing from the first `{` to the last `}`.
 - Add five harder evals built from verified platform traps: `compose-semantics-traps-review`, `android-sdk36-behavior-review`, `uikit-container-traps-review`, `kmp-interop-traps-review`, and `test-evidence-traps-review`. The Android and iOS fixtures compile in `samples/` with runtime guards. The KMP and prose fixtures have static guards.
 - Fix `clean-uikit-review`: its "clean" `UIButton(type: .system)` keeps a fixed 15 pt title at every Dynamic Type size, as measured on the simulator. The plugin reviewer reported it and the unassisted baseline did not. The fixture now uses `UIButton(configuration: .plain())`, a simulator test guards it, and `apple-patterns.md` documents the trap.
 - Add severity calibration examples to `mobile-a11y-review`. A defect proven by code keeps its severity even while device confirmation is pending.

@@ -1,0 +1,16 @@
+{
+  "matched_findings": [
+    {
+      "id": "audit-handler-suppresses-all-issues"
+    },
+    {
+      "id": "identical-scaled-snapshots-indicate-no-scaling"
+    },
+    {
+      "id": "green-suites-do-not-prove-assistive-technology"
+    }
+  ],
+  "forbidden_claims": [
+    "`tryPerformAccessibilityChecks()` is the non-throwing variant. It collects results and doesn't fail the test, so a green run is expected whatever the screens contain."
+  ]
+}

@@ -1,6 +1,26 @@
 # Mobile accessibility review checklist
 
-Last reviewed: 2026-10-23.
+Last reviewed: 2026-10-24.
+
+## Code signals
+
+Scan the changed code for these signals before reading it line by line. Each one is a prompt to check the behavior, not a finding by itself. The platform references hold the detailed guidance.
+
+| Signal in code | Check |
+|---|---|
+| Compose `items(...)`/`itemsIndexed(...)` without `key =`, or a list replaced wholesale on update | Focus and position survive insertions, removals, and reloads |
+| `clearAndSetSemantics`, `mergeDescendants = true`, `.accessibilityElement(children: .combine/.ignore)` | No label, state, or secondary action is lost from the merged node |
+| `pointerInput`, `detectTapGestures`, `onLongPress`, swipe or drag handlers, `.onTapGesture` | The action is also a native or custom accessibility action |
+| Custom `View` with `onDraw`/canvas, or a UIKit view drawing several targets | Accessibility node contract or virtual children, not one `contentDescription` |
+| `AccessibilityDelegateCompat`, `accessibilityTraits =`, `accessibilityElements =` | Superclass actions and traits are preserved and order matches dynamic content |
+| Fixed `height`/`frame(height:)`, `maxLines = 1`, `lineLimit(1)`, `UIButton(type: .system)` titles | Text scales and reflows at the largest font and Dynamic Type sizes |
+| Custom overlay, sheet, or dialog built from `Box`/`ZStack`/plain views | Modal boundary, system back or escape dismissal, and focus restoration |
+| `WebView`, `WKWebView`, `loadUrl`, `loadHTMLString` | Native title for the web content and a separate audit of the DOM and focus transitions |
+| `announceForAccessibility`, `UIAccessibility.post`, `liveRegion` on frequently changing text | Announcements are limited to important asynchronous changes |
+| `FocusRequester` or `@AccessibilityFocusState` driven by ordinary state | Focus moves only for meaningful context changes |
+| `clickable(indication = null)`, custom indications, or removed focus styles | Keyboard and switch focus stays visible |
+| Password, OTP, payment, or identity fields with custom masking, blocked paste, or `contentType`/`textContentType` changes | Autofill, paste, and consistent visual and accessibility masking |
+| `onBackPressed`, `KEYCODE_BACK`, missing insets on edge-to-edge screens | Back dismissal and focused content stay reachable on current SDK targets |
 
 ## Structure and semantics
 

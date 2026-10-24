@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-24T20:14:11.826055+00:00",
+  "model": "agent=sonnet,judge=opus",
+  "variant": "baseline",
+  "commit": "local",
+  "runs": [
+    {
+      "id": "compose-semantics-traps-review",
+      "status": "failed"
+    },
+    {
+      "id": "android-sdk36-behavior-review",
+      "status": "failed"
+    },
+    {
+      "id": "uikit-container-traps-review",
+      "status": "failed"
+    },
+    {
+      "id": "kmp-interop-traps-review",
+      "status": "failed",
+      "score": 4,
+      "maximum": 8
+    },
+    {
+      "id": "test-evidence-traps-review",
+      "status": "failed",
+      "score": 6,
+      "maximum": 8
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+name: Sync light distribution
+
+on:
+  push:
+    branches: [main]
+    # Only inputs to the generated distribution; other pushes would publish a provenance-only commit.
+    paths:
+      - agents/**
+      - skills/**
+      - distribution/light/**
+      - LICENSE
+      - scripts/build_light_distribution.py
+      - scripts/validate_light_distribution.py
+      - .github/workflows/sync-light-distribution.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: light-distribution-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    # A manual dispatch can select any branch; only canonical main may publish.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out canonical repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: source
+      - name: Check out light repository with its restricted deploy key
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: vikktorn/mobile-a11y-agent-skills-lite
+          path: light
+          ssh-key: ${{ secrets.LIGHT_REPO_DEPLOY_KEY }}
+      - name: Generate and validate distribution
+        run: |
+          python3 source/scripts/build_light_distribution.py generated
+          python3 source/scripts/validate_light_distribution.py generated source
+      - name: Replace generated content
+        run: |
+          find light -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -R generated/. light/
+      - name: Commit changes as repository owner
+        working-directory: light
+        run: |
+          if git diff --quiet --exit-code && [ -z "$(git status --porcelain)" ]; then
+            echo "Light distribution is already current."
+            exit 0
+          fi
+          git config user.name "Viktor Nesic"
+          git config user.email "16168442+vikktorn@users.noreply.github.com"
+          git add --all
+          git commit -m "Sync canonical accessibility agents and skills"
+          git push origin HEAD:main

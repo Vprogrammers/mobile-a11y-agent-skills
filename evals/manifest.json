@@ -6,7 +6,8 @@
       "prompt": "evals/android-compose-review.md",
       "fixture": "evals/android-compose-review/CheckoutScreen.kt",
       "rubric": "evals/android-compose-review/rubric.json",
-      "minimum_score": 8
+      "minimum_score": 8,
+      "severity_required": true
     },
     {
       "id": "ios-swiftui-review",
@@ -14,7 +15,8 @@
       "prompt": "evals/ios-swiftui-review.md",
       "fixture": "evals/ios-swiftui-review/AccountScreen.swift",
       "rubric": "evals/ios-swiftui-review/rubric.json",
-      "minimum_score": 8
+      "minimum_score": 8,
+      "severity_required": true
     },
     {
       "id": "kmp-boundary-review",
@@ -38,7 +40,8 @@
       "prompt": "evals/android-views-review.md",
       "fixture": "evals/android-views-review/PaymentView.kt",
       "rubric": "evals/android-views-review/rubric.json",
-      "minimum_score": 6
+      "minimum_score": 6,
+      "severity_required": true
     },
     {
       "id": "ios-uikit-review",
@@ -46,7 +49,8 @@
       "prompt": "evals/ios-uikit-review.md",
       "fixture": "evals/ios-uikit-review/ProfileViewController.swift",
       "rubric": "evals/ios-uikit-review/rubric.json",
-      "minimum_score": 6
+      "minimum_score": 6,
+      "severity_required": true
     },
     {
       "id": "mobile-test-strategy",
@@ -110,7 +114,8 @@
       "prompt": "evals/compose-semantics-traps-review.md",
       "fixture": "evals/compose-semantics-traps-review/OrderCard.kt",
       "rubric": "evals/compose-semantics-traps-review/rubric.json",
-      "minimum_score": 6
+      "minimum_score": 6,
+      "severity_required": true
     },
     {
       "id": "android-sdk36-behavior-review",
@@ -118,7 +123,8 @@
       "prompt": "evals/android-sdk36-behavior-review.md",
       "fixture": "evals/android-sdk36-behavior-review/PinEntryActivity.kt",
       "rubric": "evals/android-sdk36-behavior-review/rubric.json",
-      "minimum_score": 6
+      "minimum_score": 6,
+      "severity_required": true
     },
     {
       "id": "uikit-container-traps-review",
@@ -126,7 +132,8 @@
       "prompt": "evals/uikit-container-traps-review.md",
       "fixture": "evals/uikit-container-traps-review/ReceiptCell.swift",
       "rubric": "evals/uikit-container-traps-review/rubric.json",
-      "minimum_score": 6
+      "minimum_score": 6,
+      "severity_required": true
     },
     {
       "id": "kmp-interop-traps-review",

@@ -8,9 +8,16 @@ import subprocess
 import tempfile
 import unittest
 
-from scripts.judge_eval import build_prompt, drop_non_defect_severity, parse_judge_output
+from scripts.judge_eval import build_prompt, drop_unscorable_severity, parse_judge_output
 
 ROOT = Path(__file__).resolve().parent.parent
+RATED_COMPOSE_FINDINGS = [
+    {"id": "fixed-height-text", "severity": "P1"},
+    {"id": "unstable-lazy-list-identity", "severity": "P2"},
+    {"id": "duplicate-delete-semantics", "severity": "P2"},
+    {"id": "gesture-only-help", "severity": "P1"},
+    {"id": "non-modal-overlay", "severity": "P1"},
+]
 
 
 class JudgeEvalTests(unittest.TestCase):
@@ -21,9 +28,19 @@ class JudgeEvalTests(unittest.TestCase):
         ], "forbidden_claims": []}
         result = {"matched_findings": [{"id": "focus", "severity": "P2"}, {"id": "device", "severity": "P2"}], "forbidden_claims": []}
 
-        drop_non_defect_severity(result, rubric)
+        drop_unscorable_severity(result, rubric)
 
         self.assertEqual(result["matched_findings"], [{"id": "focus", "severity": "P2"}, {"id": "device"}])
+
+    def test_off_scale_defect_severity_is_dropped(self) -> None:
+        rubric = {"required_findings": [
+            {"id": "focus", "points": 2, "kind": "defect", "criteria": "c", "expected_severity": "P1"},
+        ], "forbidden_claims": []}
+        result = {"matched_findings": [{"id": "focus", "severity": "High"}], "forbidden_claims": []}
+
+        drop_unscorable_severity(result, rubric)
+
+        self.assertEqual(result["matched_findings"], [{"id": "focus"}])
 
     def test_prompt_contains_rubric_response_and_json_contract(self) -> None:
         rubric = {"required_findings": [{"id": "focus", "points": 2, "kind": "defect", "criteria": "Identifies the focus defect and proposes restoration.", "expected_severity": "P1"}], "forbidden_claims": ["claims compliance"]}
@@ -88,6 +105,15 @@ class JudgeEvalTests(unittest.TestCase):
         with self.assertRaises(json.JSONDecodeError):
             parse_judge_output("no json here")
 
+    def test_result_object_is_found_among_prose_braces_and_other_objects(self) -> None:
+        payload = {"matched_findings": [{"id": "focus", "severity": "P1"}], "forbidden_claims": []}
+        braces = "The {focus} criterion matched. " + json.dumps(payload) + " See {notes}."
+        several = 'Draft: {"note": "ignore"}\nFinal: ' + json.dumps(payload) + '\nExtra: {"other": 1}'
+        self.assertEqual(parse_judge_output(braces), payload)
+        self.assertEqual(parse_judge_output(several), payload)
+        with self.assertRaises(json.JSONDecodeError):
+            parse_judge_output('Only {"note": "no result"} here')
+
     def run_judge(self, stdout: str) -> tuple[subprocess.CompletedProcess[str], Path]:
         temporary = Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, temporary, True)
@@ -108,7 +134,7 @@ class JudgeEvalTests(unittest.TestCase):
 
     def test_fenced_judge_output_is_scored(self) -> None:
         payload = {
-            "matched_findings": ["fixed-height-text", "duplicate-delete-semantics", "gesture-only-help", "non-modal-overlay"],
+            "matched_findings": RATED_COMPOSE_FINDINGS[:1] + RATED_COMPOSE_FINDINGS[2:],
             "forbidden_claims": [],
         }
         result, output = self.run_judge("```json\n" + json.dumps(payload) + "\n```")
@@ -120,16 +146,11 @@ class JudgeEvalTests(unittest.TestCase):
         self.assertEqual(result.returncode, 2)
         self.assertIn("does not match the schema", result.stdout)
         self.assertFalse(output.exists())
+        self.assertIn("invented-finding", output.with_name("result.rejected.txt").read_text())
 
     def test_provider_command_result_is_scored_end_to_end(self) -> None:
         result_payload = {
-            "matched_findings": [
-                "fixed-height-text",
-                "unstable-lazy-list-identity",
-                "duplicate-delete-semantics",
-                "gesture-only-help",
-                "non-modal-overlay",
-            ],
+            "matched_findings": RATED_COMPOSE_FINDINGS,
             "forbidden_claims": [],
         }
         with tempfile.TemporaryDirectory() as directory:
@@ -163,13 +184,7 @@ class JudgeEvalTests(unittest.TestCase):
 
     def test_judge_runs_in_isolated_working_directory(self) -> None:
         result_payload = {
-            "matched_findings": [
-                "fixed-height-text",
-                "unstable-lazy-list-identity",
-                "duplicate-delete-semantics",
-                "gesture-only-help",
-                "non-modal-overlay",
-            ],
+            "matched_findings": RATED_COMPOSE_FINDINGS,
             "forbidden_claims": [],
         }
         with tempfile.TemporaryDirectory() as directory:

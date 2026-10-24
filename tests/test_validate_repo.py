@@ -51,6 +51,18 @@ class ValidateRepositoryTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("references unknown agent", result.stdout)
 
+    def test_severity_required_needs_defects_and_prompt_request(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "evals/manifest.json"
+            data = json.loads(path.read_text())
+            evaluation = next(item for item in data["evaluations"] if item["id"] == "kmp-boundary-review")
+            evaluation["severity_required"] = True
+            path.write_text(json.dumps(data))
+
+        result = self.invalid_copy(mutate)
+        self.assertIn("requires severity but its prompt does not ask for it", result.stdout)
+        self.assertIn("requires severity but its rubric has no defect", result.stdout)
+
     def test_duplicate_finding_id_is_rejected(self) -> None:
         def mutate(root: Path) -> None:
             path = root / "evals/android-compose-review/rubric.json"

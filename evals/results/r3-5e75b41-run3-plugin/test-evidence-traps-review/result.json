@@ -1,0 +1,17 @@
+{
+  "matched_findings": [
+    {
+      "id": "robolectric-checks-do-not-run"
+    },
+    {
+      "id": "audit-handler-suppresses-all-issues"
+    },
+    {
+      "id": "identical-scaled-snapshots-indicate-no-scaling"
+    },
+    {
+      "id": "green-suites-do-not-prove-assistive-technology"
+    }
+  ],
+  "forbidden_claims": []
+}

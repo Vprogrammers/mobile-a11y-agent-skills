@@ -45,6 +45,8 @@ Or copy `agents/*` to `.claude/agents/` and `skills/*` to `.claude/skills/`.
 
 The agents invoke skills by name, so they work from plugin installation or copied project directories without repository-relative paths.
 
+For a minimal copy-ready package, use [`mobile-a11y-agent-skills-lite`](https://github.com/vikktorn/mobile-a11y-agent-skills-lite). It is generated from this repository and contains only consumer instructions, agents, skills, references, and license files.
+
 ## Example prompts
 
 Plugin agents are namespaced. When the plugin is installed, invoke them as `<plugin>:<agent>` or with Claude Code's explicit `@agent-...` form. Agents copied directly into `.claude/agents/` keep their unprefixed names.
@@ -101,7 +103,7 @@ Evaluation scenarios live in `evals/`. Each manifest entry points to a prompt, r
 
 Rubrics keep finding `kind` separate from severity. Each finding has explicit acceptance `criteria`. Severity uses the `P0`–`P3` definitions in `mobile-a11y-review`, applies only to defects, and is `null` for architecture, interop, testing, verification, compliance, dependency, or recommendation criteria.
 
-Record the assessment using rubric finding IDs. Severity is optional for backward compatibility; when supplied for a defect, it must match the rubric:
+Record the assessment using rubric finding IDs, with the P0–P3 severity the response assigned to each defect. A defect whose severity does not match the rubric earns no points; the rest of the result still counts. Evals whose prompts ask for severity set `"severity_required": true` in the manifest. The suite then appends the P0–P3 definitions from `mobile-a11y-review` to the prompt for both the plugin and the baseline, and a matched defect without a P0–P3 severity earns no points, so omitting severity never scores better than a mismatch. Elsewhere, severity stays optional. When the judge's output is rejected, `judge_eval.py` keeps it in `<result>.rejected.txt`:
 
 ```json
 {
