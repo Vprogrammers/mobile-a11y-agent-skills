@@ -9,10 +9,10 @@ import unittest
 ROOT = Path(__file__).resolve().parent.parent
 
 # Static guards for fixtures that samples/ does not exercise at runtime: kmp-boundary-review cannot
-# compile because it intentionally places platform types in common code, and SwiftUI modifiers are
-# not inspectable from XCTest without a third-party dependency. Each pattern proves that the fixture
-# still contains the evidence for a rubric finding. Findings in NOT_GUARDED are judged from the
-# response alone (for example, a recommendation) and have no fixture evidence to check.
+# compile because it intentionally places platform types in common code, SwiftUI modifiers are not
+# inspectable from XCTest without a third-party dependency, and the regulatory fixture is prose.
+# Each pattern proves that the fixture still contains the evidence for a rubric finding. Findings in
+# NOT_GUARDED are judged from the response alone or are covered elsewhere.
 GUARDS: dict[str, dict[str, str]] = {
     "kmp-boundary-review": {
         "compose-type-in-common-api": r"import androidx\.compose\.ui\.semantics\.SemanticsPropertyReceiver[\s\S]*fun applyComposeSemantics\(receiver: SemanticsPropertyReceiver\)",
@@ -27,10 +27,19 @@ GUARDS: dict[str, dict[str, str]] = {
         "repeated-focus-reset": r"\.onChange\(of: message\) \{ focused = true \}",
         "webview-needs-separate-audit": r"WebView\(url:",
     },
+    "regulatory-evidence-review": {
+        "distinguishes-published-from-cited-version": r"V4\.1\.1 is the newest published edition, it is automatically harmonized",
+    },
 }
 NOT_GUARDED: dict[str, set[str]] = {
     "kmp-boundary-review": {"proposes-platform-neutral-state-contract"},
     "ios-swiftui-review": set(),
+    "regulatory-evidence-review": {
+        "rejects-automated-compliance-claim",
+        "distinguishes-standard-from-law",
+        "requires-jurisdiction-and-scope-review",
+        "requires-release-specific-evidence",
+    },
 }
 
 

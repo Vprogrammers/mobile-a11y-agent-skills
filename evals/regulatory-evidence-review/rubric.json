@@ -2,12 +2,14 @@
   "required_findings": [
     {"id": "rejects-automated-compliance-claim", "points": 2, "kind": "defect", "criteria": "Rejects the assertion that green automated audits prove accessibility or legal compliance.", "expected_severity": "P1"},
     {"id": "distinguishes-standard-from-law", "points": 2, "kind": "compliance", "criteria": "Distinguishes technical standards such as WCAG and EN 301 549 from legal obligations such as EAA, ADA, and Section 508.", "expected_severity": null},
+    {"id": "distinguishes-published-from-cited-version", "points": 2, "kind": "compliance", "criteria": "Explains that publication of EN 301 549 V4.1.1 does not by itself prove citation in the Official Journal or create a presumption of conformity, and requires verification for the applicable Directive.", "expected_severity": null},
     {"id": "requires-jurisdiction-and-scope-review", "points": 2, "kind": "compliance", "criteria": "Requires product, organization, market, and jurisdiction scope to be established before making legal applicability statements.", "expected_severity": null},
     {"id": "requires-release-specific-evidence", "points": 2, "kind": "compliance", "criteria": "Requires maintained release-specific evidence including automated results, manual assistive-technology checks, limitations, and unresolved issues.", "expected_severity": null}
   ],
   "forbidden_claims": [
     "Provides legal advice or guarantees compliance",
     "Treats WCAG as a law in every jurisdiction",
+    "Treats the latest published EN 301 549 edition as automatically cited or harmonized",
     "Claims one report remains valid for all future releases"
   ]
 }
