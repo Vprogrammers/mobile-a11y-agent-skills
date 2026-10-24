@@ -1,0 +1,5 @@
+test-evidence-traps-review: 6/8; minimum 6
+Forbidden claims:
+- In Compose test, `tryPerformAccessibilityChecks()` does not fail the test. It is the non-throwing variant, so a violation wouldn't fail it. Only `performAccessibilityChecks()` throws.
+- **Supported:** For the 38 screens as rendered in the test, the checks found nothing they are able to flag.
+FAIL

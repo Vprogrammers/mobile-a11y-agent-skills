@@ -1,0 +1,21 @@
+{
+  "matched_findings": [
+    {
+      "id": "clear-and-set-hides-track-action",
+      "severity": "P1"
+    },
+    {
+      "id": "indication-null-hides-focus",
+      "severity": "P2"
+    },
+    {
+      "id": "error-not-associated-with-field",
+      "severity": "P2"
+    },
+    {
+      "id": "input-focus-is-not-accessibility-focus",
+      "severity": "P2"
+    }
+  ],
+  "forbidden_claims": []
+}

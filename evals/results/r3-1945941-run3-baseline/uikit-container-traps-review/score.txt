@@ -1,0 +1,5 @@
+uikit-container-traps-review: 4/8; minimum 6
+Defects with a mismatched severity earn no points:
+- cell-element-hides-remove-button: expected P1, received P0
+- legacy-button-title-fixed-size: expected P1, received P2
+FAIL

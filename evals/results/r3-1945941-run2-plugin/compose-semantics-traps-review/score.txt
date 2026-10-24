@@ -1,0 +1,4 @@
+compose-semantics-traps-review: 6/8; minimum 6
+Defects with a mismatched severity earn no points:
+- indication-null-hides-focus: expected P1, received P2
+PASS

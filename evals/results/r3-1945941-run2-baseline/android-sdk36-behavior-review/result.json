@@ -1,0 +1,20 @@
+{
+  "matched_findings": [
+    {
+      "id": "on-back-pressed-not-called-on-sdk36",
+      "severity": "P1"
+    },
+    {
+      "id": "per-keystroke-announcement",
+      "severity": "P2"
+    },
+    {
+      "id": "password-variation-for-visible-code",
+      "severity": "P2"
+    },
+    {
+      "id": "requires-android-16-device-verification"
+    }
+  ],
+  "forbidden_claims": []
+}
