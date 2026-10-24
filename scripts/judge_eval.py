@@ -11,6 +11,7 @@ import sys
 
 # Allow both `python3 scripts/judge_eval.py` and `import scripts.judge_eval` in tests.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from bounded_process import OutputLimitExceeded, ProcessTimedOut, run_bounded  # noqa: E402
 from score_eval import InvalidResult, check_result  # noqa: E402
 
 DEFAULT_TIMEOUT_SECONDS = 180
@@ -89,19 +90,17 @@ def main(root: Path, eval_id: str, response_path: Path, result_path: Path) -> in
         print("EVAL_JUDGE_TIMEOUT_SECONDS must be a positive integer.")
         return 2
     try:
-        completed = subprocess.run(
+        completed = run_bounded(
             shlex.split(command),
-            input=prompt,
-            text=True,
-            capture_output=True,
-            check=False,
+            input_text=prompt,
             timeout=timeout,
+            max_output_bytes=MAX_OUTPUT_BYTES,
         )
-    except subprocess.TimeoutExpired:
+    except ProcessTimedOut:
         print(f"Judge timed out after {timeout} seconds.")
         return 2
-    if len(completed.stdout.encode("utf-8")) > MAX_OUTPUT_BYTES:
-        print(f"Judge output exceeds {MAX_OUTPUT_BYTES} bytes.")
+    except OutputLimitExceeded:
+        print(f"Combined judge output exceeds {MAX_OUTPUT_BYTES} bytes.")
         return 2
     if completed.returncode != 0:
         print(completed.stderr or completed.stdout)
