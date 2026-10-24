@@ -47,9 +47,9 @@ GUARDS: dict[str, dict[str, str]] = {
     },
     "us-regulatory-scope-review": {
         "distinguishes-title-ii-title-iii-and-section-508": r"ADA Title II, ADA Title III, and Section 508",
-        "identifies-title-ii-technical-baseline": r"all require WCAG 2\\.2",
+        "identifies-title-ii-technical-baseline": r"all require WCAG 2\.2",
         "does-not-reduce-section-508-to-wcag": r"Section 508 does not require any software interoperability or functional-performance review",
-        "rejects-scan-and-future-release-proof": r"same scan proves[\\s\\S]*future releases",
+        "rejects-scan-and-future-release-proof": r"same scan proves[\s\S]*future releases",
     },
 }
 NOT_GUARDED: dict[str, set[str]] = {
