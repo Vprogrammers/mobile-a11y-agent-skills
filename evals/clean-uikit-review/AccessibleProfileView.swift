@@ -1,6 +1,6 @@
 final class AccessibleProfileView: UIStackView {
     private let status = UILabel()
-    private let save = UIButton(type: .system)
+    private let save = UIButton(configuration: .plain())
 
     init(onSave: @escaping () -> Void) {
         super.init(frame: .zero)

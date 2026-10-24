@@ -21,6 +21,20 @@ final class UIKitPatternsTests: XCTestCase {
         XCTAssertGreaterThan(scaled.pointSize, base.pointSize)
     }
 
+    func testConfiguredButtonTitleGrowsAtAccessibilitySizes() {
+        let button = makeScalableButton(title: "Save profile")
+
+        XCTAssertGreaterThan(titlePointSize(of: button, at: .accessibilityExtraExtraExtraLarge), 40)
+    }
+
+    /// Documents the trap in apple-patterns.md: the legacy system button title does not scale.
+    func testLegacySystemButtonTitleStaysFixed() {
+        let button = UIButton(type: .system)
+        button.setTitle("Save profile", for: .normal)
+
+        XCTAssertEqual(titlePointSize(of: button, at: .accessibilityExtraExtraExtraLarge), 15)
+    }
+
     func testModalCardIsModalWithHeaderTitle() {
         let card = ModalCardView()
 
@@ -49,4 +63,15 @@ final class UIKitPatternsTests: XCTestCase {
 
         XCTAssertEqual(row.accessibilityCustomActions?.map(\.name), ["Share", "Archive"])
     }
+}
+
+/// Lays the button out in a window at the given content size and returns its title font size.
+@MainActor
+func titlePointSize(of button: UIButton, at category: UIContentSizeCategory) -> CGFloat {
+    let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 400, height: 800))
+    window.addSubview(button)
+    button.traitOverrides.preferredContentSizeCategory = category
+    window.layoutIfNeeded()
+    button.layoutIfNeeded()
+    return button.titleLabel?.font.pointSize ?? 0
 }

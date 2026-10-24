@@ -8,12 +8,23 @@ import subprocess
 import tempfile
 import unittest
 
-from scripts.judge_eval import build_prompt, parse_judge_output
+from scripts.judge_eval import build_prompt, drop_non_defect_severity, parse_judge_output
 
 ROOT = Path(__file__).resolve().parent.parent
 
 
 class JudgeEvalTests(unittest.TestCase):
+    def test_stray_non_defect_severity_is_dropped_but_defect_severity_is_kept(self) -> None:
+        rubric = {"required_findings": [
+            {"id": "focus", "points": 2, "kind": "defect", "criteria": "c", "expected_severity": "P1"},
+            {"id": "device", "points": 2, "kind": "verification", "criteria": "c", "expected_severity": None},
+        ], "forbidden_claims": []}
+        result = {"matched_findings": [{"id": "focus", "severity": "P2"}, {"id": "device", "severity": "P2"}], "forbidden_claims": []}
+
+        drop_non_defect_severity(result, rubric)
+
+        self.assertEqual(result["matched_findings"], [{"id": "focus", "severity": "P2"}, {"id": "device"}])
+
     def test_prompt_contains_rubric_response_and_json_contract(self) -> None:
         rubric = {"required_findings": [{"id": "focus", "points": 2, "kind": "defect", "criteria": "Identifies the focus defect and proposes restoration.", "expected_severity": "P1"}], "forbidden_claims": ["claims compliance"]}
         prompt = build_prompt(

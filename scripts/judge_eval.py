@@ -62,6 +62,20 @@ def parse_judge_output(output: str) -> object:
     return json.loads(text)
 
 
+def drop_non_defect_severity(result: object, rubric: dict[str, object]) -> None:
+    """Remove a judge's stray severity on non-defect criteria, where severity has no meaning.
+
+    Defect severity mismatches still fail validation; only values the rubric defines as null are dropped.
+    """
+    expected = {item["id"]: item.get("expected_severity") for item in rubric["required_findings"]}
+    findings = result.get("matched_findings") if isinstance(result, dict) else None
+    if not isinstance(findings, list):
+        return
+    for finding in findings:
+        if isinstance(finding, dict) and finding.get("id") in expected and expected[finding["id"]] is None:
+            finding.pop("severity", None)
+
+
 def main(root: Path, eval_id: str, response_path: Path, result_path: Path) -> int:
     command = os.environ.get("EVAL_JUDGE_COMMAND")
     if not command:
@@ -116,6 +130,7 @@ def main(root: Path, eval_id: str, response_path: Path, result_path: Path) -> in
     except json.JSONDecodeError as error:
         print(f"Judge returned invalid JSON: {error}")
         return 2
+    drop_non_defect_severity(result, rubric)
     try:
         check_result(result, rubric)
     except InvalidResult as error:

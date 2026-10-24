@@ -66,6 +66,7 @@ Update `.accessibilityValue` and move focus only when a new context or blocking 
 ## Dynamic Type and layout
 
 - Use text styles and scalable fonts. In UIKit, use `UIFontMetrics` and set `adjustsFontForContentSizeCategory = true`.
+- `UIButton(type: .system)` with `setTitle` keeps a fixed 15 pt title at every content size. Measured on the iOS 26 simulator, the title was still 15 pt at AX5. Use `UIButton.Configuration`, such as `UIButton(configuration: .plain())`, whose title follows Dynamic Type. Alternatively, set a text-style font with `adjustsFontForContentSizeCategory = true` on the title label.
 - In SwiftUI, use `@ScaledMetric` for dimensions that should scale with text.
 - Use `ViewThatFits`, adaptive stacks, and layout changes at accessibility Dynamic Type sizes instead of shrinking text.
 - Use `dynamicTypeSize` environment information to change layout, not to cap user settings without a documented exceptional reason.
@@ -143,4 +144,5 @@ Official sources:
 - Apple accessibility: https://developer.apple.com/accessibility/
 - SwiftUI accessibility: https://developer.apple.com/documentation/swiftui/accessibility
 - UIKit accessibility: https://developer.apple.com/documentation/uikit/accessibility
+- UIButton.Configuration: https://developer.apple.com/documentation/uikit/uibutton/configuration-swift.struct
 - WKWebViewConfiguration.ignoresViewportScaleLimits: https://developer.apple.com/documentation/webkit/wkwebviewconfiguration/ignoresviewportscalelimits

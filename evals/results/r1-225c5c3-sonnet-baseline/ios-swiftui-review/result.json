@@ -1,0 +1,25 @@
+{
+  "matched_findings": [
+    {
+      "id": "combined-unrelated-actions",
+      "severity": "P1"
+    },
+    {
+      "id": "color-only-status",
+      "severity": "P1"
+    },
+    {
+      "id": "dynamic-type-cap",
+      "severity": "P1"
+    },
+    {
+      "id": "repeated-focus-reset",
+      "severity": "P1"
+    },
+    {
+      "id": "webview-needs-separate-audit",
+      "severity": null
+    }
+  ],
+  "forbidden_claims": []
+}

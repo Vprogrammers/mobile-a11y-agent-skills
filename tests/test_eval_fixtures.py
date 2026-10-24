@@ -37,7 +37,7 @@ GUARDS: dict[str, dict[str, str]] = {
         "recognizes-no-proven-blocker": r"Button\(context\)\.apply[\s\S]*setOnClickListener",
     },
     "clean-uikit-review": {
-        "recognizes-no-proven-blocker": r"UIButton\(type: \.system\)[\s\S]*preferredFont\(forTextStyle: \.body\)",
+        "recognizes-no-proven-blocker": r"UIButton\(configuration: \.plain\(\)\)[\s\S]*preferredFont\(forTextStyle: \.body\)",
     },
     "en-301-549-scope-review": {
         "inventories-distinct-technologies": r"native Android and iOS[\s\S]*WebView[\s\S]*tagged PDF",

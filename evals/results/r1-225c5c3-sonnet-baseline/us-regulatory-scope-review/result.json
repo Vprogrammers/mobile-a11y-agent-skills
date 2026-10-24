@@ -1,0 +1,25 @@
+{
+  "matched_findings": [
+    {
+      "id": "distinguishes-title-ii-title-iii-and-section-508",
+      "severity": null
+    },
+    {
+      "id": "identifies-title-ii-technical-baseline",
+      "severity": null
+    },
+    {
+      "id": "does-not-reduce-section-508-to-wcag",
+      "severity": null
+    },
+    {
+      "id": "requires-applicability-context",
+      "severity": null
+    },
+    {
+      "id": "rejects-scan-and-future-release-proof",
+      "severity": null
+    }
+  ],
+  "forbidden_claims": []
+}

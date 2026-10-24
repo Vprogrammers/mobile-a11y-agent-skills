@@ -1,0 +1,3 @@
+Judge returned a result that does not match the schema: Severity mismatches:
+- custom-view-needs-accessibility-node-contract: severity must be omitted for a non-defect criterion
+- requires-device-verification: severity must be omitted for a non-defect criterion

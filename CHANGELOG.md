@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Fix `clean-uikit-review`: its "clean" `UIButton(type: .system)` keeps a fixed 15 pt title at every Dynamic Type size, as measured on the simulator. The plugin reviewer reported it and the unassisted baseline did not. The fixture now uses `UIButton(configuration: .plain())`, a simulator test guards it, and `apple-patterns.md` documents the trap.
+- Add severity calibration examples to `mobile-a11y-review`. A defect proven by code keeps its severity even while device confirmation is pending.
+- Drop a judge's stray severity on non-defect criteria instead of rejecting the whole result. Defect severity mismatches still fail.
 - Add `Skill` to every agent's `tools` list. An explicit list replaces the defaults, so before this change no agent could load the skills it is instructed to invoke. The validator now rejects an agent that invokes skills without `Skill`.
 - Let restricted eval agents read skill references with `--add-dir "{plugin_dir}/skills"`, without exposing the rubrics.
 - Add `samples/kmp`, which compiles the shared validation and reduced-motion contract with Android Compose/Settings and iOS UIKit adapters, common, Robolectric, and simulator tests, and an exported Objective-C header check. CI runs it on macOS.

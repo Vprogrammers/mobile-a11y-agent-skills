@@ -13,6 +13,14 @@ public func makeScalableLabel(text: String, baseFont: UIFont = .systemFont(ofSiz
     return label
 }
 
+/// Button whose title follows Dynamic Type. A legacy `UIButton(type: .system)` keeps a fixed 15 pt title.
+@MainActor
+public func makeScalableButton(title: String) -> UIButton {
+    let button = UIButton(configuration: .plain())
+    button.setTitle(title, for: .normal)
+    return button
+}
+
 /// Custom modal container that keeps VoiceOver inside it while presented.
 public final class ModalCardView: UIView {
     public let titleLabel = UILabel()
