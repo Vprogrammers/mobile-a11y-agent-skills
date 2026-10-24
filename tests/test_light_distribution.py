@@ -21,6 +21,33 @@ class LightDistributionTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "must not contain"):
                 build(root, output, SOURCE_COMMIT)
 
+    def test_refuses_to_replace_unrelated_directory(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "unrelated"
+            output.mkdir()
+            (output / "keep.txt").write_text("user data")
+
+            with self.assertRaisesRegex(ValueError, "not a generated distribution"):
+                build(ROOT, output, SOURCE_COMMIT)
+            self.assertEqual((output / "keep.txt").read_text(), "user data")
+
+    def test_replaces_previous_generated_distribution(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "light"
+            build(ROOT, output, SOURCE_COMMIT)
+            (output / "stale.txt").write_text("old")
+
+            build(ROOT, output, SOURCE_COMMIT)
+            self.assertFalse((output / "stale.txt").exists())
+            self.assertEqual(validate(output), 0)
+
+    def test_builds_into_existing_empty_directory(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "light"
+            output.mkdir()
+            build(ROOT, output, SOURCE_COMMIT)
+            self.assertEqual(validate(output), 0)
+
     def test_builds_valid_allowlisted_distribution(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "light"

@@ -24,6 +24,10 @@ def build(root: Path, output: Path, commit: str | None = None) -> None:
     if output == root or root in output.parents or output in root.parents:
         raise ValueError("Output must be outside and must not contain the canonical repository.")
     if output.exists():
+        if not output.is_dir():
+            raise ValueError("Output must be a directory.")
+        if any(output.iterdir()) and not (output / ".source.json").is_file():
+            raise ValueError("Refusing to replace a non-empty directory that is not a generated distribution.")
         shutil.rmtree(output)
 
     claude = output / ".claude"
