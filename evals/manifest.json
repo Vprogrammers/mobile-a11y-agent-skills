@@ -62,7 +62,7 @@
       "prompt": "evals/regulatory-evidence-review.md",
       "fixture": "evals/regulatory-evidence-review/AuditClaim.md",
       "rubric": "evals/regulatory-evidence-review/rubric.json",
-      "minimum_score": 6
+      "minimum_score": 8
     }
   ]
 }
