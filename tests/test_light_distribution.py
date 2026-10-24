@@ -12,6 +12,15 @@ SOURCE_COMMIT = "a" * 40
 
 
 class LightDistributionTests(unittest.TestCase):
+    def test_rejects_output_that_contains_source_repository(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory)
+            root = output / "canonical"
+            root.mkdir()
+
+            with self.assertRaisesRegex(ValueError, "must not contain"):
+                build(root, output, SOURCE_COMMIT)
+
     def test_builds_valid_allowlisted_distribution(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "light"
