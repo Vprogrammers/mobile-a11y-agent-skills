@@ -6,15 +6,16 @@ This repository is generated from [`Vprogrammers/mobile-a11y-agent-skills`](http
 
 ## Install
 
-Copy `.claude/` into the root of your project:
+Copy the agents and skills into the `.claude/` directory at the root of your project:
 
 ```bash
-cp -R .claude /path/to/your-project/
+mkdir -p /path/to/your-project/.claude
+cp -R .claude/agents .claude/skills /path/to/your-project/.claude/
 ```
 
-This installs five specialized agents, five accessibility skills, their references, and consumer project instructions.
+This installs the specialized agents, the accessibility skills, and their references.
 
-Merge existing project instructions deliberately instead of overwriting them.
+Then add the consumer instructions from `.claude/CLAUDE.md`. If your project has no `.claude/CLAUDE.md`, copy the file. Otherwise, merge its sections into your existing file instead of overwriting it.
 
 ## Contents
 

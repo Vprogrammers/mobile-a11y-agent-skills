@@ -20,4 +20,3 @@ Use the installed accessibility agents and skills when work affects Android, iOS
 - Treat passwords, one-time codes, payments, identity, location, health data, accessibility trees, recordings, and logs as sensitive.
 - Do not introduce permissions, analytics, logging, or data collection for accessibility convenience.
 - Verify version-sensitive platform and regulatory claims against current official sources.
-- Do not include generated-by, assistant attribution, or co-author trailers in commits.

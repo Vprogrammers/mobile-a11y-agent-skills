@@ -11,19 +11,37 @@ ALLOWED_ROOT = {".claude", ".source.json", "CONTRIBUTING.md", "LICENSE", "README
 FORBIDDEN_CONSUMER_INSTRUCTIONS = ("./scripts/validate.sh", "update samples/", "update evals/")
 
 
-def main(root: Path) -> int:
+def agent_names(agents: Path) -> set[str]:
+    return {path.stem for path in agents.glob("*.md")}
+
+
+def skill_names(skills: Path) -> set[str]:
+    return {path.parent.name for path in skills.glob("*/SKILL.md")}
+
+
+def compare(kind: str, found: set[str], expected: set[str] | None) -> list[str]:
+    if expected is None:
+        return [] if found else [f"no {kind} found"]
+    errors = []
+    if expected - found:
+        errors.append(f"missing {kind}: " + ", ".join(sorted(expected - found)))
+    if found - expected:
+        errors.append(f"unexpected {kind}: " + ", ".join(sorted(found - expected)))
+    return errors
+
+
+def main(root: Path, source: Path | None = None) -> int:
     root = root.resolve()
     errors: list[str] = []
     unexpected = sorted(path.name for path in root.iterdir() if path.name not in ALLOWED_ROOT)
     if unexpected:
         errors.append("unexpected root entries: " + ", ".join(unexpected))
 
-    agents = sorted((root / ".claude/agents").glob("*.md"))
-    skills = sorted((root / ".claude/skills").glob("*/SKILL.md"))
-    if len(agents) != 5:
-        errors.append(f"expected 5 agents, found {len(agents)}")
-    if len(skills) != 5:
-        errors.append(f"expected 5 skills, found {len(skills)}")
+    # With the canonical repository, the distribution must ship exactly its agents and skills.
+    agents = agent_names(root / ".claude/agents")
+    skills = skill_names(root / ".claude/skills")
+    errors += compare("agents", agents, agent_names(source / "agents") if source else None)
+    errors += compare("skills", skills, skill_names(source / "skills") if source else None)
 
     for path in root.rglob("*.md"):
         text = path.read_text(encoding="utf-8")
@@ -63,7 +81,7 @@ def main(root: Path) -> int:
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: validate_light_distribution.py <distribution-directory>")
+    if len(sys.argv) not in (2, 3):
+        print("Usage: validate_light_distribution.py <distribution-directory> [canonical-repository]")
         raise SystemExit(2)
-    raise SystemExit(main(Path(sys.argv[1])))
+    raise SystemExit(main(Path(sys.argv[1]), Path(sys.argv[2]).resolve() if len(sys.argv) == 3 else None))

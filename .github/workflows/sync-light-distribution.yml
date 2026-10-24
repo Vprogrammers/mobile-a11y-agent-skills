@@ -23,6 +23,8 @@ concurrency:
 
 jobs:
   sync:
+    # A manual dispatch can select any branch; only canonical main may publish.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Check out canonical repository
@@ -38,7 +40,7 @@ jobs:
       - name: Generate and validate distribution
         run: |
           python3 source/scripts/build_light_distribution.py generated
-          python3 source/scripts/validate_light_distribution.py generated
+          python3 source/scripts/validate_light_distribution.py generated source
       - name: Replace generated content
         run: |
           find light -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +

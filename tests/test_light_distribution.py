@@ -1,5 +1,6 @@
 from pathlib import Path
 import json
+import shutil
 import tempfile
 import unittest
 
@@ -52,9 +53,7 @@ class LightDistributionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "light"
             build(ROOT, output, SOURCE_COMMIT)
-            self.assertEqual(validate(output), 0)
-            self.assertEqual(len(list((output / ".claude/agents").glob("*.md"))), 5)
-            self.assertEqual(len(list((output / ".claude/skills").glob("*/SKILL.md"))), 5)
+            self.assertEqual(validate(output, ROOT), 0)
             self.assertFalse((output / "evals").exists())
             self.assertFalse((output / "samples").exists())
             self.assertFalse((output / "scripts").exists())
@@ -67,6 +66,19 @@ class LightDistributionTests(unittest.TestCase):
             build(ROOT, output, SOURCE_COMMIT)
             (output / "evals").mkdir()
             self.assertEqual(validate(output), 1)
+
+    def test_validator_rejects_skill_set_that_differs_from_source(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "light"
+            build(ROOT, output, SOURCE_COMMIT)
+            shutil.rmtree(output / ".claude/skills/ios-a11y")
+            self.assertEqual(validate(output, ROOT), 1)
+
+            build(ROOT, output, SOURCE_COMMIT)
+            extra = output / ".claude/skills/stale-skill"
+            extra.mkdir()
+            (extra / "SKILL.md").write_text("---\nname: stale-skill\n---\n")
+            self.assertEqual(validate(output, ROOT), 1)
 
     def test_validator_rejects_maintainer_command(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
