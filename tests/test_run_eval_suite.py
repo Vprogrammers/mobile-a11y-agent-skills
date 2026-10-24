@@ -67,6 +67,33 @@ class RunEvalSuiteTests(unittest.TestCase):
             self.assertEqual(summary["model"], "stub")
             self.assertEqual(summary["runs"], [{"id": "clean-compose-review", "status": "passed"}])
 
+    def test_excessive_stderr_is_recorded_in_summary(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            temporary = Path(directory)
+            output = temporary / "run"
+            agent = temporary / "agent.py"
+            agent.write_text(
+                "import sys\nsys.stdin.read()\nsys.stderr.write('x' * 1_000_001)\n",
+                encoding="utf-8",
+            )
+            environment = dict(os.environ)
+            environment["EVAL_AGENT_COMMAND"] = f"python3 {agent}"
+            environment["EVAL_JUDGE_COMMAND"] = "python3 -c pass"
+            result = subprocess.run(
+                ["python3", "scripts/run_eval_suite.py", str(output), "clean-compose-review"],
+                cwd=ROOT,
+                env=environment,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            summary = json.loads((output / "summary.json").read_text(encoding="utf-8"))
+            self.assertEqual(
+                summary["runs"],
+                [{"id": "clean-compose-review", "status": "agent-output-too-large"}],
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
