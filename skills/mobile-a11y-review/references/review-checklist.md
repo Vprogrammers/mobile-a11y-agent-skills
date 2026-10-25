@@ -23,6 +23,8 @@ Scan the changed code for these signals before reading it line by line. Each one
 | `FocusRequester` or `@AccessibilityFocusState` driven by ordinary state | Focus moves only for meaningful context changes |
 | `clickable(indication = null)`, custom indications, or removed focus styles | Keyboard and switch focus stays visible |
 | Password, OTP, payment, or identity fields with custom masking, blocked paste, or `contentType`/`textContentType` changes | Autofill, paste, and consistent visual and accessibility masking |
+| Android sensitive fields without `sensitiveData`/`accessibilityDataSensitive`, or the flag applied broadly | Untrusted services are restricted without hiding necessary content from legitimate assistive technologies; masking, redaction, and secure logging remain intact |
+| Custom Android text rendering that bypasses `android.text.Layout` | Android 16 outline-text preference is observed and the result remains legible |
 | Visible text differs from `contentDescription`, `accessibilityLabel`, or Voice Control input labels | The accessible name contains the visible label so spoken control names remain predictable |
 | Concatenated user-facing strings, hard-coded accessibility text, manual plurals, or locale-dependent formatting | Labels, values, hints, and announcements remain grammatical and synchronized in every supported locale and RTL/BiDi layout |
 | Touch-exploration checks, enabled accessibility-service inspection, or VoiceOver-running status checks | Core semantics and functionality do not depend on detecting one assistive technology |

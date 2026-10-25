@@ -1,6 +1,6 @@
 ---
 name: android-a11y
-description: Implement or review Android accessibility in Jetpack Compose or Views. Use for TalkBack or Voice Access problems, contentDescription, visible-label matching, localization, accessibility-service detection, semantics, traversal, focus, headings, stateDescription, custom actions, live regions, font scaling, touch targets, autofill, errors, motion, contrast, WebView, accessibility testing, or “TalkBack does not read this”.
+description: Implement or review Android accessibility in Jetpack Compose or Views. Use for TalkBack or Voice Access problems, contentDescription, visible-label matching, localization, accessibility-service detection, sensitive accessibility data, outline text, custom text rendering, semantics, traversal, focus, headings, stateDescription, custom actions, live regions, font scaling, touch targets, autofill, errors, motion, contrast, WebView, accessibility testing, or “TalkBack does not read this”.
 ---
 
 # Implement Android accessibility
@@ -23,11 +23,12 @@ Match the code in the change to a section of [references/android-patterns.md](re
 | Code in the change | Section |
 |---|---|
 | `Modifier.semantics`, `clearAndSetSemantics`, `mergeDescendants`, custom composables | [Compose semantics](references/android-patterns.md#compose-semantics) |
+| `contentDescription`, hard-coded accessibility text, formatted strings, plurals, locale or RTL handling | [Names, voice access, and localization](references/android-patterns.md#names-voice-access-and-localization) |
 | `FocusRequester`, `liveRegion`, `announceForAccessibility`, lazy lists | [Focus and dynamic updates](references/android-patterns.md#focus-and-dynamic-updates) |
-| Fixed heights, text sizes, touch targets, animations | [Touch, text, and layout](references/android-patterns.md#touch-text-and-layout) |
+| Fixed heights, text sizes, touch targets, animations, outline text or custom text rendering | [Touch, text, and layout](references/android-patterns.md#touch-text-and-layout) |
 | Insets, edge-to-edge, `onBackPressed`, back handlers | [Edge-to-edge, insets, and back navigation](references/android-patterns.md#edge-to-edge-insets-and-back-navigation) |
 | `clickable` indications, keyboard order | [Keyboard focus visibility](references/android-patterns.md#keyboard-focus-visibility) |
 | Custom `View`, `onDraw`, `AccessibilityDelegateCompat` | [Views APIs](references/android-patterns.md#views-apis) |
 | `Canvas`, charts, maps, video or audio players | [Charts, custom drawing, media, and maps](references/android-patterns.md#charts-custom-drawing-media-and-maps) |
-| Text fields, passwords, one-time codes, autofill | [Input, autofill, and sensitive data](references/android-patterns.md#input-autofill-and-sensitive-data) |
+| Text fields, passwords, one-time codes, autofill, `sensitiveData`, `accessibilityDataSensitive` | [Input, autofill, and sensitive data](references/android-patterns.md#input-autofill-and-sensitive-data) |
 | `WebView` | [WebView and hybrid UI](references/android-patterns.md#webview-and-hybrid-ui) |

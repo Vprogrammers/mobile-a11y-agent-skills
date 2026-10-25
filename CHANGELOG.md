@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Strengthen agent routing, source verification, test-edit boundaries, repair/re-review flow, completion status, and Android 16 accessibility guidance.
 - Clarify agent orchestration, PR diff discovery, KMP skill routing, scope boundaries, and completion evidence. Add visible-label matching, localization, and assistive-technology detection guidance, and move detailed eval operations from the README to `docs/evals.md`.
 - Retain the r5 repair eval bundles and record the result: plugin and baseline both fixed `compose-order-card` with 8/8 in all three runs, so this eval does not yet separate them. See `evals/results/README.md`.
 - Add repair evals that measure whether an engineer agent fixes a defect, not only whether it describes one. `compose-order-card` gives `android-a11y-engineer` a Gradle workspace with the `OrderCard.kt` fixture. Hidden Robolectric tests and a pattern check score the fix without a judge, and a required test fails a fix that breaks existing behavior. `run_repair_eval.py --self-check` runs in Android CI and proves the tests fail on the original and pass on a reference fix.

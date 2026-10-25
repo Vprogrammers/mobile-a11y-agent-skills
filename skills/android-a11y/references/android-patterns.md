@@ -94,6 +94,7 @@ Use a live region only when the update must be announced without focus.
 - Android 14 introduced nonlinear font scaling up to 200%. Do not assume `scaledDensity` is linear at large scales.
 - Avoid fixed-height containers around text. Test 1.0x, 1.3x, 1.5x, and 2.0x font scales plus narrow width and RTL.
 - Respect animator duration scale and the app's reduced-motion policy without removing meaningful state changes.
+- Android 16 replaces high-contrast text with outline text. Standard text rendering handles this through the framework; UI toolkits and apps that bypass `android.text.Layout` for custom text rendering must observe the corresponding `AccessibilityManager` state/listener and provide an equivalent outlined result. Do not add service detection to ordinary app text that already uses platform rendering.
 
 ### Bad: clipped scaled text
 
@@ -169,6 +170,7 @@ Column {
 - Password semantics intentionally protect the value; TalkBack may announce bullets, character counts, or privacy-oriented feedback depending on settings and version. Never promise exact speech.
 - If digits are visually unmasked, do not mark the field as a password merely to obtain a numeric keyboard. Choose keyboard and visual transformation independently.
 - Do not request `READ_SMS` for convenience. Prefer SMS Retriever, SMS User Consent, or user-mediated platform flows when SMS verification is required.
+- For secrets and financial or identity data, use `Modifier.semantics { sensitiveData = true }`, `android:accessibilityDataSensitive="true"`, `View.isAccessibilityDataSensitive`, or `AccessibilityNodeInfoCompat.setAccessibilityDataSensitive(true)` when supported by the project's SDK and dependencies. This limits exposure to services that are not declared accessibility tools; it does not replace masking, redaction, secure logging, screenshot policy, or threat analysis, and it must not hide the value from legitimate assistive technology users.
 
 ## WebView and hybrid UI
 
@@ -208,6 +210,9 @@ Official sources:
 - Font scaling: https://developer.android.com/about/versions/14/features#non-linear-font-scaling
 - Edge-to-edge in Compose: https://developer.android.com/develop/ui/compose/system/system-bars
 - Android 16 behavior changes (edge-to-edge opt-out, predictive back): https://developer.android.com/about/versions/16/behavior-changes-16
+- Android 16 accessibility features (outline text): https://developer.android.com/about/versions/16/features#accessibility
+- Sensitive accessibility data: https://developer.android.com/reference/androidx/core/view/accessibility/AccessibilityNodeInfoCompat#setAccessibilityDataSensitive(boolean)
+- Android security guidance for `accessibilityDataSensitive`: https://developer.android.com/blog/posts/enhancing-android-security-stop-malware-from-snooping-on-your-app-data
 - WebView settings: https://developer.android.com/reference/android/webkit/WebSettings
 - Custom views and virtual view hierarchies: https://developer.android.com/guide/topics/ui/accessibility/views/custom-views
 - Media3 `SubtitleView`: https://developer.android.com/reference/androidx/media3/ui/SubtitleView
