@@ -1,0 +1,67 @@
+--- before
++++ after
+@@ -54,9 +54,10 @@
+ import androidx.compose.ui.graphics.Color
+ import androidx.compose.ui.input.pointer.pointerInput
+ import androidx.compose.ui.semantics.Role
+-import androidx.compose.ui.semantics.clearAndSetSemantics
++import androidx.compose.ui.semantics.LiveRegionMode
+ import androidx.compose.ui.semantics.contentDescription
+-import androidx.compose.ui.semantics.heading
++import androidx.compose.ui.semantics.error
++import androidx.compose.ui.semantics.liveRegion
+ import androidx.compose.ui.semantics.semantics
+ import androidx.compose.ui.text.SpanStyle
+ import androidx.compose.ui.text.buildAnnotatedString
+@@ -69,20 +70,23 @@
+     Row(
+         Modifier
+             .fillMaxWidth()
+-            .clickable(
+-                interactionSource = remember { MutableInteractionSource() },
+-                indication = null,
+-                onClick = onOpen,
+-            )
+-            .clearAndSetSemantics { contentDescription = "Order ${order.number}, ${order.status}" }
+             .padding(16.dp),
+         verticalAlignment = Alignment.CenterVertically,
+     ) {
+-        Column(Modifier.weight(1f)) {
++        // Only the summary opens the order, so the Track button stays a separate focusable node.
++        Column(
++            Modifier
++                .weight(1f)
++                .clickable(onClickLabel = "Open order ${order.number}", role = Role.Button, onClick = onOpen)
++                .semantics(mergeDescendants = true) {},
++        ) {
+             Text("Order ${order.number}", style = MaterialTheme.typography.titleMedium)
+             Text(order.status)
+         }
+-        TextButton(onClick = onTrack) {
++        TextButton(
++            onClick = onTrack,
++            modifier = Modifier.semantics { contentDescription = "Track order ${order.number}" },
++        ) {
+             Icon(Icons.Default.LocationOn, contentDescription = null)
+             Text("Track")
+         }
+@@ -100,8 +104,17 @@
+             value = street,
+             onValueChange = onStreetChange,
+             label = { Text("Street") },
+-            modifier = Modifier.focusRequester(focusRequester),
++            isError = errors.isNotEmpty(),
++            supportingText = if (errors.isEmpty()) null else {
++                {
++                    Column(Modifier.semantics { liveRegion = LiveRegionMode.Polite }) {
++                        errors.forEach { Text("Error: $it") }
++                    }
++                }
++            },
++            modifier = Modifier
++                .focusRequester(focusRequester)
++                .semantics { if (errors.isNotEmpty()) error(errors.joinToString(". ")) },
+         )
+-        errors.forEach { Text(it, color = MaterialTheme.colorScheme.error) }
+     }
+ }

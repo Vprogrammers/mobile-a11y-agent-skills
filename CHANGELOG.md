@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Retain the r5 repair eval bundles and record the result: plugin and baseline both fixed `compose-order-card` with 8/8 in all three runs, so this eval does not yet separate them. See `evals/results/README.md`.
 - Add repair evals that measure whether an engineer agent fixes a defect, not only whether it describes one. `compose-order-card` gives `android-a11y-engineer` a Gradle workspace with the `OrderCard.kt` fixture. Hidden Robolectric tests and a pattern check score the fix without a judge, and a required test fails a fix that breaks existing behavior. `run_repair_eval.py --self-check` runs in Android CI and proves the tests fail on the original and pass on a reference fix.
 - Retain the r4 held-out eval bundles and record the result: on defects the skills do not teach, the plugin and the baseline both passed 3 of 6 runs. See `evals/results/README.md`.
 - Stop requiring Smart Invert in the `heldout-swiftui-review` verification criterion, now `verification-covers-voiceover-and-switch-control`. A missed Smart Invert defect lost points twice.

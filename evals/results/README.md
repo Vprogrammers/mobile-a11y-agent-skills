@@ -86,3 +86,23 @@ Findings:
 - **The judges agreed on 9 of 12 runs.** All three disagreements were on the verification criterion, and Opus was the stricter judge each time.
 
 After these runs, the SwiftUI verification criterion stopped requiring Smart Invert, because a missed Smart Invert defect also failed verification. The scores above use the original criterion, so they are stricter than later runs. The finding id changed from `verification-covers-voiceover-switch-control-and-smart-invert` to `verification-covers-voiceover-and-switch-control`.
+
+## r5: repair eval, three runs per variant, 2026-10-25
+
+`run_repair_eval.py` ran `compose-order-card` at commit `f54f6ad`. The agent was `claude -p --model sonnet` with Read, Glob, Grep, Edit, Write, and Bash, plus the plugin, `android-a11y-engineer`, and Skill for the plugin variant. Hidden tests scored every fix, with no judge. Each bundle keeps the agent's report (`response.md`), the fix (`fix.diff`), and the scored checks (`result.json`). The Gradle logs are not kept because they contain local paths.
+
+| Variant | Runs | Score |
+|---|---|---|
+| Plugin | 8, 8, 8 | **3/3 passed, 24/24** |
+| Baseline | 8, 8, 8 | **3/3 passed, 24/24** |
+
+Findings:
+
+- **The eval does not separate the variants.** Every fix exposed Track as its own action, tied the errors to the field with `isError`, `supportingText`, and error semantics, removed `indication = null`, and kept the existing behavior. The prompt names the users and the actions that must work, and that is enough for the baseline to find all three defects.
+- **Small differences outside the checks.** The plugin added a 48 dp minimum height to the open target in two of three runs. The baseline did not add one, but one baseline run listed the touch target as a device check. One baseline run added a polite live region to the error text.
+- **Every report is honest about evidence.** All six built with `assembleDebug`, and none claims TalkBack, Switch Access, or keyboard results. Each lists what still needs a real-device check. The engineer rule from #33 to build before reporting held in every plugin run, and the baseline followed the prompt's build instruction.
+
+Limits:
+
+- One repair eval with three defects is too easy to measure the engineer agent. A useful next eval needs defects the baseline misses in review, such as `input-focus-is-not-accessibility-focus` from r3, or a held-out defect.
+- Three runs per variant is a minimum, not a benchmark.
