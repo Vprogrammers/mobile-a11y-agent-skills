@@ -34,6 +34,7 @@ import androidx.compose.ui.platform.LocalAccessibilityManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.contentType
 import androidx.compose.ui.semantics.error
@@ -110,7 +111,8 @@ fun PasswordField(
         onValueChange = onValueChange,
         label = { Text("Password") },
         isError = errorMessage != null,
-        supportingText = errorMessage?.let { { Text(it) } },
+        // error() already gives TalkBack the message; hiding the visible copy stops it being read twice.
+        supportingText = errorMessage?.let { { Text(it, Modifier.clearAndSetSemantics {}) } },
         visualTransformation = PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         modifier = Modifier.semantics {

@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Record the first real-device check: TalkBack 17.1 on a Samsung Galaxy Z Fold7 with Android 17 confirmed the Compose role, click-label, toggle-row, link, timeout, language, chart, and password patterns and the Views click label and custom action, and confirmed the `ClickableText` and split toggle-row defects. See `docs/device-evidence/2026-10-25-android-talkback.md`.
+- Stop TalkBack from reading a field error twice: when Material3 `supportingText` shows the same text as `error()`, hide the visible copy from accessibility. The sample and a test now do this.
+- Note that a clickable Views `TextView` is announced without a button role.
+
 ## 0.8.0
 
 - Fix two factual errors: the Views value is `android:accessibilityDataSensitive="yes"`, set in code with `setAccessibilityDataSensitive(ACCESSIBILITY_DATA_SENSITIVE_YES)` on API 34+, and Reduce Motion and Full Keyboard Access are not under Display & Text Size.
