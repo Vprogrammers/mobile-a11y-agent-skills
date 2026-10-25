@@ -42,8 +42,9 @@ abstract class GenerateEvalFixtures : DefaultTask() {
     }
 }
 
+// Repair eval workspaces copy this build without the evals directory and compile only the fixture under repair.
+val evals = rootDir.resolve("../../evals")
 val generateEvalFixtures = tasks.register<GenerateEvalFixtures>("generateEvalFixtures") {
-    val evals = rootDir.resolve("../../evals")
     // kmp-boundary-review is excluded: it intentionally mixes platform types in common code.
     fixtures.from(
         evals.resolve("android-compose-review/CheckoutScreen.kt"),
@@ -60,7 +61,9 @@ val generateEvalFixtures = tasks.register<GenerateEvalFixtures>("generateEvalFix
 
 androidComponents {
     onVariants { variant ->
-        variant.sources.kotlin?.addGeneratedSourceDirectory(generateEvalFixtures, GenerateEvalFixtures::outputDir)
+        if (evals.isDirectory) {
+            variant.sources.kotlin?.addGeneratedSourceDirectory(generateEvalFixtures, GenerateEvalFixtures::outputDir)
+        }
     }
 }
 

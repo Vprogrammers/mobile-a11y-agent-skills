@@ -1,0 +1,22 @@
+{
+  "repairs": [
+    {
+      "id": "compose-order-card",
+      "agent": "android-a11y-engineer",
+      "platform": "android",
+      "prompt": "evals/repairs/compose-order-card/prompt.md",
+      "fixture": "evals/compose-semantics-traps-review/OrderCard.kt",
+      "workspace_path": "src/main/kotlin/evals/fixtures/OrderCard.kt",
+      "stubs": "evals/repairs/compose-order-card/Models.kt",
+      "tests": "evals/repairs/compose-order-card/RepairTest.kt",
+      "reference_fix": "evals/repairs/compose-order-card/ReferenceFix.kt",
+      "minimum_score": 6,
+      "checks": [
+        {"id": "track-action-reachable", "points": 2, "test": "trackActionIsReachable"},
+        {"id": "error-exposed-on-field", "points": 2, "test": "errorIsExposedOnField"},
+        {"id": "focus-indication-kept", "points": 2, "absent": "indication\\s*=\\s*null"},
+        {"id": "behavior-preserved", "points": 2, "test": "existingBehaviorIsPreserved", "required": true}
+      ]
+    }
+  ]
+}

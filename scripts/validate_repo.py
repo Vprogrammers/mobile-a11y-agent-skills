@@ -337,6 +337,36 @@ def main(root: Path) -> int:
     except (FileNotFoundError, json.JSONDecodeError, KeyError, TypeError) as error:
         errors.append(f"Invalid eval manifest or rubric: {error}")
 
+    try:
+        repairs = json.loads((root / "evals/repairs/manifest.json").read_text(encoding="utf-8"))["repairs"]
+        repair_ids: set[str] = set()
+        for repair in repairs:
+            repair_id = str(repair["id"])
+            if repair_id in repair_ids:
+                errors.append(f"Duplicate repair id: {repair_id}")
+            repair_ids.add(repair_id)
+            if repair["agent"] not in agent_names:
+                errors.append(f"Repair {repair_id} references unknown agent: {repair['agent']}")
+            if repair["platform"] != "android":
+                errors.append(f"Repair {repair_id} platform must be android")
+            for field in ("prompt", "fixture", "stubs", "tests", "reference_fix"):
+                if not (root / str(repair[field])).is_file():
+                    errors.append(f"Repair {repair_id} missing {field}: {repair[field]}")
+            check_ids = [check["id"] for check in repair["checks"]]
+            if len(check_ids) != len(set(check_ids)):
+                errors.append(f"Repair {repair_id} has duplicate check ids")
+            for check in repair["checks"]:
+                if ("test" in check) == ("absent" in check):
+                    errors.append(f"Repair {repair_id} check {check['id']} needs exactly one of test or absent")
+                if not isinstance(check["points"], int) or isinstance(check["points"], bool) or check["points"] <= 0:
+                    errors.append(f"Repair {repair_id} check {check['id']} points must be a positive integer")
+            if not any(check.get("required") for check in repair["checks"]):
+                errors.append(f"Repair {repair_id} needs a required check that existing behavior still works")
+            if repair["minimum_score"] > sum(check["points"] for check in repair["checks"]):
+                errors.append(f"Repair {repair_id} minimum score exceeds the maximum")
+    except (FileNotFoundError, json.JSONDecodeError, KeyError, TypeError) as error:
+        errors.append(f"Invalid repair manifest: {error}")
+
     validator = root / "scripts/validate.sh"
     if not os.access(validator, os.X_OK):
         errors.append("scripts/validate.sh must be executable")
