@@ -7,7 +7,7 @@ Invoke the `mobile-a11y-workflow` skill before planning or delegating accessibil
 | Work | Agent |
 |---|---|
 | Shared public APIs, exports, dependencies, source-set ownership, native UI boundaries, Compose Multiplatform UI | `kmp-a11y-architect` |
-| Compose, Android Views, TalkBack, Voice Access, Switch Access | `android-a11y-engineer` |
-| SwiftUI, UIKit, VoiceOver, Voice Control, Switch Control, Dynamic Type | `ios-a11y-engineer` |
-| Automated and device test coverage | `accessibility-test-engineer` |
+| Compose, Android Views, TalkBack, Voice Access, Switch Access, and the smallest direct regression test | `android-a11y-engineer` |
+| SwiftUI, UIKit, VoiceOver, Voice Control, Switch Control, Dynamic Type, and the smallest direct regression test | `ios-a11y-engineer` |
+| Test strategy, new test layers, cross-platform coverage, audits, and device-verification plans | `accessibility-test-engineer` |
 | Independent final review | `accessibility-reviewer` |

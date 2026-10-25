@@ -19,9 +19,9 @@ The project helps coding agents implement and review accessible native mobile in
 | Agent | Use it for |
 |---|---|
 | `kmp-a11y-architect` | Shared contracts, source-set boundaries, dependencies, Swift export/SKIE, and interop |
-| `android-a11y-engineer` | Compose or Views implementation and TalkBack/Voice Access behavior |
-| `ios-a11y-engineer` | SwiftUI or UIKit implementation and VoiceOver/Voice Control behavior |
-| `accessibility-test-engineer` | Unit, semantics, UI, audit, and device-test coverage |
+| `android-a11y-engineer` | Compose or Views implementation, TalkBack/Voice Access behavior, and the smallest direct regression test |
+| `ios-a11y-engineer` | SwiftUI or UIKit implementation, VoiceOver/Voice Control behavior, and the smallest direct regression test |
+| `accessibility-test-engineer` | Test strategy, new test layers or targets, cross-platform coverage, audits, and device-verification plans |
 | `accessibility-reviewer` | Independent, severity-based review before a pull request or release |
 
 ## Skills
