@@ -337,12 +337,12 @@ class ValidateRepositoryTests(unittest.TestCase):
         from validate_repo import bare_urls
 
         text = (
-            "- Audit: https://example.org/audit(for:). "
-            "See (https://example.org/x), <https://example.org/y>."
+            "- Audit: https://docs.test/audit(for:). "
+            "See (https://docs.test/x), <https://docs.test/y>, and the sample https://example.com/terms."
         )
         self.assertEqual(
             bare_urls(text),
-            {"https://example.org/audit(for:)", "https://example.org/x", "https://example.org/y"},
+            {"https://docs.test/audit(for:)", "https://docs.test/x", "https://docs.test/y"},
         )
 
 if __name__ == "__main__":

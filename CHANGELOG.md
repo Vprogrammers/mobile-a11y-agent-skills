@@ -2,6 +2,14 @@
 
 ## 0.8.0
 
+- Fix two factual errors: the Views value is `android:accessibilityDataSensitive="yes"`, set in code with `setAccessibilityDataSensitive(ACCESSIBILITY_DATA_SENSITIVE_YES)` on API 34+, and Reduce Motion and Full Keyboard Access are not under Display & Text Size.
+- Add Views custom actions, click labels, and pane titles, and iOS custom toggles and inline links, each compiled in `samples/`. Cover time limits in the Android and iOS skill steps, name Smart Invert in the iOS settings list, and add severity calibration examples for unnamed controls, image-only information, disappearing actions, unassociated errors, and inverted media.
+- Score the rejected compliance claim in `regulatory-evidence-review` as a compliance criterion, not as a P1 defect.
+- Teach the workflow when to answer directly with a domain skill and when to delegate, re-review committed or working-tree changes, report a finished review as `completed` with P0/P1 findings under Blockers, stop out-of-scope tasks as `blocked`, and allow upstream sources of tools in use, such as Robolectric and SKIE.
+- Keep `.claude/CLAUDE.md` to maintainer rules and add the plugin manifest check, the repair self-check, the held-out rule, the frontmatter contract, and approval before paid model evals. Exclude attribution from pull request descriptions as well as commits.
+- Bring the Android and iOS lookup tables and descriptions in line with the 0.8.0 guidance, and stop a checklist row from suggesting reliance on TalkBack detection.
+- Add a README verification status table that separates automated evidence from real-device testing.
+- Replace two Apple documentation links that now return 404, and skip RFC 2606 example domains in the external link check.
 - Move agent routing, the repair/re-review loop, the source policy, safety rules, and the completion report into a new `mobile-a11y-workflow` skill. Claude Code does not load `CLAUDE.md` from a plugin, so plugin installs previously never received the status values and rules the agents referred to. Every agent preloads the skill through `skills` frontmatter, keeps an invoke fallback for `--agent` sessions, and sets `maxTurns`. Both `CLAUDE.md` files and the README now point to the skill.
 - Give `accessibility-test-engineer` web tools for version checks and `kmp-a11y-architect` read-only Bash for generated headers, and name the neighbouring agent in every agent description.
 - Teach headings with levels, reading-order priority, 44 pt targets, the VoiceOver escape gesture, iOS 17 announcements, SwiftUI field errors, language marking, Large Content Viewer, Reduce Motion, Increase Contrast, and Full Keyboard Access on iOS; and click labels, roles, language marking, and the API 36 deprecation of `announceForAccessibility` on Android. Chart examples format values through resources and locale-aware formatters.

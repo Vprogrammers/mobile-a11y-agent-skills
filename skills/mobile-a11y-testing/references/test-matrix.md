@@ -156,5 +156,5 @@ Official sources:
 - Compose accessibility checks API (API 34+, not Robolectric): https://developer.android.com/reference/kotlin/androidx/compose/ui/test/junit4/accessibility/package-summary
 - Espresso accessibility checks: https://developer.android.com/training/testing/espresso/accessibility-checking
 - Robolectric configuration: https://robolectric.org/configuring/
-- XCUITest audits: https://developer.apple.com/documentation/xctest/xcuiapplication/performaccessibilityaudit(for:)
+- XCUITest audits: https://developer.apple.com/documentation/xcuiautomation/xcuiapplication/performaccessibilityaudit(for:_:)
 - Compose Multiplatform iOS accessibility: https://kotlinlang.org/docs/multiplatform/compose-ios-accessibility.html

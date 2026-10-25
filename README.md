@@ -139,7 +139,7 @@ Review [SECURITY.md](SECURITY.md) before running agents with shell access or usi
 
 ## Distribution
 
-Use the repository directly as a Claude Code plugin or copy `agents/` and `skills/` into a project. GitHub Releases are intentionally not generated; tags may still identify reviewed snapshots if versioned distribution is needed later.
+Use the repository directly as a Claude Code plugin or copy `agents/` and `skills/` into a project. Each reviewed version has a `v<version>` tag and a GitHub release whose notes are that version's [CHANGELOG](CHANGELOG.md) entry. Plugin installs stay on the `version` in `.claude-plugin/plugin.json` until it changes.
 
 ## License
 

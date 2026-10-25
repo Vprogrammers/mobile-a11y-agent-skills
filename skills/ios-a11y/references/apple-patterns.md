@@ -217,7 +217,7 @@ Still report the restrictive viewport to the web owners. Other browsers and web 
 Official sources:
 
 - Apple accessibility: https://developer.apple.com/accessibility/
-- SwiftUI accessibility: https://developer.apple.com/documentation/swiftui/accessibility
+- SwiftUI accessibility fundamentals: https://developer.apple.com/documentation/swiftui/accessibility-fundamentals
 - UIKit accessibility: https://developer.apple.com/documentation/uikit/accessibility
 - UIButton.Configuration: https://developer.apple.com/documentation/uikit/uibutton/configuration-swift.struct
 - WKWebViewConfiguration.ignoresViewportScaleLimits: https://developer.apple.com/documentation/webkit/wkwebviewconfiguration/ignoresviewportscalelimits
