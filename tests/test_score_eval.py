@@ -49,11 +49,34 @@ class ScoreEvalTests(unittest.TestCase):
         self.assertIn("- gesture-only-help", result.stdout)
 
     def test_unrated_defect_still_counts_when_severity_is_not_required(self) -> None:
-        rubric = json.loads((ROOT / "evals/regulatory-evidence-review/rubric.json").read_text(encoding="utf-8"))
-        defect = next(item for item in rubric["required_findings"] if item["kind"] == "defect")
-        result = self.run_score("regulatory-evidence-review", {"matched_findings": [defect["id"]], "forbidden_claims": []})
-        self.assertIn(f"regulatory-evidence-review: {defect['points']}/", result.stdout)
-        self.assertNotIn("without the required severity", result.stdout)
+        # No shipped eval has a defect without severity_required, so score a minimal repository copy.
+        import contextlib
+        import io
+        import sys
+
+        sys.path.insert(0, str(ROOT / "scripts"))
+        import score_eval
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "evals").mkdir()
+            (root / "evals/rubric.json").write_text(json.dumps({
+                "required_findings": [
+                    {"id": "unlabeled-control", "points": 2, "kind": "defect", "criteria": "x", "expected_severity": "P1"}
+                ],
+                "forbidden_claims": ["x"],
+            }), encoding="utf-8")
+            (root / "evals/manifest.json").write_text(json.dumps({"evaluations": [
+                {"id": "example", "agent": "a", "prompt": "p", "fixture": "f", "rubric": "evals/rubric.json", "minimum_score": 2}
+            ]}), encoding="utf-8")
+            result = root / "result.json"
+            result.write_text(json.dumps({"matched_findings": ["unlabeled-control"], "forbidden_claims": []}), encoding="utf-8")
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                code = score_eval.main(root, "example", str(result))
+        self.assertEqual(code, 0, output.getvalue())
+        self.assertIn("example: 2/2", output.getvalue())
+        self.assertNotIn("without the required severity", output.getvalue())
 
     def test_below_threshold_fails(self) -> None:
         result = self.run_score(

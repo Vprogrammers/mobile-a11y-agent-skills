@@ -10,9 +10,10 @@ description: Implement or review SwiftUI and UIKit accessibility. Use for VoiceO
 3. Group, contain, or ignore children according to the logical interaction; do not flatten unrelated actions.
 4. Expose adjustable and custom controls through native actions, not gesture instructions alone.
 5. Move accessibility focus only for meaningful context changes and choose screen/layout notifications deliberately in UIKit.
-6. Support accessibility Dynamic Type sizes, Voice Control, Switch Control, Full Keyboard Access, Reduce Motion, Increase Contrast, Reduce Transparency, Bold Text, Button Shapes, Differentiate Without Color, On/Off Labels, and Large Content Viewer where relevant.
-7. Test navigation, modals, lists, sliders, charts, custom drawing, media, and web content.
-8. Run XCUITest accessibility audits where supported, triage findings, and verify VoiceOver/Voice Control on a real device.
+6. Give users enough time: keep actionable content until it is dismissed or long enough to reach, and add a pause control to content that moves on its own.
+7. Support accessibility Dynamic Type sizes, Voice Control, Switch Control, Full Keyboard Access, Reduce Motion, Increase Contrast, Reduce Transparency, Smart Invert, Bold Text, Button Shapes, Differentiate Without Color, On/Off Labels, and Large Content Viewer where relevant.
+8. Test navigation, modals, lists, sliders, charts, custom drawing, media, and web content.
+9. Run XCUITest accessibility audits where supported, triage findings, and verify VoiceOver/Voice Control on a real device.
 
 ## Where to look
 
@@ -20,7 +21,7 @@ Match the code in the change to a section of [references/apple-patterns.md](refe
 
 | Code in the change | Section |
 |---|---|
-| `accessibilityElement(children:)`, labels, values, traits, headings, reading order, selection shown by color, gestures, custom actions, small targets | [SwiftUI structure](references/apple-patterns.md#swiftui-structure) |
+| `accessibilityElement(children:)`, labels, values, traits, custom toggles, inline links, headings, reading order, selection shown by color, gestures, custom actions, small targets | [SwiftUI structure](references/apple-patterns.md#swiftui-structure) |
 | `accessibilityLabel`, `accessibilityInputLabels`, hard-coded accessibility text, String Catalog, locale or RTL handling, text in another language | [Names, voice control, and localization](references/apple-patterns.md#names-voice-control-and-localization) |
 | `@AccessibilityFocusState`, `UIAccessibility.post`, announcements, modals, escape, presentations, field errors | [Focus, navigation, and notifications](references/apple-patterns.md#focus-navigation-and-notifications) |
 | Fonts, fixed frames, `UIButton` titles, `dynamicTypeSize` | [Dynamic Type and layout](references/apple-patterns.md#dynamic-type-and-layout) |

@@ -9,12 +9,13 @@ description: Implement or review Android accessibility in Jetpack Compose or Vie
 2. Prefer native controls and preserve built-in role, state, action, focus, keyboard, selection, and autofill behavior.
 3. Model each logical control as one usable node; merge or clear semantics only with a verified result.
 4. Expose state and errors through semantics; reserve live regions and announcements for important asynchronous changes.
-5. Treat input focus and TalkBack accessibility focus as different systems. Do not claim Compose can directly request TalkBack focus through a stable public API.
-6. Support large font, RTL, dark theme, reduced/remove animations, keyboard with visible focus, Switch Access, Voice Access, and 48 dp touch targets.
-7. Apply system bar, cutout, and IME insets for edge-to-edge, and handle back through the predictive back APIs so panes stay dismissible.
-8. Test custom controls, lists, dialogs, sheets, sliders, charts, WebViews, and navigation boundaries on representative API levels.
-9. Use host tests only when their environment supports the required UI behavior; use device tests for framework integration.
-10. Verify TalkBack and Voice Access on a real device before claiming actual announcements or navigation behavior.
+5. Give users enough time: honor the recommended accessibility timeout for content that disappears with an action, and add a pause control to content that moves on its own.
+6. Treat input focus and TalkBack accessibility focus as different systems. Do not claim Compose can directly request TalkBack focus through a stable public API.
+7. Support large font, RTL, dark theme, reduced/remove animations, keyboard with visible focus, Switch Access, Voice Access, and 48 dp touch targets.
+8. Apply system bar, cutout, and IME insets for edge-to-edge, and handle back through the predictive back APIs so panes stay dismissible.
+9. Test custom controls, lists, dialogs, sheets, sliders, charts, WebViews, and navigation boundaries on representative API levels.
+10. Use host tests only when their environment supports the required UI behavior; use device tests for framework integration.
+11. Verify TalkBack and Voice Access on a real device before claiming actual announcements or navigation behavior.
 
 ## Where to look
 
@@ -28,7 +29,7 @@ Match the code in the change to a section of [references/android-patterns.md](re
 | Fixed heights, text sizes, touch targets, animations, outline text or custom text rendering | [Touch, text, and layout](references/android-patterns.md#touch-text-and-layout) |
 | Insets, edge-to-edge, `onBackPressed`, back handlers | [Edge-to-edge, insets, and back navigation](references/android-patterns.md#edge-to-edge-insets-and-back-navigation) |
 | `clickable` indications, keyboard order | [Keyboard focus visibility](references/android-patterns.md#keyboard-focus-visibility) |
-| Custom `View`, `onDraw`, `AccessibilityDelegateCompat` | [Views APIs](references/android-patterns.md#views-apis) |
+| Custom `View`, `onDraw`, `AccessibilityDelegateCompat`, touch listeners on Views, custom panes | [Views APIs](references/android-patterns.md#views-apis) |
 | `Canvas`, charts, maps, video or audio players | [Charts, custom drawing, media, and maps](references/android-patterns.md#charts-custom-drawing-media-and-maps) |
 | Text fields, passwords, one-time codes, autofill, `sensitiveData`, `accessibilityDataSensitive` | [Input, autofill, and sensitive data](references/android-patterns.md#input-autofill-and-sensitive-data) |
 | `WebView` | [WebView and hybrid UI](references/android-patterns.md#webview-and-hybrid-ui) |

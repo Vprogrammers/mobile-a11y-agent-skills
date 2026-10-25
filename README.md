@@ -115,6 +115,8 @@ Status as of 0.8.0 (2026-10-25). “Automated evidence” is what the compiled s
 | Android and Compose language marking (`LocaleSpan`, `SpanStyle(localeList)`) | Compiles; the text stays whole | Not tested on a real device |
 | iOS headings, sort priority, escape action, announcements, Large Content Viewer, Reduce Motion, Increase Contrast | Compiles; XCTest asserts the UIKit escape handler | Not tested on a real device |
 | iOS selected trait, Smart Invert opt-out, pausable carousel | Compiles; XCTest asserts the UIKit Smart Invert property | Not tested on a real device |
+| Views click labels, custom actions, pane titles, and sensitive data | Compiles | Not tested on a real device |
+| iOS custom toggles (`.isToggle`, `.toggleButton`) and Markdown links in `Text` | Compiles; XCTest asserts the UIKit toggle trait and value | Not tested on a real device |
 | UIKit `accessibilityLanguage` | Compiles; XCTest asserts the property | Not tested on a real device |
 | SwiftUI `languageIdentifier` on `AttributedString` | Compiles; XCTest asserts the attribute is set on the right run | Not tested on a real device. Apple does not document whether VoiceOver uses this attribute in SwiftUI, so check it first |
 | Repair evals `compose-order-card` and `uikit-receipt-cell` | Hidden tests fail on the original fixture and pass on the reference fix | Not applicable |

@@ -21,14 +21,16 @@ Review interval: 180 days.
 - Expose inline links as links. `ClickableText` is deprecated and resolves taps from text offsets, so TalkBack, Switch Access, and keyboard users cannot reach the links. Build the text with `withLink(LinkAnnotation.Url(url)) { append("terms") }`, or `LinkAnnotation.Clickable` for in-app navigation, and pass it to `Text`.
 - Give a custom `clickable` the role it represents and a label for its outcome: `Modifier.clickable(onClickLabel = "Open order details", role = Role.Button, onClick = …)`. TalkBack reads the label as the action's description instead of a generic “activate”. Apply the same to `combinedClickable` with `onLongClickLabel`.
 
-### Bad: duplicate image and label nodes
+### Bad: a clickable row with a duplicate icon label
 
 ```kotlin
-Row {
+Row(Modifier.clickable(onClick = onDelete)) {
     Icon(Icons.Default.Delete, contentDescription = "Delete")
     Text("Delete")
 }
 ```
+
+The merged node reads “Delete” twice and exposes no button role.
 
 ### Better: one real action
 
@@ -158,6 +160,7 @@ These are requirements for apps that target the stated SDK levels:
 - Prefer platform widgets and Material components.
 - Use `ViewCompat.setAccessibilityDelegate` only when native widget exposure is insufficient.
 - Use `ViewCompat.setAccessibilityHeading`, `ViewCompat.setStateDescription`, `android:labelFor`, and `importantForAccessibility` for their intended relationships.
+- Expose gesture-only or nested actions with `ViewCompat.addAccessibilityAction(view, label) { … }`, and give the default click or long-click a meaningful label with `ViewCompat.replaceAccessibilityAction(view, AccessibilityActionCompat.ACTION_CLICK, label, null)`. Give a custom pane, such as an in-app panel, a title with `ViewCompat.setAccessibilityPaneTitle`.
 - In `AccessibilityDelegateCompat`, initialize node info without removing actions or metadata supplied by the superclass.
 - For custom views with separately meaningful or clickable regions, such as a calendar, implement a virtual view hierarchy with `ExploreByTouchHelper` and attach it with `ViewCompat.setAccessibilityDelegate`. One opaque node for the whole drawing gives services only the container's description.
 - Send an `AccessibilityEvent` when a custom view's content changes, and handle `KEYCODE_DPAD_CENTER` and `KEYCODE_ENTER` like a tap.
@@ -194,6 +197,8 @@ Column {
 }
 ```
 
+`sales_value` is a resource such as `<string name="sales_value">%1$s: %2$s</string>`, so translators can reorder the parts.
+
 ## Input, autofill, and sensitive data
 
 - Preserve selection, paste, keyboard, IME actions, and autofill.
@@ -202,7 +207,7 @@ Column {
 - Password semantics intentionally protect the value; TalkBack may announce bullets, character counts, or privacy-oriented feedback depending on settings and version. Never promise exact speech.
 - If digits are visually unmasked, do not mark the field as a password merely to obtain a numeric keyboard. Choose keyboard and visual transformation independently.
 - Do not request `READ_SMS` for convenience. Prefer SMS Retriever, SMS User Consent, or user-mediated platform flows when SMS verification is required.
-- For secrets and financial or identity data, use `Modifier.semantics { sensitiveData = true }`, `android:accessibilityDataSensitive="true"`, `View.isAccessibilityDataSensitive`, or `AccessibilityNodeInfoCompat.setAccessibilityDataSensitive(true)` when supported by the project's SDK and dependencies. This limits exposure to services that are not declared accessibility tools; it does not replace masking, redaction, secure logging, screenshot policy, or threat analysis, and it must not hide the value from legitimate assistive technology users.
+- For secrets and financial or identity data, use `Modifier.semantics { sensitiveData = true }` in Compose, or in Views `android:accessibilityDataSensitive="yes"` or `View.setAccessibilityDataSensitive(View.ACCESSIBILITY_DATA_SENSITIVE_YES)` (API 34+), or `AccessibilityNodeInfoCompat.setAccessibilityDataSensitive(true)` in a delegate, when supported by the project's SDK and dependencies. This limits exposure to services that are not declared accessibility tools; it does not replace masking, redaction, secure logging, screenshot policy, or threat analysis, and it must not hide the value from legitimate assistive technology users.
 
 ## WebView and hybrid UI
 
@@ -233,7 +238,6 @@ webView.settings.apply {
 ## Diagnosis
 
 - Inspect Compose semantics with `printToLog`/`printToString` and compare merged and unmerged trees before changing modifiers.
-- `sales_value` is a resource such as `<string name="sales_value">%1$s: %2$s</string>`, so translators can reorder the parts.
 - For test-layer choice, test APIs, and evidence limits, invoke the `mobile-a11y-testing` skill.
 
 Official sources:

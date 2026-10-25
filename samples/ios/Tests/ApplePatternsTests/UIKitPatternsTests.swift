@@ -28,6 +28,14 @@ final class UIKitPatternsTests: XCTestCase {
         XCTAssertEqual(languages, [nil, "fr-FR"])
     }
 
+    func testCustomToggleHasToggleTraitAndValue() {
+        let view = UIView()
+        markAsToggle(view, isOn: true)
+
+        XCTAssertTrue(view.accessibilityTraits.contains(.toggleButton))
+        XCTAssertEqual(view.accessibilityValue, "On")
+    }
+
     func testPhotoViewIgnoresSmartInvert() {
         let photo = makePhotoView(image: nil, caption: "Harbor at sunset")
 
