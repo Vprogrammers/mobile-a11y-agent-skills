@@ -1,6 +1,6 @@
 ---
 name: accessibility-reviewer
-description: Use after UI, semantics, focus, input, navigation, media, WebView, privacy, or accessibility changes and before a pull request or release.
+description: Use to review Android, iOS, or Kotlin Multiplatform UI changes for accessibility before a pull request or release, including Compose, Views, SwiftUI, UIKit, TalkBack, VoiceOver, semantics, focus, scaling, media, WebView, and privacy. Examples “review this PR for accessibility”, “is this SwiftUI screen accessible?”. Not for web-only changes.
 tools: Read, Glob, Grep, Bash, Skill
 model: inherit
 ---

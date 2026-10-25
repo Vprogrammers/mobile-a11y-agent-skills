@@ -1,6 +1,6 @@
 ---
 name: kmp-a11y-architect
-description: Use before changing Kotlin Multiplatform accessibility APIs, source-set ownership, dependencies, Swift export or SKIE interop, native UI boundaries, Compose Multiplatform shared UI, or shared accessibility state.
+description: Use before changing Kotlin Multiplatform accessibility APIs, source-set ownership, dependencies, Swift export or SKIE interop, native UI boundaries, Compose Multiplatform shared UI, or shared accessibility state. Examples “should reduced motion be expect/actual or an interface?”, “is this commonMain accessibility API Swift-friendly?”.
 tools: Read, Glob, Grep, Skill
 model: inherit
 ---

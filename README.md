@@ -154,10 +154,10 @@ EVAL_JUDGE_COMMAND='…same Opus judge…' EVAL_MODEL='agent=sonnet,judge=opus' 
 ./scripts/run_eval_suite.py "evals/results/$(date -u +%Y-%m-%dT%H%M%SZ)-sonnet-opus-baseline"
 ```
 
-The repository also includes a small official Claude plugin eval under `plugin-evals/`. It verifies real namespaced agent routing and evaluates output quality in Claude Code's isolated eval runner:
+The repository also includes official Claude plugin evals under `plugin-evals/`, one per agent. They verify that a matching request routes to the namespaced agent, and the reviewer eval also grades output quality, in Claude Code's isolated eval runner:
 
 ```bash
-claude plugin eval . --runs 1 --ablation with-without --max-cost-usd 3.00 --no-publish
+claude plugin eval . --runs 1 --ablation with-without --max-cost-usd 8.00 --no-publish
 ```
 
 Use the official runner for plugin loading, routing, trace, and baseline evidence. Use the custom suite for the repository's 18 detailed accessibility rubrics and deterministic scoring contract.

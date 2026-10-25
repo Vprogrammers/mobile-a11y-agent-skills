@@ -14,4 +14,6 @@ description: Plan, implement, or review accessibility tests for Android, iOS, an
 7. Reserve exact TalkBack, VoiceOver, Voice Control, Switch Control/Access, keyboard, and system-service behavior for device verification.
 8. Report passed, failed, skipped, unavailable, and manual checks separately.
 
-Read [references/test-matrix.md](references/test-matrix.md) for APIs, discovery commands, and evidence boundaries. Use [the real-device evidence template](references/real-device-evidence-template.md) when recording manual results.
+## Where to look
+
+Use [references/test-matrix.md](references/test-matrix.md) in this order: [Discover before writing tests](references/test-matrix.md#discover-before-writing-tests), then [Layer selection](references/test-matrix.md#layer-selection), then the [Android APIs](references/test-matrix.md#android-apis) or [Apple APIs](references/test-matrix.md#apple-apis) and the compiled [Examples](references/test-matrix.md#examples). Plan device work with [Manual device checks](references/test-matrix.md#manual-device-checks). Use [the real-device evidence template](references/real-device-evidence-template.md) when recording manual results.

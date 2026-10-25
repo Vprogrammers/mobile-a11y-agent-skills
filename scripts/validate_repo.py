@@ -43,6 +43,14 @@ REQUIRED_DENY_RULES = {
 }
 
 
+
+def heading_anchors(path: Path) -> set[str]:
+    """GitHub-style anchors for the Markdown headings in a file."""
+    anchors = set()
+    for heading in re.findall(r"^#{1,6} (.+)$", path.read_text(encoding="utf-8"), re.MULTILINE):
+        anchors.add(re.sub(r"[^\w\- ]", "", heading.lower()).replace(" ", "-"))
+    return anchors
+
 def frontmatter(path: Path) -> tuple[list[str], dict[str, str]]:
     lines = path.read_text(encoding="utf-8").splitlines()
     if not lines or lines[0] != "---":
@@ -151,9 +159,12 @@ def main(root: Path) -> int:
                 continue
             if target.startswith(("mailto:", "#")):
                 continue
-            target_path = (path.parent / target.split("#", 1)[0]).resolve()
+            target_file, _, anchor = target.partition("#")
+            target_path = (path.parent / target_file).resolve()
             if not target_path.exists():
                 errors.append(f"{path.relative_to(root)} links missing {target}")
+            elif anchor and target_path.suffix == ".md" and anchor not in heading_anchors(target_path):
+                errors.append(f"{path.relative_to(root)} links missing anchor {target}")
 
     for path in root.glob("skills/*/references/*.md"):
         text = path.read_text(encoding="utf-8")
