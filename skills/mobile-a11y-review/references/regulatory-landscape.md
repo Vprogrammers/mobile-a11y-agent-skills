@@ -21,7 +21,12 @@ Primary sources:
 
 ### European Accessibility Act
 
-Directive (EU) 2019/882 applies from 28 June 2025 to covered products and services, including areas such as consumer banking, e-commerce, electronic communications, and parts of passenger transport. It does not make every mobile app automatically subject to identical requirements. Check national transposition, scope, exemptions, and enforcement. In the Directive's own text, check at least the exemption for microenterprises that provide services, the transitional measures for services that use products already in use before 28 June 2025, and the disproportionate-burden and fundamental-alteration provisions. The article text was not independently verified on 2026-10-25 because EUR-Lex refused automated retrieval; read it before relying on any of these provisions.
+Directive (EU) 2019/882 applies from 28 June 2025 to covered products and services, including areas such as consumer banking, e-commerce, electronic communications, and parts of passenger transport. It does not make every mobile app automatically subject to identical requirements. Check national transposition, scope, exemptions, and enforcement. Two provisions matter often for apps:
+
+- **Article 4(5):** microenterprises that provide services are exempt from the accessibility requirements for services and the related obligations. A microenterprise employs fewer than 10 persons and has an annual turnover or balance sheet total of at most EUR 2 million. The exemption covers services, not products.
+- **Article 32:** Member States provide a transitional period ending on 28 June 2030, during which service providers may continue to provide their services using products they lawfully used for similar services before 28 June 2025.
+
+These were confirmed on 2026-10-25 from the EUR-Lex text as indexed by a web search; EUR-Lex refused direct automated retrieval, so read the articles before relying on them. Also check the disproportionate-burden and fundamental-alteration provisions and their documentation duties, which were not verified.
 
 - Directive: https://eur-lex.europa.eu/eli/dir/2019/882/oj/eng
 - Commission overview: https://commission.europa.eu/strategy-and-policy/policies/justice-and-fundamental-rights/disability/european-accessibility-act-eaa_en
