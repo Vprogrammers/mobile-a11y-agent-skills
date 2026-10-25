@@ -104,6 +104,24 @@ When the iOS job fails, CI uploads its `.xcresult` bundle for diagnosis. Success
 
 The eval set includes defect-bearing Android, iOS, KMP, test-strategy, and regulatory cases; clean Compose, Android Views, SwiftUI, and UIKit cases that penalize invented findings; and an EN 301 549 scenario that tests technology self-scoping.
 
+## Verification status
+
+Status as of 0.8.0 (2026-10-25). “Automated evidence” is what the compiled samples and their tests prove. “Not tested on a real device” means the behavior could not be tested yet: no physical Android or iOS device with TalkBack or VoiceOver was available, and emulators and the iOS Simulator cannot reproduce screen-reader speech or navigation. It does not mean a test ran and failed.
+
+| Guidance | Automated evidence | Real-device testing |
+|---|---|---|
+| Compose roles, `onClickLabel`, toggle rows, `LinkAnnotation` links, minimum target size | Compiles; Robolectric tests assert role, state, click label, link annotation, and size | Not tested on a real device |
+| Compose recommended timeout for actionable banners | Compiles; a test with a substituted accessibility manager proves the banner waits | Not tested on a real device |
+| Android and Compose language marking (`LocaleSpan`, `SpanStyle(localeList)`) | Compiles; the text stays whole | Not tested on a real device |
+| iOS headings, sort priority, escape action, announcements, Large Content Viewer, Reduce Motion, Increase Contrast | Compiles; XCTest asserts the UIKit escape handler | Not tested on a real device |
+| iOS selected trait, Smart Invert opt-out, pausable carousel | Compiles; XCTest asserts the UIKit Smart Invert property | Not tested on a real device |
+| UIKit `accessibilityLanguage` | Compiles; XCTest asserts the property | Not tested on a real device |
+| SwiftUI `languageIdentifier` on `AttributedString` | Compiles; XCTest asserts the attribute is set on the right run | Not tested on a real device. Apple does not document whether VoiceOver uses this attribute in SwiftUI, so check it first |
+| Repair evals `compose-order-card` and `uikit-receipt-cell` | Hidden tests fail on the original fixture and pass on the reference fix | Not applicable |
+| Exact TalkBack and VoiceOver speech and navigation for every pattern | Not provable by automated tests | Not tested on a real device |
+
+Record real-device results with [the real-device evidence template](skills/mobile-a11y-testing/references/real-device-evidence-template.md) and update this table when a row is tested.
+
 ## Non-goals
 
 - Claiming WCAG, EAA, ADA, Section 508, or EN 301 549 compliance from static review alone.
