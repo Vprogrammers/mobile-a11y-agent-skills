@@ -3,7 +3,7 @@
 ## 0.8.2
 
 - Add a cross-platform acceptance contract and make platform agents own the smallest direct regression test, reserving the test agent for strategy, new layers, audits, coordinated coverage, and remaining evidence gaps.
-- Require reviewers to receive and verify an explicit local base ref or committed range, broaden Android and iOS routing triggers, and separate KMP architecture design from verification mode.
+- Require reviewers of committed changes to receive and verify an explicit local base ref or range while allowing standalone file and evaluation-fixture reviews without Git endpoints; broaden Android and iOS routing triggers; and separate KMP architecture design from verification mode.
 - Harden the optional Claude settings template against destructive Git state and remote changes.
 
 ## 0.8.1
