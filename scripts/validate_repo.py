@@ -35,6 +35,8 @@ PLUGIN_NAME = "mobile-a11y-agent-skills"
 REPAIR_PLATFORMS = {"android", "ios"}
 # Bare URLs in prose, such as "- Source: https://...". Apple and Android URLs contain parentheses.
 BARE_URL = re.compile(r"https?://[^\s<>\[\]`'\"]+")
+# RFC 2606 example domains appear in code samples and are never checked.
+EXAMPLE_HOST = re.compile(r"^https?://(?:[\w-]+\.)*example\.(?:com|org|net)(?:[/:?#]|$)")
 REQUIRED_DENY_RULES = {
     "Read(./.claude/settings.local.json)",
     "Read(./**/*.jks)",
@@ -107,7 +109,8 @@ def bare_urls(text: str) -> set[str]:
             if stripped == url:
                 break
             url = stripped
-        urls.add(url)
+        if not EXAMPLE_HOST.match(url):
+            urls.add(url)
     return urls
 
 
