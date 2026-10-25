@@ -71,6 +71,14 @@ class ValidateRepositoryTests(unittest.TestCase):
         result = self.invalid_copy(mutate)
         self.assertIn("heldout-swiftui-review held-out term appears in skills/: Smart Invert", result.stdout)
 
+    def test_missing_link_anchor_is_rejected(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "skills/android-a11y/SKILL.md"
+            path.write_text(path.read_text().replace("#compose-semantics)", "#missing-section)"))
+
+        result = self.invalid_copy(mutate)
+        self.assertIn("links missing anchor references/android-patterns.md#missing-section", result.stdout)
+
     def test_duplicate_finding_id_is_rejected(self) -> None:
         def mutate(root: Path) -> None:
             path = root / "evals/android-compose-review/rubric.json"

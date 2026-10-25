@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Name Android, iOS, or Kotlin Multiplatform in every agent description and add example requests, so routing does not pick the reviewer for web-only changes. Add a routing eval for each of the five agents and raise the plugin eval cost cap to match.
+- Require the Android and iOS engineer agents to run the narrowest existing build and tests before reporting completion, or to say why they could not.
+- Add iOS display-setting guidance for Differentiate Without Color, Bold Text, Button Shapes, On/Off Labels, and Reduce Transparency, with a matching code signal.
+- Add a "Where to look" guide to the Android, iOS, KMP, and testing skills that maps the code in a change to a reference section. The validator now checks that link anchors match a heading.
 - Run the paid `Agent eval regression` workflow only on demand. The weekly schedule failed by design whenever `CLAUDE_CODE_OAUTH_TOKEN` was not configured.
 - Move the light distribution to `Vprogrammers/mobile-a11y-agent-skills-lite` and point the sync workflow and README at it.
 - Add two held-out evals, `heldout-compose-review` and `heldout-swiftui-review`, built from defects whose patterns and fix APIs appear nowhere in `skills/`. Their manifest entries list `held_out_terms`, and the validator fails when a term appears in a skill file. The Compose fixture compiles in `samples/` with runtime guards; the SwiftUI fixture compiles and has static guards.

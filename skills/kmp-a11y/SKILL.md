@@ -16,4 +16,15 @@ description: Design or review Kotlin Multiplatform accessibility architecture. U
 9. With Compose Multiplatform shared UI, use Compose semantics as the iOS implementation surface, verify iOS-only capabilities on the Compose screen, and host gaps in native views when needed.
 10. Document consumer configuration, localization ownership, export setup, and device verification.
 
-Read [references/kmp-boundaries.md](references/kmp-boundaries.md) before changing a public API.
+## Where to look
+
+Read [references/kmp-boundaries.md](references/kmp-boundaries.md) before changing a public API. Start with the section that matches the decision:
+
+| Decision | Section |
+|---|---|
+| What belongs in `commonMain` | [Share](references/kmp-boundaries.md#share) and [Keep native](references/kmp-boundaries.md#keep-native) |
+| `expect`/`actual` or an injected interface | [Interface versus expect/actual](references/kmp-boundaries.md#interface-versus-expectactual) |
+| Shape of shared state | [State contract example](references/kmp-boundaries.md#state-contract-example) |
+| Types that cross into Swift | [Swift interop](references/kmp-boundaries.md#swift-interop) and [Swift export and SKIE](references/kmp-boundaries.md#swift-export-and-skie) |
+| New dependencies or published artifacts | [Compatibility and dependencies](references/kmp-boundaries.md#compatibility-and-dependencies) |
+| Compose Multiplatform UI on iOS | [Compose Multiplatform shared UI](references/kmp-boundaries.md#compose-multiplatform-shared-ui) |

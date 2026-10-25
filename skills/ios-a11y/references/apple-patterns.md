@@ -87,6 +87,17 @@ Text(title)
     .frame(minHeight: 44)
 ```
 
+## Display settings
+
+People turn on these settings in Accessibility > Display & Text Size. SwiftUI exposes them as environment values that update the view; UIKit exposes them as `UIAccessibility` properties with matching status-change notifications.
+
+- **Differentiate Without Color** (`accessibilityDifferentiateWithoutColor`, `UIAccessibility.shouldDifferentiateWithoutColor`). Never convey state by color alone. When this setting is on, add a shape, symbol, or text even where color normally carries a secondary cue.
+- **Bold Text** (`legibilityWeight`, which reflects this setting, or `UIAccessibility.isBoldTextEnabled`). When text uses a custom font or is drawn by the app, read the setting and apply a heavier weight.
+- **Button Shapes** (`accessibilityShowButtonShapes`, `UIAccessibility.buttonShapesEnabled`, iOS 14+). For borderless or text-only custom buttons, add an underline or background shape when the setting is on, so actionable text is distinguishable from plain text.
+- **On/Off Labels** (`UIAccessibility.isOnOffSwitchLabelsEnabled`). Prefer the native `Toggle` and `UISwitch`. A custom switch must read this setting and show on and off labels.
+- **Reduce Transparency** (`accessibilityReduceTransparency`). Replace blurs and translucent backgrounds with opaque ones, and keep text contrast at 4.5:1 against the result.
+- Test each setting on a device together with large Dynamic Type sizes, because the combinations change layout.
+
 ## Custom controls, charts, and media
 
 - Make custom adjustable controls expose current value, bounds, and increment/decrement actions.
@@ -178,6 +189,11 @@ Official sources:
 - UIKit accessibility: https://developer.apple.com/documentation/uikit/accessibility
 - UIButton.Configuration: https://developer.apple.com/documentation/uikit/uibutton/configuration-swift.struct
 - WKWebViewConfiguration.ignoresViewportScaleLimits: https://developer.apple.com/documentation/webkit/wkwebviewconfiguration/ignoresviewportscalelimits
+- Differentiate Without Color: https://developer.apple.com/documentation/swiftui/environmentvalues/accessibilitydifferentiatewithoutcolor
+- Bold Text (legibilityWeight): https://developer.apple.com/documentation/swiftui/environmentvalues/legibilityweight
+- Button Shapes: https://developer.apple.com/documentation/swiftui/environmentvalues/accessibilityshowbuttonshapes
+- On/Off Labels: https://developer.apple.com/documentation/uikit/uiaccessibility/isonoffswitchlabelsenabled
+- Reduce Transparency: https://developer.apple.com/documentation/swiftui/environmentvalues/accessibilityreducetransparency
 - Swift Charts: https://developer.apple.com/documentation/charts
 - accessibilityChartDescriptor(_:): https://developer.apple.com/documentation/swiftui/view/accessibilitychartdescriptor(_:)
 - accessibilityChildren(children:): https://developer.apple.com/documentation/swiftui/view/accessibilitychildren(children:)

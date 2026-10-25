@@ -1,6 +1,6 @@
 ---
 name: accessibility-test-engineer
-description: Use to add or review Android, iOS, or KMP accessibility tests after semantics, focus, input, scaling, navigation, or assistive-technology behavior changes.
+description: Use to add or review accessibility tests for Android, iOS, or Kotlin Multiplatform after semantics, focus, input, scaling, navigation, or assistive-technology behavior changes. Examples “add a Compose semantics test for this error state”, “add an XCUITest accessibility audit to this flow”.
 tools: Read, Glob, Grep, Edit, Write, Bash, Skill
 model: inherit
 ---
