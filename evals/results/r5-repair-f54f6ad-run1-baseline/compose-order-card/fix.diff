@@ -1,0 +1,61 @@
+--- before
++++ after
+@@ -56,6 +56,7 @@
+ import androidx.compose.ui.semantics.Role
+ import androidx.compose.ui.semantics.clearAndSetSemantics
+ import androidx.compose.ui.semantics.contentDescription
++import androidx.compose.ui.semantics.error
+ import androidx.compose.ui.semantics.heading
+ import androidx.compose.ui.semantics.semantics
+ import androidx.compose.ui.text.SpanStyle
+@@ -69,20 +70,26 @@
+     Row(
+         Modifier
+             .fillMaxWidth()
+-            .clickable(
+-                interactionSource = remember { MutableInteractionSource() },
+-                indication = null,
+-                onClick = onOpen,
+-            )
+-            .clearAndSetSemantics { contentDescription = "Order ${order.number}, ${order.status}" }
+             .padding(16.dp),
+         verticalAlignment = Alignment.CenterVertically,
+     ) {
+-        Column(Modifier.weight(1f)) {
++        Column(
++            Modifier
++                .weight(1f)
++                .clickable(
++                    onClickLabel = "Open order ${order.number}",
++                    role = Role.Button,
++                    onClick = onOpen,
++                )
++                .semantics(mergeDescendants = true) {},
++        ) {
+             Text("Order ${order.number}", style = MaterialTheme.typography.titleMedium)
+             Text(order.status)
+         }
+-        TextButton(onClick = onTrack) {
++        TextButton(
++            onClick = onTrack,
++            modifier = Modifier.semantics { contentDescription = "Track order ${order.number}" },
++        ) {
+             Icon(Icons.Default.LocationOn, contentDescription = null)
+             Text("Track")
+         }
+@@ -100,8 +107,13 @@
+             value = street,
+             onValueChange = onStreetChange,
+             label = { Text("Street") },
+-            modifier = Modifier.focusRequester(focusRequester),
++            isError = errors.isNotEmpty(),
++            supportingText = if (errors.isEmpty()) null else {
++                { Column { errors.forEach { Text(it) } } }
++            },
++            modifier = Modifier
++                .focusRequester(focusRequester)
++                .semantics { if (errors.isNotEmpty()) error(errors.joinToString(". ")) },
+         )
+-        errors.forEach { Text(it, color = MaterialTheme.colorScheme.error) }
+     }
+ }

@@ -1,0 +1,11 @@
+{
+  "checks": {
+    "track-action-reachable": true,
+    "error-exposed-on-field": true,
+    "focus-indication-kept": true,
+    "behavior-preserved": true
+  },
+  "score": 8,
+  "maximum": 8,
+  "passed": true
+}

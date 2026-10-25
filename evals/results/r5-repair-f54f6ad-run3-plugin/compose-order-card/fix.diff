@@ -1,0 +1,68 @@
+--- before
++++ after
+@@ -19,7 +19,10 @@
+ import androidx.compose.foundation.clickable
+ import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+ import androidx.compose.foundation.interaction.MutableInteractionSource
++import androidx.compose.foundation.layout.Arrangement
+ import androidx.compose.foundation.layout.Box
++import androidx.compose.foundation.layout.heightIn
++import androidx.compose.ui.semantics.error
+ import androidx.compose.foundation.layout.Column
+ import androidx.compose.foundation.layout.Row
+ import androidx.compose.foundation.layout.fillMaxSize
+@@ -69,24 +72,25 @@
+     Row(
+         Modifier
+             .fillMaxWidth()
+-            .clickable(
+-                interactionSource = remember { MutableInteractionSource() },
+-                indication = null,
+-                onClick = onOpen,
+-            )
+-            .clearAndSetSemantics { contentDescription = "Order ${order.number}, ${order.status}" }
+             .padding(16.dp),
+         verticalAlignment = Alignment.CenterVertically,
+     ) {
+-        Column(Modifier.weight(1f)) {
++        // Open and Track stay separate focusable nodes so both are reachable by
++        // TalkBack, Switch Access and keyboard; default indication shows focus.
++        Column(
++            Modifier
++                .weight(1f)
++                .heightIn(min = 48.dp)
++                .clickable(onClickLabel = "Open order ${order.number}", role = Role.Button, onClick = onOpen),
++            verticalArrangement = Arrangement.Center,
++        ) {
+             Text("Order ${order.number}", style = MaterialTheme.typography.titleMedium)
+             Text(order.status)
+         }
+         TextButton(onClick = onTrack) {
+             Icon(Icons.Default.LocationOn, contentDescription = null)
+             Text("Track")
+-        }
+-    }
++        }    }
+ }
+ 
+ @Composable
+@@ -100,8 +104,17 @@
+             value = street,
+             onValueChange = onStreetChange,
+             label = { Text("Street") },
+-            modifier = Modifier.focusRequester(focusRequester),
++            isError = errors.isNotEmpty(),
++            supportingText = if (errors.isEmpty()) null else {
++                {
++                    Column {
++                        errors.forEach { Text(it, color = MaterialTheme.colorScheme.error) }
++                    }
++                }
++            },
++            modifier = Modifier
++                .focusRequester(focusRequester)
++                .semantics { if (errors.isNotEmpty()) error(errors.joinToString(". ")) },
+         )
+-        errors.forEach { Text(it, color = MaterialTheme.colorScheme.error) }
+     }
+ }
