@@ -1,6 +1,6 @@
 ---
 name: accessibility-test-engineer
-description: Use to add or review accessibility tests for Android, iOS, or Kotlin Multiplatform after semantics, focus, input, scaling, navigation, or assistive-technology behavior changes. Examples “add a Compose semantics test for this error state”, “add an XCUITest accessibility audit to this flow”. For production fixes use android-a11y-engineer or ios-a11y-engineer; for review use accessibility-reviewer.
+description: Use to design, add, or review Android, iOS, or Kotlin Multiplatform accessibility coverage when test strategy is unclear, a new layer or target is considered, cross-platform coverage or an audit is requested, or a real-device verification plan and evidence matrix are needed. Examples “plan device verification for this OTP flow”, “add an XCUITest accessibility audit”. Routine regression tests stay with the platform implementation agent; for review use accessibility-reviewer.
 tools: Read, Glob, Grep, Edit, Write, Bash, WebSearch, WebFetch, Skill
 model: inherit
 skills:

@@ -40,6 +40,11 @@ class ValidateRepositoryTests(unittest.TestCase):
         result = self.run_validator(ROOT)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
+    def test_reviewer_allows_standalone_fixture_without_git_range(self) -> None:
+        reviewer = (ROOT / "agents/accessibility-reviewer.md").read_text()
+        self.assertIn("evaluation fixture does not require Git endpoints", reviewer)
+        self.assertIn("committed-change review", reviewer)
+
     def test_unknown_agent_is_rejected(self) -> None:
         def mutate(root: Path) -> None:
             path = root / "evals/manifest.json"

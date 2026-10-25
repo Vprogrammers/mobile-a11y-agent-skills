@@ -12,14 +12,20 @@ Answer a short, self-contained question or a single snippet directly with the ma
 ## Agent routing
 
 1. Use `kmp-a11y-architect` first when a change affects shared public APIs, source-set ownership, exported types, dependencies, native UI boundaries, or Compose Multiplatform UI.
-2. Use `android-a11y-engineer` and/or `ios-a11y-engineer` for platform implementation and implementation self-checks. Formal review belongs to `accessibility-reviewer`.
-3. Use `accessibility-test-engineer` after implementation when accessibility coverage changes or is missing.
+2. Use `android-a11y-engineer` and/or `ios-a11y-engineer` for platform implementation, implementation self-checks, and the smallest direct regression test that fits an existing target. Formal review belongs to `accessibility-reviewer`.
+3. Use `accessibility-test-engineer` when test strategy is unclear, a new test layer or target is proposed, cross-platform coverage must be coordinated, an audit is requested, or meaningful coverage or device-plan gaps remain. Do not delegate routine regression tests twice.
 4. Reuse `kmp-a11y-architect` for a read-only final architecture check when implementation changed a shared public API, exported type, source-set boundary, framework packaging, or Compose Multiplatform/native UI boundary.
 5. Use `accessibility-reviewer` for an independent final review after implementation and tests. Do not ask an implementation agent to approve its own work.
 
 Skip steps that do not apply. A review-only request goes straight to `accessibility-reviewer`; a test-only request goes to `accessibility-test-engineer`. Do not use these agents for web-only, Flutter, or React Native changes. An agent that receives such a task stops with `Status: blocked` and says the task is out of scope, without editing files.
 
 When final review finds a P0/P1 issue or an API-boundary problem, return the finding to the responsible implementation agent, rerun the narrowest relevant tests, and ask the reviewer to inspect the new changes: the committed range if the engineer committed, otherwise the staged and unstaged changes. Implementation agents do not commit unless the user asks. Stop after two repair/re-review cycles and report the remaining blocker or product decision instead of looping.
+
+## Acceptance contract
+
+Before a multi-step change, record the affected platforms, UI frameworks, supported OS range, user-visible behavior, assistive technologies, sensitive data, exclusions, and required evidence. For work affecting Android and iOS, keep one cross-platform acceptance contract covering shared product and privacy rules plus separate Android and iOS behavior and verification, even when no KMP API changes. Platform implementations may differ.
+
+If a platform agent discovers that a public shared API or source-set boundary must change, it stops and reports the proposed contract for `kmp-a11y-architect` review instead of editing that boundary.
 
 ## Scope
 

@@ -13,7 +13,7 @@ The `mobile-a11y-workflow` and `kmp-a11y` skills are preloaded; if either is mis
 
 Follow every rule in `mobile-a11y-workflow`: scope, source policy, safety, claims, the out-of-scope stop, and the completion report. For Kotlin, Compose Multiplatform, Swift export, or SKIE claims, use current JetBrains or upstream project sources.
 
-Before implementation, propose the boundary and consumer contract. After implementation, when the workflow asks for a final architecture check, compare the actual shared API, generated Swift surface, source-set ownership, and packaging with the approved design; do not redesign unrelated code.
+Work in one explicit mode. In **design mode**, propose the boundary and consumer contract before implementation. In **verification mode**, compare the implemented shared API, generated Swift surface, source-set ownership, and packaging with the approved design; do not redesign unrelated code.
 
 Do not edit files. Use Bash only for read-only Git commands and for the narrowest existing build task that generates the framework header you need to inspect, such as a `link…Framework…` task. Do not change Git state, dependencies, or build configuration.
 

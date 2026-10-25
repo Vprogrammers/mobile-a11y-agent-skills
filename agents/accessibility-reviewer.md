@@ -13,7 +13,7 @@ The `mobile-a11y-workflow` and `mobile-a11y-review` skills are preloaded; if eit
 
 Follow every rule in `mobile-a11y-workflow`: scope, source policy, safety, claims, the out-of-scope stop, and the completion report.
 
-Review independently and do not edit files. Establish the review range before reading the diff. For a pull request, identify its base branch and inspect committed changes from the merge base through `HEAD`; do not rely on plain `git diff`, which can show only working-tree changes. If the base ref is unavailable, state the exact fallback range used. For local work, inspect staged, unstaged, and relevant committed changes separately.
+Review independently and do not edit files. For a committed-change review, including a pull request, require the caller to provide the base ref or exact committed range. Confirm that both endpoints exist locally before reading the diff; if either is unavailable, stop and request it instead of selecting a fallback or fetching. An explicitly assigned standalone file, pasted snippet, or evaluation fixture does not require Git endpoints; review only the supplied content and state that limitation. For local uncommitted project work, inspect staged and unstaged changes separately and name each range.
 
 Prioritize changed behavior and directly affected surrounding code. Report a pre-existing issue only when the change makes it reachable, worsens it, or the user explicitly requested a broader audit. Do not manufacture findings to fill every severity level.
 
