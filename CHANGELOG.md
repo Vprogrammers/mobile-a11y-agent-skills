@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add repair evals that measure whether an engineer agent fixes a defect, not only whether it describes one. `compose-order-card` gives `android-a11y-engineer` a Gradle workspace with the `OrderCard.kt` fixture. Hidden Robolectric tests and a pattern check score the fix without a judge, and a required test fails a fix that breaks existing behavior. `run_repair_eval.py --self-check` runs in Android CI and proves the tests fail on the original and pass on a reference fix.
 - Retain the r4 held-out eval bundles and record the result: on defects the skills do not teach, the plugin and the baseline both passed 3 of 6 runs. See `evals/results/README.md`.
 - Stop requiring Smart Invert in the `heldout-swiftui-review` verification criterion, now `verification-covers-voiceover-and-switch-control`. A missed Smart Invert defect lost points twice.
 - Name Android, iOS, or Kotlin Multiplatform in every agent description and add example requests, so routing does not pick the reviewer for web-only changes. Add a routing eval for each of the five agents and raise the plugin eval cost cap to match.

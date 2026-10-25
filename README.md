@@ -164,6 +164,25 @@ Use the official runner for plugin loading, routing, trace, and baseline evidenc
 
 The manually triggered `Agent eval regression` workflow performs both runs only when the repository owner configures `CLAUDE_CODE_OAUTH_TOKEN`. It has no schedule. The custom suite uses Sonnet for the agent and Opus as an independent judge to reduce correlated evaluation bias. Without the secret, a run records an explicit skipped summary. Pull-request CI never invokes a paid model. Workflow results are retained as artifacts rather than committed automatically.
 
+### Repair evals
+
+Review evals only show that an engineer agent can describe a fix. Repair evals in `evals/repairs/` check the fix itself. The runner copies the Android sample build into a temporary workspace that holds only the fixture under repair and its stubs. The agent edits the fixture there, with no access to tests, rubrics, or other fixtures. Afterwards the runner adds hidden Robolectric tests and scores each check without a judge:
+
+- a test proves the defect is fixed, for example that Track is reachable as a click or custom action;
+- a pattern must be absent from the fixed file, for example `indication = null`;
+- a required test proves existing behavior still works, so deleting the feature cannot pass.
+
+A build that does not compile scores nothing. `--self-check` confirms that the hidden tests fail on the original fixture and pass on the reference fix; the Android CI job runs it on every pull request.
+
+```bash
+./scripts/run_repair_eval.py --self-check
+
+EVAL_REPAIR_AGENT_COMMAND='claude -p --model sonnet --plugin-dir "{plugin_dir}" --agent mobile-a11y-agent-skills:{agent} --restricted --tools Read,Glob,Grep,Edit,Write,Bash,Skill --add-dir "{plugin_dir}/skills" --allowedTools Read Glob Grep Edit Write Bash Skill --permission-mode dontAsk --permission-prompts none --no-session-persistence --max-turns 25 --max-budget-usd 2.00' \
+./scripts/run_repair_eval.py "evals/results/$(date -u +%Y-%m-%dT%H%M%SZ)-repair-sonnet"
+```
+
+Set `EVAL_VARIANT=baseline` and drop the plugin and agent options for the baseline. `--restricted` removes Bash unless `--tools` names it, and the engineer needs Bash to build. `--restricted` still confines the file tools to the workspace, but Bash is not confined, so use only trusted agent commands. Each run needs JDK 17 and the Android SDK.
+
 ## Compiled samples
 
 `samples/` compiles the reference examples and platform code eval fixtures, and runs semantics and property tests. Guard tests fail when a fixture loses a defect its rubric expects. The KMP and SwiftUI fixtures have static guards in `tests/test_eval_fixtures.py`. `samples/kmp` compiles the recommended KMP boundary for native UI: a shared contract, native Android and iOS adapters, and a check that the exported Objective-C header leaks no platform UI types. CI runs all three projects on every pull request:

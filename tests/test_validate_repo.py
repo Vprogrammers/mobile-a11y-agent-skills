@@ -79,6 +79,17 @@ class ValidateRepositoryTests(unittest.TestCase):
         result = self.invalid_copy(mutate)
         self.assertIn("links missing anchor references/android-patterns.md#missing-section", result.stdout)
 
+    def test_repair_without_required_behavior_check_is_rejected(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "evals/repairs/manifest.json"
+            data = json.loads(path.read_text())
+            for check in data["repairs"][0]["checks"]:
+                check.pop("required", None)
+            path.write_text(json.dumps(data))
+
+        result = self.invalid_copy(mutate)
+        self.assertIn("needs a required check that existing behavior still works", result.stdout)
+
     def test_duplicate_finding_id_is_rejected(self) -> None:
         def mutate(root: Path) -> None:
             path = root / "evals/android-compose-review/rubric.json"
