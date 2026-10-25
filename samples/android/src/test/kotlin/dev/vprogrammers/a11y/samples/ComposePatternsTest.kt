@@ -1,6 +1,10 @@
 package dev.vprogrammers.a11y.samples
 
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.AccessibilityManager
+import androidx.compose.ui.platform.LocalAccessibilityManager
+import androidx.compose.ui.state.ToggleableState
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsActions
@@ -141,5 +145,54 @@ class ComposePatternsTest {
         rule.setContent { QuotedPhrase(intro = "The menu says ", phrase = "plat du jour", languageTag = "fr-FR") }
 
         rule.onNodeWithText("The menu says plat du jour").assertExists()
+    }
+
+    @Test
+    fun settingToggleRow_isOneSwitchWithState() {
+        rule.setContent { SettingToggleRow("Read receipts", checked = true, onCheckedChange = {}) }
+
+        rule.onNode(hasText("Read receipts") and hasClickAction())
+            .assert(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Switch))
+            .assert(SemanticsMatcher.expectValue(SemanticsProperties.ToggleableState, ToggleableState.On))
+        rule.onAllNodes(hasClickAction(), useUnmergedTree = true).assertCountEquals(1)
+    }
+
+    @Test
+    fun termsNotice_exposesTheLinkAsAnAction() {
+        rule.setContent { TermsNotice("https://example.com/terms") }
+
+        // The link travels in the node's AnnotatedString, which TalkBack exposes as a link.
+        rule.onNode(hasText("Messages follow our terms."))
+            .assert(
+                SemanticsMatcher("has a URL link") { node ->
+                    node.config[SemanticsProperties.Text].any { text ->
+                        text.getLinkAnnotations(0, text.length).any { (it.item as? LinkAnnotation.Url)?.url == "https://example.com/terms" }
+                    }
+                },
+            )
+    }
+
+    @Test
+    fun undoBanner_waitsForTheRecommendedTimeout() {
+        var timedOut = false
+        val slowUser = object : AccessibilityManager {
+            override fun calculateRecommendedTimeoutMillis(
+                originalTimeoutMillis: Long,
+                containsIcons: Boolean,
+                containsText: Boolean,
+                containsControls: Boolean,
+            ) = 20_000L
+        }
+        rule.mainClock.autoAdvance = false
+        rule.setContent {
+            CompositionLocalProvider(LocalAccessibilityManager provides slowUser) {
+                UndoBanner("Message deleted", onUndo = {}, onTimeout = { timedOut = true })
+            }
+        }
+
+        rule.mainClock.advanceTimeBy(5_000)
+        assertTrue("The banner must outlast the default 4 s for this user", !timedOut)
+        rule.mainClock.advanceTimeBy(16_000)
+        assertTrue(timedOut)
     }
 }

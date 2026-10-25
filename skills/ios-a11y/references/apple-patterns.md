@@ -15,6 +15,7 @@ Review interval: 180 days.
 - Use `.accessibilityInputLabels` when Voice Control needs predictable spoken alternatives to visible text.
 - Use `.accessibilityAdjustableAction` for custom increment/decrement controls.
 - Use `.accessibilityAction(named:)` for meaningful secondary actions.
+- Expose selection state with the selected trait, not only color: `.accessibilityAddTraits(filter == option ? .isSelected : [])` on each option, or use a native `Picker` with the segmented style.
 - Use `.accessibilityRotor` only when it materially improves navigation through repeated or structured content.
 - Mark section titles with `.accessibilityAddTraits(.isHeader)` so VoiceOver users can move between them with the Headings rotor. Add `.accessibilityHeading(_:)` with a level when the screen has nested sections. Use headings for real sections, not for visual emphasis.
 - Use `.accessibilitySortPriority(_:)` inside a `.contain` group only to correct a demonstrated reading-order problem, such as a total drawn below the line items that must be read first. Higher priority is read first.
@@ -118,6 +119,7 @@ People turn on these settings in Accessibility > Display & Text Size. SwiftUI ex
 - **Bold Text** (`legibilityWeight`, which reflects this setting, or `UIAccessibility.isBoldTextEnabled`). When text uses a custom font or is drawn by the app, read the setting and apply a heavier weight.
 - **Button Shapes** (`accessibilityShowButtonShapes`, `UIAccessibility.buttonShapesEnabled`, iOS 14+). For borderless or text-only custom buttons, add an underline or background shape when the setting is on, so actionable text is distinguishable from plain text.
 - **On/Off Labels** (`UIAccessibility.isOnOffSwitchLabelsEnabled`). Prefer the native `Toggle` and `UISwitch`. A custom switch must read this setting and show on and off labels.
+- **Smart Invert** (`accessibilityIgnoresInvertColors()`, `UIView.accessibilityIgnoresInvertColors`). Photos, video, and other media must keep their real colors when people use Smart Invert. Apply the modifier to the media view, not to the whole screen.
 - **Reduce Transparency** (`accessibilityReduceTransparency`). Replace blurs and translucent backgrounds with opaque ones, and keep text contrast at 4.5:1 against the result.
 - **Reduce Motion** (`accessibilityReduceMotion`, `UIAccessibility.isReduceMotionEnabled`). Replace large movement, parallax, and zooming transitions with a fade or no animation, and keep the state change visible.
 - **Increase Contrast** (`colorSchemeContrast == .increased`, `UIAccessibility.isDarkerSystemColorsEnabled`). System colors adapt; give custom colors a higher-contrast variant, for example in the asset catalog's High Contrast appearance.
@@ -137,6 +139,8 @@ People turn on these settings in Accessibility > Display & Text Size. SwiftUI ex
 - `AVPlayer` applies media selection from the system accessibility preferences by default (`appliesMediaSelectionCriteriaAutomatically`). Do not turn that off without replacing it. When you render captions yourself, read the caption preferences through the Media Accessibility framework.
 - Give custom playback controls labels and keep them reachable with VoiceOver, Switch Control, and Full Keyboard Access. Audio that plays automatically for more than three seconds needs a control to pause or stop it, or to change its volume independently (WCAG 1.4.2).
 - Respect Reduce Motion and provide a non-motion equivalent for state changes conveyed by animation.
+- Content that moves or advances on its own for more than five seconds, such as a carousel, needs a visible pause or stop control for everyone (WCAG 2.2.2 Pause, Stop, Hide), and should stop when Reduce Motion is on. If you also adapt to VoiceOver, observe it with `@Environment(\.accessibilityVoiceOverEnabled)` or `UIAccessibility.voiceOverStatusDidChangeNotification`; a one-time `UIAccessibility.isVoiceOverRunning` read misses later changes and does not cover Switch Control or Voice Control users.
+- Give actionable content that disappears on its own, such as an Undo banner, enough time or keep it until dismissed (WCAG 2.2.1 Timing Adjustable).
 
 ### Bad: drawing only
 
@@ -234,5 +238,7 @@ Official sources:
 - accessibilityLanguage: https://developer.apple.com/documentation/objectivec/nsobject-swift.class/accessibilitylanguage
 - Large Content Viewer: https://developer.apple.com/documentation/uikit/uilargecontentviewerinteraction
 - Reduce Motion: https://developer.apple.com/documentation/swiftui/environmentvalues/accessibilityreducemotion
+- Smart Invert (accessibilityIgnoresInvertColors): https://developer.apple.com/documentation/swiftui/view/accessibilityignoresinvertcolors(_:)
+- accessibilityVoiceOverEnabled: https://developer.apple.com/documentation/swiftui/environmentvalues/accessibilityvoiceoverenabled
 - Increase Contrast (colorSchemeContrast): https://developer.apple.com/documentation/swiftui/environmentvalues/colorschemecontrast
 - WCAG 2.2 captions, audio description, audio control, and non-text contrast: https://www.w3.org/TR/WCAG22/

@@ -28,6 +28,13 @@ final class UIKitPatternsTests: XCTestCase {
         XCTAssertEqual(languages, [nil, "fr-FR"])
     }
 
+    func testPhotoViewIgnoresSmartInvert() {
+        let photo = makePhotoView(image: nil, caption: "Harbor at sunset")
+
+        XCTAssertTrue(photo.accessibilityIgnoresInvertColors)
+        XCTAssertEqual(photo.accessibilityLabel, "Harbor at sunset")
+    }
+
     func testScalableLabelAdjustsForContentSizeCategory() {
         let label = makeScalableLabel(text: "Order summary")
 

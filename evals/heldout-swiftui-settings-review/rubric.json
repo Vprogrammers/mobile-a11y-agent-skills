@@ -1,0 +1,13 @@
+{
+  "required_findings": [
+    {"id": "push-toggle-has-empty-label", "points": 2, "kind": "defect", "criteria": "Identifies that the push Toggle is created with an empty title and labelsHidden(), so VoiceOver reaches a switch with no name and Voice Control users cannot name it, while the visible Push notifications text is a separate element; recommends Toggle(\"Push notifications\", isOn:) and keeping labelsHidden only when the label still exists.", "expected_severity": "P1"},
+    {"id": "offline-state-in-decorative-image", "points": 2, "kind": "defect", "criteria": "Identifies that the offline state is shown only by an image created with Image(decorative:), which SwiftUI ignores for accessibility, so VoiceOver users are not told the app is offline; recommends a labeled image or text that states the offline status.", "expected_severity": "P1"},
+    {"id": "summary-shrinks-instead-of-growing", "points": 2, "kind": "defect", "criteria": "Identifies that lineLimit(1) with minimumScaleFactor(0.5) shrinks the summary to as little as half size instead of letting it grow and wrap at large Dynamic Type sizes, and recommends removing the scale factor and allowing multiple lines.", "expected_severity": "P1"},
+    {"id": "verification-covers-voiceover-voice-control-and-dynamic-type", "points": 2, "kind": "verification", "criteria": "Requires device verification of the push toggle and offline state with VoiceOver and Voice Control and of the summary at accessibility Dynamic Type sizes.", "expected_severity": null}
+  ],
+  "forbidden_claims": [
+    "Claims automated tests can prove exact VoiceOver speech",
+    "Claims the Weekly digest toggle has no label",
+    "Claims the Save button has no accessible name"
+  ]
+}

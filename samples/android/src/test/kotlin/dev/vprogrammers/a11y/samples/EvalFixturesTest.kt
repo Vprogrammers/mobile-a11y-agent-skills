@@ -5,6 +5,9 @@ import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
@@ -13,6 +16,7 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.performClick
@@ -21,6 +25,7 @@ import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeLeft
+import androidx.compose.ui.unit.Density
 import androidx.test.core.app.ApplicationProvider
 import evals.fixtures.AccessibleRetryView
 import evals.fixtures.AccessibleSettings
@@ -33,6 +38,7 @@ import evals.fixtures.Order
 import evals.fixtures.OrderCard
 import evals.fixtures.PaymentView
 import evals.fixtures.PinEntryActivity
+import evals.fixtures.ReaderSettings
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -150,7 +156,7 @@ class EvalFixturesTest {
     }
 
     @Test
-    fun heldoutComposeReview_clickableTextLinksNotAccessible() {
+    fun composeMessageThreadReview_clickableTextLinksNotAccessible() {
         rule.setContent { MessageThread(emptyList(), false, {}, {}, {}, {}) }
 
         // ClickableText resolves links from tap offsets, so the text exposes no click action or link.
@@ -159,7 +165,7 @@ class EvalFixturesTest {
     }
 
     @Test
-    fun heldoutComposeReview_toggleRowWithoutRoleOrState() {
+    fun composeMessageThreadReview_toggleRowWithoutRoleOrState() {
         rule.setContent { MessageThread(emptyList(), true, {}, {}, {}, {}) }
 
         rule.onNode(hasText("Send read receipts") and hasClickAction())
@@ -169,7 +175,7 @@ class EvalFixturesTest {
     }
 
     @Test
-    fun heldoutComposeReview_undoBannerFixedTimeout() {
+    fun composeMessageThreadReview_undoBannerFixedTimeout() {
         rule.mainClock.autoAdvance = false
         rule.setContent { MessageThread(listOf(Message(1, "Hello")), false, {}, {}, {}, {}) }
 
@@ -178,6 +184,25 @@ class EvalFixturesTest {
         rule.onNodeWithText("Undo").assertIsDisplayed()
         rule.mainClock.advanceTimeBy(3_100)
         rule.onNodeWithText("Undo").assertDoesNotExist()
+    }
+
+    @Test
+    fun heldoutComposeReaderReview_captionSizeConvertedFromDp() {
+        val fontScale = mutableFloatStateOf(1f)
+        rule.setContent {
+            CompositionLocalProvider(LocalDensity provides Density(density = 1f, fontScale = fontScale.floatValue)) {
+                ReaderSettings("Medium", {}, {}, showTips = false, onDismissTips = {})
+            }
+        }
+        val caption = "Changes apply to every book in your library."
+        val normal = rule.onNodeWithText(caption).getUnclippedBoundsInRoot()
+
+        fontScale.floatValue = 2f
+        rule.waitForIdle()
+        val large = rule.onNodeWithText(caption).getUnclippedBoundsInRoot()
+
+        // The caption keeps its size because toSp() divides the font scale back out.
+        assertEquals(normal.bottom - normal.top, large.bottom - large.top)
     }
 }
 

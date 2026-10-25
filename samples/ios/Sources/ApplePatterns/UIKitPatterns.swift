@@ -107,3 +107,13 @@ public func makeForeignLanguageLabel(text: String, languageTag: String) -> UILab
     label.adjustsFontForContentSizeCategory = true
     return label
 }
+
+/// A photo view that keeps its real colors under Smart Invert.
+@MainActor
+public func makePhotoView(image: UIImage?, caption: String) -> UIImageView {
+    let view = UIImageView(image: image)
+    view.isAccessibilityElement = true
+    view.accessibilityLabel = caption
+    view.accessibilityIgnoresInvertColors = true
+    return view
+}

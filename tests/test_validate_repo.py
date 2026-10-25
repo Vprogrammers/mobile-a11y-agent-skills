@@ -66,10 +66,13 @@ class ValidateRepositoryTests(unittest.TestCase):
     def test_held_out_term_in_skills_is_rejected(self) -> None:
         def mutate(root: Path) -> None:
             path = root / "skills/ios-a11y/references/apple-patterns.md"
-            path.write_text(path.read_text() + "\n- Opt photos out of Smart Invert.\n")
+            path.write_text(path.read_text() + "\n- Do not shrink text with minimumScaleFactor.\n")
 
         result = self.invalid_copy(mutate)
-        self.assertIn("heldout-swiftui-review held-out term appears in agent-loaded guidance: Smart Invert", result.stdout)
+        self.assertIn(
+            "heldout-swiftui-settings-review held-out term appears in agent-loaded guidance: minimumScaleFactor",
+            result.stdout,
+        )
 
     def test_missing_link_anchor_is_rejected(self) -> None:
         def mutate(root: Path) -> None:
@@ -305,10 +308,10 @@ class ValidateRepositoryTests(unittest.TestCase):
     def test_held_out_term_in_agent_is_rejected(self) -> None:
         def mutate(root: Path) -> None:
             path = root / "agents/ios-a11y-engineer.md"
-            path.write_text(path.read_text() + "\nCheck Smart Invert on photos.\n")
+            path.write_text(path.read_text() + "\nNever use labelsHidden on a toggle without a label.\n")
 
         result = self.invalid_copy(mutate)
-        self.assertIn("held-out term appears in agent-loaded guidance: Smart Invert", result.stdout)
+        self.assertIn("held-out term appears in agent-loaded guidance: labelsHidden", result.stdout)
 
     def test_plugin_eval_grader_must_name_its_agent(self) -> None:
         def mutate(root: Path) -> None:

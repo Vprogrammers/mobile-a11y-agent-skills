@@ -59,6 +59,32 @@ class RunEvalSuiteTests(unittest.TestCase):
             with self.subTest(evaluation["id"]):
                 agent_prompt(evaluation["agent"], task, "fixture", "baseline")
 
+    def test_agent_workspace_contains_only_the_named_fixture(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            temporary = Path(directory)
+            agent = temporary / "agent.py"
+            judge = temporary / "judge.py"
+            # The stub agent reports every file it can see in its working directory.
+            agent.write_text(
+                "import pathlib, sys\nsys.stdin.read()\n"
+                "print(sorted(str(p) for p in pathlib.Path('.').rglob('*') if p.is_file()))\n",
+                encoding="utf-8",
+            )
+            judge.write_text("import sys\nsys.stdin.read()\nprint('{\"matched_findings\": [], \"forbidden_claims\": []}')\n", encoding="utf-8")
+            environment = dict(os.environ)
+            environment["EVAL_AGENT_COMMAND"] = f"python3 {agent} --agent {{agent}}"
+            environment["EVAL_JUDGE_COMMAND"] = f"python3 {judge}"
+            subprocess.run(
+                ["python3", "scripts/run_eval_suite.py", str(temporary / "run"), "clean-compose-review"],
+                cwd=ROOT,
+                env=environment,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            response = (temporary / "run/clean-compose-review/response.md").read_text(encoding="utf-8")
+            self.assertEqual(response.strip(), "['evals/clean-compose-review/AccessibleSettings.kt']")
+
     def test_unknown_eval_is_rejected_before_output_creation(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "run"

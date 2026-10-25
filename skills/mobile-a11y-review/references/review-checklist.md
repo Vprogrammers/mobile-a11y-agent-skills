@@ -29,6 +29,12 @@ Scan the changed code for these signals before reading it line by line. Each one
 | Concatenated user-facing strings, hard-coded accessibility text, manual plurals, or locale-dependent formatting | Labels, values, hints, and announcements remain grammatical and synchronized in every supported locale and RTL/BiDi layout |
 | Touch-exploration checks, enabled accessibility-service inspection, or VoiceOver-running status checks | Core semantics and functionality do not depend on detecting one assistive technology |
 | `onBackPressed`, `KEYCODE_BACK`, missing insets on edge-to-edge screens | Back dismissal and focused content stay reachable on current SDK targets |
+| `clickable` row that also contains a clickable `Switch`, `Checkbox`, or `RadioButton` | One toggleable or selectable node with a role and state |
+| `ClickableText`, links resolved from tap offsets | Each link is reachable as a link (`LinkAnnotation`) |
+| A fixed `delay`, timer, or `asyncAfter` that hides content with an action | The user's recommended timeout or an explicit dismiss keeps the action reachable |
+| Auto-advancing carousels or timers that change content | A pause or stop control exists for everyone, and VoiceOver or TalkBack detection is observed, not read once |
+| Selection shown by background or text color | The selected state is exposed (selected trait, `selectable`, segmented `Picker`) |
+| Photos, video, or maps in iOS views | Media opts out of Smart Invert with `accessibilityIgnoresInvertColors` |
 | Section titles styled only with a larger or bolder font | Headings are exposed (`heading()`, `.isHeader`, `.header`) so screen-reader users can navigate by them |
 | Custom `clickable` rows or cards without `role` or `onClickLabel` | The node exposes the role it acts as and a meaningful action label |
 | Custom modal panels on iOS without an escape action | VoiceOver's escape gesture dismisses them (`accessibilityPerformEscape`, `.accessibilityAction(.escape)`) |

@@ -274,6 +274,77 @@ public struct StatusBadge: View {
     }
 }
 
+/// Filter options expose which one is selected, not only through color.
+public struct FilterBar: View {
+    @Binding var selection: String
+    let options: [String]
+
+    public init(selection: Binding<String>, options: [String]) {
+        _selection = selection
+        self.options = options
+    }
+
+    public var body: some View {
+        HStack {
+            ForEach(options, id: \.self) { option in
+                Button(option) { selection = option }
+                    .padding(8)
+                    .background(selection == option ? Color.accentColor : Color.clear)
+                    .accessibilityAddTraits(selection == option ? .isSelected : [])
+            }
+        }
+    }
+}
+
+/// Photos keep their real colors under Smart Invert.
+public struct PhotoTile: View {
+    let imageName: String
+    let caption: String
+
+    public init(imageName: String, caption: String) {
+        self.imageName = imageName
+        self.caption = caption
+    }
+
+    public var body: some View {
+        Image(imageName)
+            .resizable()
+            .scaledToFill()
+            .accessibilityLabel(caption)
+            .accessibilityIgnoresInvertColors()
+    }
+}
+
+/// A carousel that advances only while unpaused and while Reduce Motion is off.
+public struct FeaturedCarousel: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var index = 0
+    @State private var isPaused = false
+    let captions: [String]
+
+    public init(captions: [String]) {
+        self.captions = captions
+    }
+
+    public var body: some View {
+        VStack {
+            if !captions.isEmpty {
+                Text(captions[index % captions.count])
+            }
+            Button(isPaused ? "Play slideshow" : "Pause slideshow") { isPaused.toggle() }
+        }
+        // Restarting the task when either condition changes keeps the timer in step with the settings.
+        .task(id: isPaused || reduceMotion) {
+            guard !isPaused, !reduceMotion, !captions.isEmpty else { return }
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(5))
+                guard !Task.isCancelled else { break }
+                index = (index + 1) % captions.count
+            }
+        }
+    }
+}
+
 private func drawBars(_ sales: [Sale], in context: inout GraphicsContext, size: CGSize) {
     guard let maximum = sales.map(\.value).max(), maximum > 0 else { return }
     let barWidth = size.width / CGFloat(sales.count * 2)

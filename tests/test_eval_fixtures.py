@@ -60,15 +60,24 @@ GUARDS: dict[str, dict[str, str]] = {
         "on-back-pressed-not-called-on-sdk36": r"override fun onBackPressed\(\)",
         "per-keystroke-announcement": r"override fun onTextChanged[\s\S]*counter\.announceForAccessibility\(counter\.text\)",
     },
-    "heldout-compose-review": {
+    "compose-message-thread-review": {
         "clickable-text-links-not-accessible": r"pushStringAnnotation\(tag = \"url\"[\s\S]*ClickableText\(policy\)",
         "undo-banner-fixed-timeout": r"delay\(3_000\)\s*\n\s*deleted = null[\s\S]*Text\(\"Undo\"\)",
         "toggle-row-without-role-or-state": r"\.clickable \{ onReadReceiptsChange\(!readReceipts\) \}[\s\S]*Switch\(checked = readReceipts, onCheckedChange = onReadReceiptsChange\)",
     },
-    "heldout-swiftui-review": {
+    "swiftui-photo-feed-review": {
         "carousel-auto-advances-without-pause": r"\A(?![\s\S]*(?:accessibilityVoiceOverEnabled|voiceOverStatusDidChange))[\s\S]*\.onAppear \{ autoAdvance = !UIAccessibility\.isVoiceOverRunning \}[\s\S]*Task\.sleep\(for: \.seconds\(4\)\)",
         "filter-selection-only-visual": r"\A(?![\s\S]*isSelected)[\s\S]*\.background\(filter == option \? Color\.accentColor : Color\.clear\)",
         "photos-inverted-by-smart-invert": r"\A(?![\s\S]*IgnoresInvertColors)[\s\S]*Image\(photo\.imageName\)\s*\n\s*\.resizable\(\)",
+    },
+    "heldout-compose-reader-review": {
+        "buttons-removed-from-keyboard-focus": r"TextButton\(onClick = onSmaller, modifier = Modifier\.focusProperties \{ canFocus = false \}\)[\s\S]*TextButton\(onClick = onLarger, modifier = Modifier\.focusProperties \{ canFocus = false \}\)",
+        "tips-dialog-only-dismissible-by-swipe": r"DialogProperties\(dismissOnBackPress = false, dismissOnClickOutside = false\)[\s\S]*detectVerticalDragGestures(?![\s\S]*Button\()",
+    },
+    "heldout-swiftui-settings-review": {
+        "push-toggle-has-empty-label": r'Text\("Push notifications"\)\s*\n\s*Spacer\(\)\s*\n\s*Toggle\("", isOn: \$pushEnabled\)\s*\n\s*\.labelsHidden\(\)',
+        "offline-state-in-decorative-image": r'\A(?![\s\S]*[Oo]ffline"\))[\s\S]*if isOffline \{\s*\n\s*Image\(decorative: "offline-badge"\)',
+        "summary-shrinks-instead-of-growing": r"Text\(summary\)[\s\S]*\.lineLimit\(1\)\s*\n\s*\.minimumScaleFactor\(0\.5\)",
     },
     "kmp-interop-traps-review": {
         "global-context-actual": r"lateinit var appContext: Context\s*\n\s*actual fun isReduceMotionEnabled\(\)",
@@ -101,10 +110,13 @@ NOT_GUARDED: dict[str, set[str]] = {
     "compose-semantics-traps-review": {"clear-and-set-hides-track-action", "error-not-associated-with-field"},
     "android-sdk36-behavior-review": {"password-variation-for-visible-code", "requires-android-16-device-verification"},
     "kmp-interop-traps-review": set(),
+    # caption-size-converted-from-dp is guarded at runtime by EvalFixturesTest.
+    "heldout-compose-reader-review": {"caption-size-converted-from-dp", "verification-covers-keyboard-font-scale-and-dialog"},
+    "heldout-swiftui-settings-review": {"verification-covers-voiceover-voice-control-and-dynamic-type"},
     "test-evidence-traps-review": set(),
     # The Compose defects are also guarded at runtime by EvalFixturesTest.
-    "heldout-compose-review": {"verification-covers-talkback-links-and-timeout"},
-    "heldout-swiftui-review": {"verification-covers-voiceover-and-switch-control"},
+    "compose-message-thread-review": {"verification-covers-talkback-links-and-timeout"},
+    "swiftui-photo-feed-review": {"verification-covers-voiceover-and-switch-control"},
 }
 
 

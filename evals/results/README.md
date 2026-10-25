@@ -68,6 +68,8 @@ Limits:
 
 ## r4: held-out evals, three runs per variant, two judges, 2026-10-25
 
+After these runs, the skills started teaching these defects, and the two evals were renamed `compose-message-thread-review` and `swiftui-photo-feed-review` without held-out status. The bundles keep the original ids. New held-out evals replace them.
+
 The two `heldout-*` evals use defects whose patterns and fix APIs appear nowhere in `skills/`. The agent was `claude -p --model sonnet`. Every response was scored by Opus and by Sonnet as a second judge (`EVAL_SECOND_JUDGE_COMMAND`), all at commit `42a376c`. A usage limit stopped three agent runs in the third repetition (`run3-*`, status `agent-failed`). They were repeated in `run3b-*` with the same commands. No other run was repeated.
 
 Points per run, Opus judge first, with the Sonnet score where it differs:

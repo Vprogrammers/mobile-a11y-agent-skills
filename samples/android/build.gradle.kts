@@ -53,7 +53,8 @@ val generateEvalFixtures = tasks.register<GenerateEvalFixtures>("generateEvalFix
         evals.resolve("clean-android-views-review/AccessibleRetryView.kt"),
         evals.resolve("compose-semantics-traps-review/OrderCard.kt"),
         evals.resolve("android-sdk36-behavior-review/PinEntryActivity.kt"),
-        evals.resolve("heldout-compose-review/MessageThread.kt"),
+        evals.resolve("compose-message-thread-review/MessageThread.kt"),
+        evals.resolve("heldout-compose-reader-review/ReaderSettings.kt"),
     )
     header.set(layout.projectDirectory.file("eval-fixture-header.kt.txt"))
     outputDir.set(layout.buildDirectory.dir("generated/evalFixtures"))

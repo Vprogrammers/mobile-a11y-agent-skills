@@ -41,7 +41,7 @@ Calculate deterministic pass/fail with:
 ./scripts/score_eval.py android-compose-review result.json
 ```
 
-Most evals cover guidance present in the skills. `heldout-*` evals measure behavior on defects not taught by the plugin. Their manifests declare `held_out_terms`; validation fails if those terms appear in a skill, an agent, or the consumer `CLAUDE.md`. Remove held-out status when guidance intentionally begins covering one of them.
+Most evals cover guidance present in the skills. `heldout-*` evals measure behavior on defects not taught by the plugin: `heldout-compose-reader-review` and `heldout-swiftui-settings-review`. The first held-out pair, which covered inline links, timeouts, toggle rows, carousels, selection state, and Smart Invert, became `compose-message-thread-review` and `swiftui-photo-feed-review` when the skills started teaching those defects. Their manifests declare `held_out_terms`; validation fails if those terms appear in a skill, an agent, or the consumer `CLAUDE.md`. Remove held-out status when guidance intentionally begins covering one of them.
 
 Classification remains separate from scoring: a human or independent evaluator maps the raw response to finding IDs and forbidden claims. Substring matching is not treated as review-quality evidence.
 
@@ -55,6 +55,8 @@ EVAL_JUDGE_COMMAND='claude -p --model opus --restricted --permission-mode dontAs
 ```
 
 The adapter extracts JSON from a fenced block or short prose and validates it before writing the result. The judge is excluded from pull-request CI because it is nondeterministic, costs money, and requires user-managed credentials.
+
+Each agent runs in an empty temporary directory that holds only the fixture, at the path its prompt names, so responses can cite exact lines. The fixture is also inlined in the prompt as untrusted data. Rubrics and other evals stay out of reach.
 
 Run every domain eval with separate trusted agent and judge commands. The agent command must include `{agent}`; `{plugin_dir}` resolves to the repository root. Add only `skills/` to the restricted workspace because the repository root also contains rubrics.
 
