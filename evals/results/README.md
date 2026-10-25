@@ -65,3 +65,24 @@ Limits:
 
 - These evals measure whether the plugin delivers knowledge it contains. The traps were added to the references when the evals were written, and the review checklist's code signals name several of them, so the plugin has an advantage by construction. They do not measure general review ability on unseen defects.
 - One judge model scored every run, and three runs per variant is a minimum, not a benchmark.
+
+## r4: held-out evals, three runs per variant, two judges, 2026-10-25
+
+The two `heldout-*` evals use defects whose patterns and fix APIs appear nowhere in `skills/`. The agent was `claude -p --model sonnet`. Every response was scored by Opus and by Sonnet as a second judge (`EVAL_SECOND_JUDGE_COMMAND`), all at commit `42a376c`. A usage limit stopped three agent runs in the third repetition (`run3-*`, status `agent-failed`). They were repeated in `run3b-*` with the same commands. No other run was repeated.
+
+Points per run, Opus judge first, with the Sonnet score where it differs:
+
+| Eval | Plugin | Baseline |
+|---|---|---|
+| `heldout-compose-review` | 8, 6 (Sonnet 8), 8 | 8, 8, 6 |
+| `heldout-swiftui-review` | 4, 4 (Sonnet 6), 4 | 2, 2, 4 (Sonnet 6) |
+| **Total (Opus)** | **3/6 passed, 34/48** | **3/6 passed, 30/48** |
+
+Findings:
+
+- **No clear plugin advantage on untaught defects.** Both variants passed the same evals. The 4-point gap comes from severity calibration: the plugin rated the color-only filter selection P1 in every run, and the baseline rated it P2 in two of three. The plugin delivers the knowledge it contains (r3: 15/15 against 4/15). It does not make general review better.
+- **The Compose traps are already known.** Both variants found the `ClickableText` links, the fixed-timeout Undo banner, and the toggle row in every run. The baseline once rated the toggle row P1 instead of P2.
+- **Nobody found the Smart Invert defect.** None of the six SwiftUI responses mentions invert at all. This is a real gap in both variants. The held-out terms keep it out of the skills, so a later fix there would end this eval's held-out status.
+- **The judges agreed on 9 of 12 runs.** All three disagreements were on the verification criterion, and Opus was the stricter judge each time.
+
+After these runs, the SwiftUI verification criterion stopped requiring Smart Invert, because a missed Smart Invert defect also failed verification. The scores above use the original criterion, so they are stricter than later runs. The finding id changed from `verification-covers-voiceover-switch-control-and-smart-invert` to `verification-covers-voiceover-and-switch-control`.

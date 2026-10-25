@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Retain the r4 held-out eval bundles and record the result: on defects the skills do not teach, the plugin and the baseline both passed 3 of 6 runs. See `evals/results/README.md`.
+- Stop requiring Smart Invert in the `heldout-swiftui-review` verification criterion, now `verification-covers-voiceover-and-switch-control`. A missed Smart Invert defect lost points twice.
 - Name Android, iOS, or Kotlin Multiplatform in every agent description and add example requests, so routing does not pick the reviewer for web-only changes. Add a routing eval for each of the five agents and raise the plugin eval cost cap to match.
 - Require the Android and iOS engineer agents to run the narrowest existing build and tests before reporting completion, or to say why they could not.
 - Add iOS display-setting guidance for Differentiate Without Color, Bold Text, Button Shapes, On/Off Labels, and Reduce Transparency, with a matching code signal.

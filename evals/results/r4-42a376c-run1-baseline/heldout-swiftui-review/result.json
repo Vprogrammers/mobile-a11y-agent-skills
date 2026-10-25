@@ -1,0 +1,13 @@
+{
+  "matched_findings": [
+    {
+      "id": "carousel-auto-advances-without-pause",
+      "severity": "P1"
+    },
+    {
+      "id": "filter-selection-only-visual",
+      "severity": "P2"
+    }
+  ],
+  "forbidden_claims": []
+}
