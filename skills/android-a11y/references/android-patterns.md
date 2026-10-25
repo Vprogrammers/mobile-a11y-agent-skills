@@ -12,7 +12,7 @@ Review interval: 180 days.
 - Use `hideFromAccessibility()` for decorative or redundant descendants on current Compose versions; check project compatibility before replacing older `invisibleToUser()` usage.
 - Use `heading()` for actual section headings, not for visual emphasis.
 - Use `paneTitle` for meaningful window-like changes such as sheets or custom panes.
-- Use `error()` to expose helpful error text associated with the relevant field.
+- Use `error()` to expose helpful error text associated with the relevant field. When the same text is also visible as a Material3 `supportingText`, TalkBack reads it twice (observed with TalkBack 17.1 on Android 17); keep it visible and hide that copy with `Modifier.clearAndSetSemantics {}`.
 - Use `stateDescription` only when standard state semantics do not communicate the state adequately.
 - Use `customActions` to make gesture-only or nested actions directly available. Avoid duplicating the primary click action.
 - Use `isTraversalGroup` and `traversalIndex` only to correct a demonstrated reading-order problem. Visual placement alone does not guarantee traversal order.
@@ -157,7 +157,7 @@ These are requirements for apps that target the stated SDK levels:
 
 ## Views APIs
 
-- Prefer platform widgets and Material components.
+- Prefer platform widgets and Material components. A plain `TextView` with a click listener is announced with its click hint but without a button role (observed with TalkBack 17.1); use a `Button` when the control acts as one.
 - Use `ViewCompat.setAccessibilityDelegate` only when native widget exposure is insufficient.
 - Use `ViewCompat.setAccessibilityHeading`, `ViewCompat.setStateDescription`, `android:labelFor`, and `importantForAccessibility` for their intended relationships.
 - Expose gesture-only or nested actions with `ViewCompat.addAccessibilityAction(view, label) { … }`, and give the default click or long-click a meaningful label with `ViewCompat.replaceAccessibilityAction(view, AccessibilityActionCompat.ACTION_CLICK, label, null)`. Give a custom pane, such as an in-app panel, a title with `ViewCompat.setAccessibilityPaneTitle`.

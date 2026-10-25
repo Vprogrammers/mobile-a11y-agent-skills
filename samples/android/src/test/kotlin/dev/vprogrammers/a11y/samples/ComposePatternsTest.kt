@@ -84,6 +84,8 @@ class ComposePatternsTest {
         rule.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.EditableText))
             .assert(SemanticsMatcher.expectValue(SemanticsProperties.Error, "Enter your password"))
             .assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.Password))
+        // The visible supporting text is hidden, so TalkBack reads the error once (checked on a device).
+        rule.onAllNodes(hasText("Enter your password"), useUnmergedTree = true).assertCountEquals(0)
     }
 
     @Test
