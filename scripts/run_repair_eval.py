@@ -116,7 +116,9 @@ def score(repair: dict[str, object], tests: dict[str, bool], source: str) -> dic
 def evaluate(root: Path, repair: dict[str, object], workspace: Path, fixture: Path) -> tuple[dict[str, object], str]:
     install_tests(root, repair, workspace)
     _, log = run_gradle(workspace)
-    return score(repair, read_test_results(workspace), fixture.read_text(encoding="utf-8")), log
+    # A deleted fixture cannot compile with the hidden tests, so it scores nothing instead of crashing the run.
+    source = fixture.read_text(encoding="utf-8") if fixture.exists() else ""
+    return score(repair, read_test_results(workspace), source), log
 
 
 def self_check(root: Path, repair: dict[str, object]) -> list[str]:
@@ -132,7 +134,8 @@ def self_check(root: Path, repair: dict[str, object]) -> list[str]:
             fixture = build_workspace(root, repair, workspace, source)
             result, log = evaluate(root, repair, workspace, fixture)
         checks = result["checks"]
-        if name == "reference" and not result["passed"]:
+        # Every check must accept the reference fix; a check that rejects it would penalize correct repairs.
+        if name == "reference" and not (result["passed"] and all(checks.values())):
             errors.append(f"{repair['id']}: reference fix fails {checks}\n{log[-3000:]}")
         if name == "original":
             unfixed = [check["id"] for check in repair["checks"] if not check.get("required") and checks[check["id"]]]

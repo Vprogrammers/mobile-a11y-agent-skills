@@ -102,6 +102,33 @@ class RepairWorkspaceTests(unittest.TestCase):
             self.assertTrue(json.loads((temporary / "run/result.json").read_text())["checks"]["focus-indication-kept"])
             self.assertFalse(workspaces[0].exists())
 
+    def test_self_check_requires_every_check_on_the_reference_fix(self) -> None:
+        repair = load_repairs(ROOT)[0]
+
+        def fake_evaluate(root, repair, workspace, fixture):
+            source = fixture.read_text()
+            if "OutlinedTextField(\n        value = street" in source and "isError" in source:
+                # Reference fix: passes the minimum but one hidden check wrongly rejects it.
+                tests = {"trackActionIsReachable": True, "errorIsExposedOnField": False, "existingBehaviorIsPreserved": True}
+            else:
+                tests = {"trackActionIsReachable": False, "errorIsExposedOnField": False, "existingBehaviorIsPreserved": True}
+            return score(repair, tests, source), "log"
+
+        with mock.patch.object(run_repair_eval, "evaluate", fake_evaluate):
+            errors = run_repair_eval.self_check(ROOT, repair)
+        self.assertEqual(len(errors), 1)
+        self.assertIn("reference fix fails", errors[0])
+
+    def test_deleted_fixture_scores_nothing(self) -> None:
+        repair = load_repairs(ROOT)[0]
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = Path(directory)
+            fixture = build_workspace(ROOT, repair, workspace, "// fixture\n")
+            fixture.unlink()
+            with mock.patch.object(run_repair_eval, "run_gradle", return_value=(1, "compilation failed")):
+                result, log = run_repair_eval.evaluate(ROOT, repair, workspace, fixture)
+        self.assertEqual((result["score"], result["passed"], log), (0, False, "compilation failed"))
+
     def test_missing_command_is_rejected(self) -> None:
         with mock.patch.dict(os.environ, {}, clear=True):
             self.assertEqual(run_repair_eval.main(ROOT, ["out"]), 2)
