@@ -60,7 +60,7 @@ Text(title)
 
 ## Names, voice control, and localization
 
-- Mark text in another language so VoiceOver pronounces it correctly. In UIKit, set `accessibilityLanguage` to a BCP 47 tag on the element. In SwiftUI, an `AttributedString` run can carry Foundation's `languageIdentifier` attribute; verify on a device that VoiceOver switches voices, because SwiftUI does not document how it maps that attribute.
+- Mark text in another language so VoiceOver pronounces it correctly. In UIKit, set `accessibilityLanguage` to a BCP 47 tag on the element. In SwiftUI, an `AttributedString` run can carry Foundation's `languageIdentifier` attribute. SwiftUI does not document how it maps that attribute; VoiceOver on iOS 26.7.2 pronounced such a run in the marked language (device check, 2026-10-25), so recheck on the iOS versions you support.
 - Keep visible control text in the accessibility label and Voice Control input labels, preferably at the start. A control shown as “Continue” but labeled only “Submit order” is difficult to activate by saying what is visible.
 - Use `.accessibilityInputLabels` for concise localized synonyms only when they improve Voice Control recognition; include the visible label and do not use input labels to hide a mismatched accessibility label.
 - Localize labels, values, hints, custom-action names, errors, and announcements as complete phrases. Use String Catalog pluralization and locale-aware number/date formatting instead of concatenating fragments.

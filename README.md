@@ -106,22 +106,22 @@ The eval set includes defect-bearing Android, iOS, KMP, test-strategy, and regul
 
 ## Verification status
 
-Status as of 2026-10-25. “Automated evidence” is what the compiled samples and their tests prove. Android rows were tested with TalkBack 17.1 on one Samsung Galaxy Z Fold7 running Android 17; see [the device record](docs/device-evidence/2026-10-25-android-talkback.md). “Not tested on a real device” means the behavior could not be tested yet: no iOS device with VoiceOver was available, and the iOS Simulator cannot reproduce screen-reader speech or navigation. It does not mean a test ran and failed.
+Status as of 2026-10-25. “Automated evidence” is what the compiled samples and their tests prove. Android rows were tested with TalkBack 17.1 on a Samsung Galaxy Z Fold7 running Android 17, and iOS rows with VoiceOver on an iPhone 14 running iOS 26.7.2; see the [Android](docs/device-evidence/2026-10-25-android-talkback.md) and [iOS](docs/device-evidence/2026-10-25-ios-voiceover.md) device records. “Not tested on a real device” means the behavior has not been tested on a device yet; it does not mean a test ran and failed.
 
 | Guidance | Automated evidence | Real-device testing |
 |---|---|---|
 | Compose roles, `onClickLabel`, toggle rows, `LinkAnnotation` links, minimum target size | Compiles; Robolectric tests assert role, state, click label, link annotation, and size | Passed with TalkBack 17.1 |
 | Compose recommended timeout for actionable banners | Compiles; a test with a substituted accessibility manager proves the banner waits | Passed: 10 s with Time to take action at 10 s |
 | Android and Compose language marking (`LocaleSpan`, `SpanStyle(localeList)`) | Compiles; the text stays whole | Compose passed (heard French, logged `fr_FR`); Views `LocaleSpan` not tested |
-| iOS headings, sort priority, escape action, announcements, Large Content Viewer, Reduce Motion, Increase Contrast | Compiles; XCTest asserts the UIKit escape handler | Not tested on a real device |
-| iOS selected trait, Smart Invert opt-out, pausable carousel | Compiles; XCTest asserts the UIKit Smart Invert property | Not tested on a real device |
+| iOS headings, sort priority, escape action, announcements, Large Content Viewer, Reduce Motion, Increase Contrast | Compiles; XCTest asserts the UIKit escape handler | Headings with level and the escape action passed with VoiceOver; the rest not tested on a real device |
+| iOS selected trait, Smart Invert opt-out, pausable carousel | Compiles; XCTest asserts the UIKit Smart Invert property | Selected trait passed with VoiceOver; Smart Invert and carousel not tested on a real device |
 | Views click labels, custom actions, pane titles, and sensitive data | Compiles | Click label, custom action, and sensitive field passed; pane title not tested |
 | Compose charts and password field errors | Robolectric tests assert summary, values, error, and password semantics | Passed; the error was read twice until the visible copy was hidden, now fixed in the sample |
-| iOS custom toggles (`.isToggle`, `.toggleButton`) and Markdown links in `Text` | Compiles; XCTest asserts the UIKit toggle trait and value | Not tested on a real device |
-| UIKit `accessibilityLanguage` | Compiles; XCTest asserts the property | Not tested on a real device |
-| SwiftUI `languageIdentifier` on `AttributedString` | Compiles; XCTest asserts the attribute is set on the right run | Not tested on a real device. Apple does not document whether VoiceOver uses this attribute in SwiftUI, so check it first |
+| iOS custom toggles (`.isToggle`, `.toggleButton`) and Markdown links in `Text` | Compiles; XCTest asserts the UIKit toggle trait and value | SwiftUI toggle and link passed with VoiceOver; UIKit `.toggleButton` not tested on a real device |
+| UIKit `accessibilityLanguage` | Compiles; XCTest asserts the property | Passed: VoiceOver used a French voice |
+| SwiftUI `languageIdentifier` on `AttributedString` | Compiles; XCTest asserts the attribute is set on the right run | Passed on iOS 26.7.2: VoiceOver pronounced the run in French. Apple does not document this mapping, so recheck on other iOS versions |
 | Repair evals `compose-order-card` and `uikit-receipt-cell` | Hidden tests fail on the original fixture and pass on the reference fix | Not applicable |
-| Exact TalkBack and VoiceOver speech and navigation for every pattern | Not provable by automated tests | TalkBack: the patterns above only; VoiceOver: not tested on a real device |
+| Exact TalkBack and VoiceOver speech and navigation for every pattern | Not provable by automated tests | Only the patterns marked as passed above |
 
 Record real-device results with [the real-device evidence template](skills/mobile-a11y-testing/references/real-device-evidence-template.md) and update this table when a row is tested.
 
