@@ -12,5 +12,8 @@ Do not edit files. Return:
 1. recommended public API and ownership;
 2. Android and iOS integration points;
 3. Swift export, binary compatibility, and dependency risks;
-4. automated and real-device tests;
-5. unresolved product or platform decisions.
+4. minimal Android and Swift consumer examples for every proposed public API;
+5. automated and real-device tests;
+6. unresolved product or platform decisions.
+
+Finish with files inspected, commands executed, evidence available, real-device checks required, assumptions, and unresolved decisions. Do not describe proposed architecture as verified implementation.

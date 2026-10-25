@@ -1,6 +1,6 @@
 # Mobile accessibility review checklist
 
-Last reviewed: 2026-10-24.
+Last reviewed: 2026-10-25.
 
 ## Code signals
 
@@ -23,6 +23,9 @@ Scan the changed code for these signals before reading it line by line. Each one
 | `FocusRequester` or `@AccessibilityFocusState` driven by ordinary state | Focus moves only for meaningful context changes |
 | `clickable(indication = null)`, custom indications, or removed focus styles | Keyboard and switch focus stays visible |
 | Password, OTP, payment, or identity fields with custom masking, blocked paste, or `contentType`/`textContentType` changes | Autofill, paste, and consistent visual and accessibility masking |
+| Visible text differs from `contentDescription`, `accessibilityLabel`, or Voice Control input labels | The accessible name contains the visible label so spoken control names remain predictable |
+| Concatenated user-facing strings, hard-coded accessibility text, manual plurals, or locale-dependent formatting | Labels, values, hints, and announcements remain grammatical and synchronized in every supported locale and RTL/BiDi layout |
+| Touch-exploration checks, enabled accessibility-service inspection, or VoiceOver-running status checks | Core semantics and functionality do not depend on detecting one assistive technology |
 | `onBackPressed`, `KEYCODE_BACK`, missing insets on edge-to-edge screens | Back dismissal and focused content stay reachable on current SDK targets |
 
 ## Structure and semantics
@@ -32,6 +35,7 @@ Scan the changed code for these signals before reading it line by line. Each one
 - Hide decorative content while preserving meaningful imagery, charts, status, and validation.
 - Check headings, landmarks/containers, lists, collection position, modal boundaries, and reading order.
 - Verify custom controls expose the same operability and state as their native equivalents.
+- Keep a control's visible label in its accessible name, preferably at the start, so Voice Access and Voice Control users can speak what they see.
 
 ## Navigation and input
 
@@ -59,6 +63,8 @@ Scan the changed code for these signals before reading it line by line. Each one
 - Verify focus transitions into and out of WebViews and that web content does not create a second inaccessible navigation model.
 - For Compose Multiplatform screens on iOS, verify behavior with VoiceOver on iOS; Android semantics tests do not establish iOS behavior.
 - Preserve accessible authentication: allow paste, autofill, password managers, and alternatives to memory or transcription tasks.
+- Localize labels, values, hints, actions, errors, and announcements with resource-backed complete phrases, plural rules, locale-aware formatting, and tested RTL/BiDi ordering. Keep accessibility text synchronized when the app locale changes.
+- Do not gate core semantics or functionality on TalkBack, VoiceOver, touch-exploration, or accessibility-service detection. A detected service is not a reliable proxy for disability or input method.
 
 ## Privacy
 

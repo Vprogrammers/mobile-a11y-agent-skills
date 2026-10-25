@@ -1,6 +1,6 @@
 ---
 name: android-a11y
-description: Implement or review Android accessibility in Jetpack Compose or Views. Use for TalkBack or Voice Access problems, contentDescription, semantics, traversal, focus, headings, stateDescription, custom actions, live regions, font scaling, touch targets, autofill, errors, motion, contrast, WebView, accessibility testing, or “TalkBack does not read this”.
+description: Implement or review Android accessibility in Jetpack Compose or Views. Use for TalkBack or Voice Access problems, contentDescription, visible-label matching, localization, accessibility-service detection, semantics, traversal, focus, headings, stateDescription, custom actions, live regions, font scaling, touch targets, autofill, errors, motion, contrast, WebView, accessibility testing, or “TalkBack does not read this”.
 ---
 
 # Implement Android accessibility

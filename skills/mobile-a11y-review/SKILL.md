@@ -1,6 +1,6 @@
 ---
 name: mobile-a11y-review
-description: Review native Android, iOS, or Kotlin Multiplatform UI for accessibility barriers and testing gaps. Use for pull requests, releases, regressions, WCAG 2.2 or EN 301 549 mapping, TalkBack or VoiceOver failures, semantics, focus, scaling, contrast, motion, navigation, media, input, WebView, or sensitive-data changes.
+description: Review native Android, iOS, or Kotlin Multiplatform UI for accessibility barriers and testing gaps. Use for pull requests, releases, regressions, WCAG 2.2 or EN 301 549 mapping, TalkBack or VoiceOver failures, semantics, focus, scaling, contrast, motion, navigation, media, input, localization, Voice Control or Voice Access names, WebView, or sensitive-data changes.
 ---
 
 # Review mobile accessibility
