@@ -1,6 +1,6 @@
 # Contributing
 
-Contributions are welcome for Android, iOS, Kotlin Multiplatform, testing, and assistive-technology guidance.
+Contributions are welcome for Android, iOS, Kotlin Multiplatform, testing, and assistive-technology guidance. You do not need a finished change: an issue with a source link or a real-device result already helps. Use the issue forms for guidance corrections, device results, and suggestions, and Discussions for open questions. Everyone taking part follows the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Rules
 

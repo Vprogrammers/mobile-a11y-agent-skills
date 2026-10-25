@@ -1,0 +1,28 @@
+name: Device result
+description: Share what TalkBack, VoiceOver, Voice Access, Voice Control, or Switch Access did on a real device.
+labels: ["device-evidence"]
+body:
+  - type: markdown
+    attributes:
+      value: Real-device results are the evidence this project needs most. Use synthetic data and remove anything sensitive before posting.
+  - type: input
+    id: device
+    attributes:
+      label: Device, OS version, and assistive technology version
+      placeholder: Pixel 9, Android 16, TalkBack 16.1
+    validations:
+      required: true
+  - type: input
+    id: pattern
+    attributes:
+      label: Pattern or guidance tested
+      placeholder: Compose toggle row with Role.Switch
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Steps, expected result, and actual result
+      description: Quote the speech or the VoiceOver Caption Panel text where you can.
+    validations:
+      required: true

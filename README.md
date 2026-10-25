@@ -4,7 +4,7 @@ Production-focused accessibility agents and skills for Android, iOS, and Kotlin 
 
 The project helps coding agents implement and review accessible native mobile interfaces instead of applying a web checklist blindly. It covers Compose, Android Views, SwiftUI, UIKit, KMP boundaries, TalkBack, VoiceOver, Voice Access/Control, Switch Access/Control, Dynamic Type, font scaling, reduced motion, contrast, autofill, focus, testing, and standards-aware reporting.
 
-> Early release: verify version-sensitive APIs and real assistive-technology behavior in the target project and on supported devices.
+> Early release and a work in progress: verify version-sensitive APIs and real assistive-technology behavior in the target project and on supported devices. Suggestions, corrections, and device results are welcome; see [Contributing](#contributing).
 
 ## Why use it
 
@@ -133,6 +133,17 @@ Record real-device results with [the real-device evidence template](skills/mobil
 - Forcing identical Android and iOS accessibility implementations.
 - Flutter, React Native, and other non-Kotlin cross-platform UI frameworks.
 - Providing legal advice.
+
+## Contributing
+
+Every suggestion is welcome, from a typo to a new pattern or eval. The most valuable contributions are corrections backed by an official source and results from real devices.
+
+- [Report wrong or outdated guidance](https://github.com/Vprogrammers/mobile-a11y-agent-skills/issues/new?template=guidance-correction.yml)
+- [Share a real-device result](https://github.com/Vprogrammers/mobile-a11y-agent-skills/issues/new?template=device-result.yml)
+- [Suggest an improvement](https://github.com/Vprogrammers/mobile-a11y-agent-skills/issues/new?template=suggestion.yml)
+- [Ask a question or discuss an idea](https://github.com/Vprogrammers/mobile-a11y-agent-skills/discussions)
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request, and follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Security
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Prepare for outside contributors: a lite README that explains the agents and both installs and invites suggestions, a friendlier lite contributing note, issue forms for guidance corrections, device results, and suggestions, a pull request template, the Contributor Covenant 2.1 Code of Conduct, and a Contributing section in the README. Discussions are enabled in the main repository, and issues in the generated lite mirror are turned off so reports reach one place.
+
 ## 0.8.2
 
 - Add a cross-platform acceptance contract and make platform agents own the smallest direct regression test, reserving the test agent for strategy, new layers, audits, coordinated coverage, and remaining evidence gaps.
