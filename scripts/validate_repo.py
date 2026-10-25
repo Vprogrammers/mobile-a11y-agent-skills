@@ -28,6 +28,13 @@ ALLOWED_FINDING_KINDS = {
     "testing",
     "verification",
 }
+REQUIRED_AGENT_FIELDS = {"name", "description", "tools", "model"}
+OPTIONAL_AGENT_FIELDS = {"skills", "maxTurns"}
+WORKFLOW_SKILL = "mobile-a11y-workflow"
+PLUGIN_NAME = "mobile-a11y-agent-skills"
+REPAIR_PLATFORMS = {"android", "ios"}
+# Bare URLs in prose, such as "- Source: https://...". Apple and Android URLs contain parentheses.
+BARE_URL = re.compile(r"https?://[^\s<>\[\]`'\"]+")
 REQUIRED_DENY_RULES = {
     "Read(./.claude/settings.local.json)",
     "Read(./**/*.jks)",
@@ -65,6 +72,43 @@ def frontmatter(path: Path) -> tuple[list[str], dict[str, str]]:
         if match:
             values[match.group(1)] = match.group(2).strip()
     return lines, values
+
+
+def frontmatter_list(path: Path, key: str) -> list[str]:
+    """Return a YAML block list such as `skills:` followed by `  - name` lines, or an inline comma list."""
+    lines = path.read_text(encoding="utf-8").splitlines()
+    if not lines or lines[0] != "---" or "---" not in lines[1:]:
+        return []
+    block = lines[1 : lines.index("---", 1)]
+    for index, line in enumerate(block):
+        match = re.match(rf"^{re.escape(key)}:\s*(.*)$", line)
+        if not match:
+            continue
+        if match.group(1).strip():
+            return [item.strip() for item in match.group(1).strip("[]").split(",") if item.strip()]
+        items = []
+        for item in block[index + 1 :]:
+            entry = re.match(r"^\s+-\s+(\S.*)$", item)
+            if not entry:
+                break
+            items.append(entry.group(1).strip())
+        return items
+    return []
+
+
+def bare_urls(text: str) -> set[str]:
+    """URLs in prose, without trailing punctuation or a closing parenthesis that belongs to the sentence."""
+    urls = set()
+    for url in BARE_URL.findall(text):
+        while True:
+            stripped = url.rstrip(".,;:")
+            if stripped.endswith(")") and stripped.count("(") < stripped.count(")"):
+                stripped = stripped[:-1]
+            if stripped == url:
+                break
+            url = stripped
+        urls.add(url)
+    return urls
 
 
 def invoked_skills(body: str) -> set[str]:
@@ -124,9 +168,19 @@ def main(root: Path) -> int:
     for path in agents:
         _, metadata = frontmatter(path)
         relative = path.relative_to(root)
-        required = {"name", "description", "tools", "model"}
-        if set(metadata) != required:
-            errors.append(f"{relative} frontmatter must contain name, description, tools, and model")
+        if not REQUIRED_AGENT_FIELDS <= set(metadata) or set(metadata) - REQUIRED_AGENT_FIELDS - OPTIONAL_AGENT_FIELDS:
+            errors.append(
+                f"{relative} frontmatter must contain name, description, tools, and model, "
+                "and may add only skills and maxTurns"
+            )
+        # Plugins cannot ship CLAUDE.md, so every agent preloads the workflow skill that holds the shared contract.
+        preloaded = frontmatter_list(path, "skills")
+        if WORKFLOW_SKILL not in preloaded:
+            errors.append(f"{relative} must preload the {WORKFLOW_SKILL} skill")
+        for skill_name in sorted(set(preloaded) - {skill.parent.name for skill in skills}):
+            errors.append(f"{relative} preloads missing skill: {skill_name}")
+        if "maxTurns" in metadata and not re.fullmatch(r"[1-9][0-9]*", metadata["maxTurns"]):
+            errors.append(f"{relative} maxTurns must be a positive integer")
         if path.stem != metadata.get("name"):
             errors.append(f"{relative} name must match filename {path.stem}")
         name = metadata.get("name")
@@ -153,6 +207,9 @@ def main(root: Path) -> int:
         if BUILD_DIRECTORIES & set(path.parts):
             continue
         text = path.read_text(encoding="utf-8")
+        # Retained eval responses are model output, not sources this repository cites.
+        if "results" not in path.relative_to(root).parts[:2]:
+            external_urls.update(bare_urls(text))
         for target in re.findall(r"\[[^\]]+\]\(([^)]+)\)", text):
             if target.startswith(("https://", "http://")):
                 external_urls.add(target)
@@ -231,9 +288,9 @@ def main(root: Path) -> int:
         if len(evaluations) < 5:
             errors.append("At least five evaluation scenarios are required")
         eval_ids: set[str] = set()
-        skill_text = "\n".join(
-            path.read_text(encoding="utf-8").lower() for path in sorted((root / "skills").rglob("*.md"))
-        )
+        # Everything an agent can load: skills, agent instructions, and the consumer CLAUDE.md.
+        taught = sorted((root / "skills").rglob("*.md")) + agents + [root / "distribution/light/CLAUDE.md"]
+        skill_text = "\n".join(path.read_text(encoding="utf-8").lower() for path in taught if path.is_file())
         for evaluation in evaluations:
             missing = REQUIRED_EVAL_FIELDS - set(evaluation)
             if missing:
@@ -262,7 +319,7 @@ def main(root: Path) -> int:
             else:
                 for term in held_out_terms:
                     if term.lower() in skill_text:
-                        errors.append(f"Eval {eval_id} held-out term appears in skills/: {term}")
+                        errors.append(f"Eval {eval_id} held-out term appears in agent-loaded guidance: {term}")
             prompt_path = root / str(evaluation["prompt"])
             if severity_required and prompt_path.is_file() and "severity" not in prompt_path.read_text(encoding="utf-8").lower():
                 errors.append(f"Eval {eval_id} requires severity but its prompt does not ask for it")
@@ -347,8 +404,8 @@ def main(root: Path) -> int:
             repair_ids.add(repair_id)
             if repair["agent"] not in agent_names:
                 errors.append(f"Repair {repair_id} references unknown agent: {repair['agent']}")
-            if repair["platform"] != "android":
-                errors.append(f"Repair {repair_id} platform must be android")
+            if repair["platform"] not in REPAIR_PLATFORMS:
+                errors.append(f"Repair {repair_id} platform must be one of: {', '.join(sorted(REPAIR_PLATFORMS))}")
             for field in ("prompt", "fixture", "stubs", "tests", "reference_fix"):
                 if not (root / str(repair[field])).is_file():
                     errors.append(f"Repair {repair_id} missing {field}: {repair[field]}")
@@ -366,6 +423,30 @@ def main(root: Path) -> int:
                 errors.append(f"Repair {repair_id} minimum score exceeds the maximum")
     except (FileNotFoundError, json.JSONDecodeError, KeyError, TypeError) as error:
         errors.append(f"Invalid repair manifest: {error}")
+
+    # Official plugin evals: one routing eval per agent whose grader names that agent.
+    for agent_name in sorted(agent_names):
+        eval_dir = root / "plugin-evals" / f"{agent_name}-routing"
+        prompt = eval_dir / "prompt.md"
+        grader = eval_dir / "graders/plugin-guidance-used.md"
+        if not prompt.is_file() or not grader.is_file():
+            errors.append(f"plugin-evals/{agent_name}-routing needs prompt.md and graders/plugin-guidance-used.md")
+            continue
+        _, grader_metadata = frontmatter(grader)
+        if agent_name not in re.findall(r"[a-z0-9-]+", grader_metadata.get("pattern", "")):
+            errors.append(f"plugin-evals/{agent_name}-routing grader must match {PLUGIN_NAME}:{agent_name}")
+    plugin_components = agent_names | {skill.parent.name for skill in skills}
+    for grader in sorted(root.glob("plugin-evals/*/graders/*.md")):
+        text = grader.read_text(encoding="utf-8")
+        # Accept a plain name or a regex alternation such as plugin:(agent|skill).
+        for named in re.findall(rf"{PLUGIN_NAME}:\(?([a-z0-9|-]+)", text):
+            for name in filter(None, named.split("|")):
+                if name not in plugin_components:
+                    errors.append(f"{grader.relative_to(root)} names unknown agent or skill: {name}")
+
+    consumer = root / "distribution/light/CLAUDE.md"
+    if consumer.is_file() and WORKFLOW_SKILL not in consumer.read_text(encoding="utf-8"):
+        errors.append(f"distribution/light/CLAUDE.md must point to the {WORKFLOW_SKILL} skill")
 
     validator = root / "scripts/validate.sh"
     if not os.access(validator, os.X_OK):

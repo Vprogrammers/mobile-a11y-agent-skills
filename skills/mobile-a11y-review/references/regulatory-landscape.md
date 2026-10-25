@@ -1,13 +1,13 @@
 # Regulatory and standards landscape
 
-Last reviewed: 2026-10-24.
+Last reviewed: 2026-10-25.
 Review interval: 90 days.
 
 This is engineering guidance, not legal advice. Applicability depends on jurisdiction, organization, product, service, contract, and national implementation. Verify current primary sources before making a compliance claim.
 
 ## Recommended engineering baseline
 
-Use WCAG 2.2 Level AA as a forward-looking engineering baseline when contract and law do not specify another version. WCAG is technology-neutral but written for web content; use W3C mobile guidance and platform behavior to interpret it for native apps. Do not claim that passing automated checks proves conformance.
+Use WCAG 2.2 Level AA as a forward-looking engineering baseline when contract and law do not specify another version. WCAG is technology-neutral but written for web content. For native apps, interpret it with the W3C Group Note *Guidance on Applying WCAG 2 to Non-Web Information and Communications Technologies* (WCAG2ICT), published 11 December 2025 for WCAG 2.2, together with W3C mobile guidance and platform behavior. WCAG2ICT is informative guidance, not a standard. Do not claim that passing automated checks proves conformance.
 
 Mobile-relevant WCAG 2.2 additions include Focus Not Obscured, Dragging Movements, Target Size (Minimum), Consistent Help, Redundant Entry, and Accessible Authentication. Preserve paste, autofill, password managers, and alternatives to memory or transcription tasks.
 
@@ -15,12 +15,18 @@ Primary sources:
 
 - WCAG 2.2: https://www.w3.org/TR/WCAG22/
 - W3C mobile accessibility: https://www.w3.org/WAI/standards-guidelines/mobile/
+- WCAG2ICT for WCAG 2.2 (W3C Group Note, 11 December 2025; checked 2026-10-25): https://www.w3.org/TR/wcag2ict-22/
 
 ## European Union
 
 ### European Accessibility Act
 
-Directive (EU) 2019/882 applies from 28 June 2025 to covered products and services, including areas such as consumer banking, e-commerce, electronic communications, and parts of passenger transport. It does not make every mobile app automatically subject to identical requirements. Check national transposition, scope, exemptions, and enforcement.
+Directive (EU) 2019/882 applies from 28 June 2025 to covered products and services, including areas such as consumer banking, e-commerce, electronic communications, and parts of passenger transport. It does not make every mobile app automatically subject to identical requirements. Check national transposition, scope, exemptions, and enforcement. Provisions that often matter for apps, checked against the Directive's article text on 2026-10-25:
+
+- **Article 4(5):** “Microenterprises providing services shall be exempt from complying with the accessibility requirements referred to in paragraph 3 of this Article and any obligations relating to the compliance with those requirements.” The exemption covers services, not products. The size thresholds are in the Directive's definitions (Article 3), which were not checked here; read them before classifying an organization.
+- **Article 14, fundamental alteration and disproportionate burden:** the requirements apply only to the extent that compliance does not fundamentally alter the basic nature of the product or service and does not impose a disproportionate burden. An operator that relies on this must assess it against the criteria in Annex VI, document the assessment, keep it for five years after the product was last made available or the service last provided, give it to the authorities on request, and inform the relevant authorities of each Member State concerned. Service providers relying on disproportionate burden must renew the assessment when the service changes, when the authorities ask, and at least every five years. An operator that receives external funding to improve accessibility cannot rely on disproportionate burden. Microenterprises dealing with products need not document the assessment, and microenterprises need not inform the authorities. This is an operator's legal assessment, not an engineering judgment; do not conclude it in a review.
+- **Article 32, transitional measures:** “Member States shall provide for a transitional period ending on 28 June 2030 during which service providers may continue to provide their services using products which were lawfully used by them to provide similar services before that date.” Service contracts agreed before 28 June 2025 may continue unchanged until they expire, but no longer than five years from that date. Member States may let self-service terminals lawfully used before 28 June 2025 stay in use until the end of their economically useful life, but no longer than 20 years after their entry into use. Whether a specific app or release falls under this transition is a legal question; do not decide it in a review.
+- **Recital 32** (interpretive, not binding) lists “mobile device-based services” among the ways passenger transport services deliver travel information, including real-time, pre-journey, disruption, and price information.
 
 - Directive: https://eur-lex.europa.eu/eli/dir/2019/882/oj/eng
 - Commission overview: https://commission.europa.eu/strategy-and-policy/policies/justice-and-fundamental-rights/disability/european-accessibility-act-eaa_en
@@ -104,6 +110,10 @@ A project may adopt WCAG 2.1 or 2.2 as an engineering baseline, but do not misst
 ### ADA Title III and other obligations
 
 Businesses open to the public must provide accessible services, but do not state that one universal WCAG version is federally mandated for every private native app. Contracts, settlements, state laws, procurement terms, and sector rules may impose more specific duties. Ask for legal review when applicability matters.
+
+## Other jurisdictions
+
+This file covers the EU and US federal context only. Other jurisdictions, such as the United Kingdom, Canada, Australia, Japan, and individual US states, have their own laws, standards, and procurement rules. Do not extrapolate EU or US conclusions to them; ask for the jurisdiction and seek legal review.
 
 ## Evidence language
 

@@ -17,6 +17,9 @@ Review interval: 180 days.
 - Use `customActions` to make gesture-only or nested actions directly available. Avoid duplicating the primary click action.
 - Use `isTraversalGroup` and `traversalIndex` only to correct a demonstrated reading-order problem. Visual placement alone does not guarantee traversal order.
 - Use `collectionInfo`, `collectionItemInfo`, and progress/range semantics for custom collections and adjustable controls when native components cannot be used.
+- Make a row that toggles a setting one node: `Modifier.toggleable(value = checked, role = Role.Switch, onValueChange = onChange)` on the row, and `Switch(checked = checked, onCheckedChange = null)` inside it. A clickable row next to an independently clickable `Switch` gives two actionable nodes and no checked state on the row. Use `selectable(selected, role = Role.RadioButton, onClick)` with `Modifier.selectableGroup()` on the parent for single-choice groups.
+- Expose inline links as links. `ClickableText` is deprecated and resolves taps from text offsets, so TalkBack, Switch Access, and keyboard users cannot reach the links. Build the text with `withLink(LinkAnnotation.Url(url)) { append("terms") }`, or `LinkAnnotation.Clickable` for in-app navigation, and pass it to `Text`.
+- Give a custom `clickable` the role it represents and a label for its outcome: `Modifier.clickable(onClickLabel = "Open order details", role = Role.Button, onClick = …)`. TalkBack reads the label as the action's description instead of a generic “activate”. Apply the same to `combinedClickable` with `onLongClickLabel`.
 
 ### Bad: duplicate image and label nodes
 
@@ -34,6 +37,31 @@ Button(onClick = onDelete) {
     Icon(Icons.Default.Delete, contentDescription = null)
     Text("Delete")
 }
+```
+
+### Better: a custom row with a role and an action label
+
+```kotlin
+Row(
+    Modifier
+        .fillMaxWidth()
+        .clickable(onClickLabel = "Open order details", role = Role.Button, onClick = onOpen)
+        .minimumInteractiveComponentSize(),
+) {
+    Text(title)
+}
+```
+
+### Better: an accessible inline link
+
+```kotlin
+Text(
+    buildAnnotatedString {
+        append("Messages follow our ")
+        withLink(LinkAnnotation.Url("https://example.com/terms")) { append("terms") }
+        append(".")
+    },
+)
 ```
 
 ### Bad: destructive semantics replacement
@@ -58,6 +86,7 @@ Add only the missing property unless replacing the whole node is deliberate and 
 - Add extra context through surrounding structure, state, or a concise expanded name without replacing the visible words. Verify voice selection with duplicate visible labels.
 - Put labels, values, custom-action names, errors, and announcements in Android resources. Use complete format strings, plurals, and locale-aware number/date formatting instead of concatenating fragments.
 - Test localization expansion, RTL layout, mixed-direction text, and runtime locale changes. Confirm semantics refresh with the visible UI.
+- Mark text in another language so TalkBack can switch pronunciation: in Views, wrap it in a `LocaleSpan`; in Compose, apply `SpanStyle(localeList = LocaleList("fr-FR"))` to that part of an `AnnotatedString`. Verify the voice change with TalkBack on a device.
 - Do not gate essential semantics, navigation, or actions on `AccessibilityManager.isTouchExplorationEnabled` or the list of enabled accessibility services. Those signals do not identify every disabled user or input method and can change while the app runs.
 
 ## Focus and dynamic updates
@@ -66,8 +95,10 @@ Compose focus APIs such as `FocusRequester` control keyboard/input focus. TalkBa
 
 - Prefer stable node identity and state updates over focus resets.
 - Use `liveRegion` for concise, important asynchronous status; debounce rapid updates.
-- Avoid `announceForAccessibility` for ordinary state changes. It is deprecated on newer Android versions; prefer semantics, window/state events, or framework behavior appropriate to the change.
+- Avoid `announceForAccessibility` for ordinary state changes. `View.announceForAccessibility` is deprecated as of API level 36 (Android 16); prefer semantics such as `stateDescription`, pane titles, live regions, or window changes, which TalkBack already reports.
 - Give dialogs and sheets real platform semantics and restore focus to the initiating control when dismissed.
+- Honor the user's **Time to take action** setting for anything that disappears on its own and contains an action, such as an Undo banner. Material3 `SnackbarHost` does this already. For custom UI, pass the default duration through `LocalAccessibilityManager.current?.calculateRecommendedTimeoutMillis(…, containsText = true, containsControls = true)` in Compose, or `AccessibilityManager.getRecommendedTimeoutMillis()` in Views (API 29+), or keep the action until the user dismisses it (WCAG 2.2.1).
+- Content that moves or advances on its own for more than five seconds, such as a carousel, needs a visible pause or stop control for everyone (WCAG 2.2.2 Pause, Stop, Hide). Also stop it when animations are removed. Do not rely on detecting TalkBack instead.
 - In lazy collections, avoid focus loss caused by unstable keys or replacing the entire item subtree.
 
 ### Bad: announce every keystroke
@@ -158,7 +189,8 @@ Column {
             .height(160.dp)
             .semantics { contentDescription = summary },
     ) { drawBars(sales) }
-    sales.forEach { (month, value) -> Text("$month: $value") }
+    val numbers = NumberFormat.getIntegerInstance()
+    sales.forEach { (month, value) -> Text(stringResource(R.string.sales_value, month, numbers.format(value))) }
 }
 ```
 
@@ -201,12 +233,19 @@ webView.settings.apply {
 ## Diagnosis
 
 - Inspect Compose semantics with `printToLog`/`printToString` and compare merged and unmerged trees before changing modifiers.
+- `sales_value` is a resource such as `<string name="sales_value">%1$s: %2$s</string>`, so translators can reorder the parts.
 - For test-layer choice, test APIs, and evidence limits, invoke the `mobile-a11y-testing` skill.
 
 Official sources:
 
 - Compose semantics: https://developer.android.com/develop/ui/compose/accessibility/semantics
 - Android accessibility principles: https://developer.android.com/guide/topics/ui/accessibility/principles
+- `View.announceForAccessibility` (deprecated in API level 36; checked against the API 36 SDK stubs on 2026-10-25): https://developer.android.com/reference/android/view/View#announceForAccessibility(java.lang.CharSequence)
+- `LinkAnnotation` and `withLink`: https://developer.android.com/develop/ui/compose/text/user-interactions
+- `AccessibilityManager.getRecommendedTimeoutMillis`: https://developer.android.com/reference/android/view/accessibility/AccessibilityManager#getRecommendedTimeoutMillis(int,%20int)
+- WCAG 2.2.1 Timing Adjustable and 2.2.2 Pause, Stop, Hide: https://www.w3.org/TR/WCAG22/#enough-time
+- Compose `clickable` with `onClickLabel` and `role`: https://developer.android.com/develop/ui/compose/accessibility/key-steps
+- `LocaleSpan`: https://developer.android.com/reference/android/text/style/LocaleSpan
 - Font scaling: https://developer.android.com/about/versions/14/features#non-linear-font-scaling
 - Edge-to-edge in Compose: https://developer.android.com/develop/ui/compose/system/system-bars
 - Android 16 behavior changes (edge-to-edge opt-out, predictive back): https://developer.android.com/about/versions/16/behavior-changes-16

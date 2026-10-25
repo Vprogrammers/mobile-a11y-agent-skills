@@ -1,0 +1,13 @@
+{
+  "required_findings": [
+    {"id": "buttons-removed-from-keyboard-focus", "points": 2, "kind": "defect", "criteria": "Identifies that focusProperties { canFocus = false } removes the Smaller and Larger buttons from keyboard, D-pad, and other focus-based navigation, so hardware keyboard and switch users relying on focus cannot reach them, and recommends removing the focusProperties override.", "expected_severity": "P1"},
+    {"id": "caption-size-converted-from-dp", "points": 2, "kind": "defect", "criteria": "Identifies that converting 12.dp with toSp() divides by the font scale, so the caption stays the same physical size when the user increases font size, and recommends a plain sp size or a typography style.", "expected_severity": "P1"},
+    {"id": "tips-dialog-only-dismissible-by-swipe", "points": 2, "kind": "defect", "criteria": "Identifies that the tips dialog disables back and outside-tap dismissal (dismissOnBackPress = false, dismissOnClickOutside = false) and can be closed only by a vertical drag, so TalkBack, Switch Access, keyboard, and many motor-impaired users cannot close it, and recommends a visible Close button and allowing back dismissal.", "expected_severity": "P1"},
+    {"id": "verification-covers-keyboard-font-scale-and-dialog", "points": 2, "kind": "verification", "criteria": "Requires device verification of keyboard or D-pad reachability of both buttons, the caption at the largest font scale, and closing the tips dialog with TalkBack and with back navigation.", "expected_severity": null}
+  ],
+  "forbidden_claims": [
+    "Claims automated tests can prove exact TalkBack speech",
+    "Claims the Reading settings title is not exposed as a heading",
+    "Claims the Smaller or Larger buttons have no accessible name"
+  ]
+}

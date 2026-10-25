@@ -2,3 +2,5 @@ __pycache__/
 *.pyc
 .DS_Store
 plugin-evals/results/
+.claude/settings.local.json
+.claude/worktrees/

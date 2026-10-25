@@ -5,6 +5,36 @@ import XCTest
 // Unit tests assert exposed accessibility properties only. They do not prove VoiceOver speech.
 @MainActor
 final class UIKitPatternsTests: XCTestCase {
+    func testModalCardDismissesWithEscapeGesture() {
+        let card = ModalCardView()
+        XCTAssertFalse(card.accessibilityPerformEscape(), "Without a dismiss handler, escape must not report success")
+
+        var dismissed = false
+        card.onDismiss = { dismissed = true }
+
+        XCTAssertTrue(card.accessibilityPerformEscape())
+        XCTAssertTrue(dismissed)
+    }
+
+    func testForeignLanguageLabelDeclaresItsLanguage() {
+        XCTAssertEqual(makeForeignLanguageLabel(text: "plat du jour", languageTag: "fr-FR").accessibilityLanguage, "fr-FR")
+    }
+
+    func testQuotedPhraseMarksOnlyTheForeignPart() {
+        let text = quotedPhrase(intro: "The menu says ", phrase: "plat du jour", languageTag: "fr-FR")
+        let languages = text.runs.map { $0.languageIdentifier }
+
+        XCTAssertEqual(String(text.characters), "The menu says plat du jour")
+        XCTAssertEqual(languages, [nil, "fr-FR"])
+    }
+
+    func testPhotoViewIgnoresSmartInvert() {
+        let photo = makePhotoView(image: nil, caption: "Harbor at sunset")
+
+        XCTAssertTrue(photo.accessibilityIgnoresInvertColors)
+        XCTAssertEqual(photo.accessibilityLabel, "Harbor at sunset")
+    }
+
     func testScalableLabelAdjustsForContentSizeCategory() {
         let label = makeScalableLabel(text: "Order summary")
 

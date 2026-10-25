@@ -20,9 +20,18 @@ class EvalWorkflowPolicyTests(unittest.TestCase):
         self.assertIn("--agent mobile-a11y-agent-skills:{agent}", self.workflow)
 
     def test_commands_are_bounded_and_ephemeral(self) -> None:
-        self.assertEqual(self.workflow.count("--max-budget-usd"), 2)
-        self.assertEqual(self.workflow.count("--max-turns"), 2)
-        self.assertEqual(self.workflow.count("--no-session-persistence"), 2)
+        commands = self.workflow.count("claude -p")
+        self.assertEqual(commands, 4)
+        self.assertEqual(self.workflow.count("--max-budget-usd"), commands)
+        self.assertEqual(self.workflow.count("--max-turns"), commands)
+        self.assertEqual(self.workflow.count("--no-session-persistence"), commands)
+
+    def test_baseline_is_opt_in_and_runs_without_the_plugin(self) -> None:
+        baseline = self.workflow[self.workflow.index("Run baseline agent and judge evals") :]
+        baseline = baseline[: baseline.index("run: ./scripts/run_eval_suite.py")]
+        self.assertIn("inputs.baseline", baseline)
+        self.assertIn("EVAL_VARIANT: baseline", baseline)
+        self.assertNotIn("--plugin-dir", baseline)
 
     def test_agent_and_judge_use_independent_models(self) -> None:
         self.assertIn("claude -p --model sonnet", self.workflow)
@@ -31,7 +40,7 @@ class EvalWorkflowPolicyTests(unittest.TestCase):
 
     def test_official_eval_keeps_baseline_and_cost_cap(self) -> None:
         self.assertIn("--ablation with-without", self.workflow)
-        self.assertIn("--max-cost-usd 8.00", self.workflow)
+        self.assertIn("--max-cost-usd 10.00", self.workflow)
 
     def test_paid_evals_run_only_on_demand(self) -> None:
         self.assertNotIn("schedule:", self.workflow)

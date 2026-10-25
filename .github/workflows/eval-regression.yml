@@ -3,6 +3,11 @@ name: Agent eval regression
 # Paid model evals run only on demand; there is no schedule.
 on:
   workflow_dispatch:
+    inputs:
+      baseline:
+        description: Also run the custom suite without the plugin
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -39,11 +44,25 @@ jobs:
             --no-session-persistence --max-turns 2 --max-budget-usd 0.25
           EVAL_MODEL: agent=sonnet,judge=opus
         run: ./scripts/run_eval_suite.py evals/results/ci
+      - name: Run baseline agent and judge evals
+        if: env.CLAUDE_CODE_OAUTH_TOKEN != '' && inputs.baseline
+        env:
+          EVAL_VARIANT: baseline
+          EVAL_AGENT_COMMAND: >-
+            claude -p --model sonnet --restricted --allowedTools Read Glob Grep
+            --permission-mode dontAsk --permission-prompts none
+            --no-session-persistence --max-turns 8 --max-budget-usd 0.75
+          EVAL_JUDGE_COMMAND: >-
+            claude -p --model opus --restricted
+            --permission-mode dontAsk --permission-prompts none
+            --no-session-persistence --max-turns 2 --max-budget-usd 0.25
+          EVAL_MODEL: agent=sonnet,judge=opus
+        run: ./scripts/run_eval_suite.py evals/results/ci-baseline
       - name: Run official plugin eval smoke suite
         if: env.CLAUDE_CODE_OAUTH_TOKEN != ''
         run: >-
           claude plugin eval . --runs 1 --ablation with-without
-          --max-cost-usd 8.00 --no-publish --trust-plugin
+          --max-cost-usd 10.00 --no-publish --trust-plugin
       - name: Upload eval evidence
         if: always() && env.CLAUDE_CODE_OAUTH_TOKEN != ''
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -51,6 +70,7 @@ jobs:
           name: agent-eval-${{ github.sha }}
           path: |
             evals/results/ci
+            evals/results/ci-baseline
             plugin-evals/results
           if-no-files-found: error
           retention-days: 30

@@ -15,7 +15,11 @@ Review interval: 180 days.
 - Use `.accessibilityInputLabels` when Voice Control needs predictable spoken alternatives to visible text.
 - Use `.accessibilityAdjustableAction` for custom increment/decrement controls.
 - Use `.accessibilityAction(named:)` for meaningful secondary actions.
+- Expose selection state with the selected trait, not only color: `.accessibilityAddTraits(filter == option ? .isSelected : [])` on each option, or use a native `Picker` with the segmented style.
 - Use `.accessibilityRotor` only when it materially improves navigation through repeated or structured content.
+- Mark section titles with `.accessibilityAddTraits(.isHeader)` so VoiceOver users can move between them with the Headings rotor. Add `.accessibilityHeading(_:)` with a level when the screen has nested sections. Use headings for real sections, not for visual emphasis.
+- Use `.accessibilitySortPriority(_:)` inside a `.contain` group only to correct a demonstrated reading-order problem, such as a total drawn below the line items that must be read first. Higher priority is read first.
+- Keep tappable targets at least 44 × 44 pt. Use `.frame(minWidth: 44, minHeight: 44)` with `.contentShape(Rectangle())` for small icons, so the hit region matches the frame.
 
 ### Bad: gesture-only image action
 
@@ -43,8 +47,18 @@ HStack { editButton; deleteButton }
 
 Keep separate controls, or expose well-named custom actions on one row element only when that interaction has been intentionally designed and tested.
 
+### Better: a section title with a level
+
+```swift
+Text(title)
+    .font(.title2)
+    .accessibilityAddTraits(.isHeader)
+    .accessibilityHeading(.h2)
+```
+
 ## Names, voice control, and localization
 
+- Mark text in another language so VoiceOver pronounces it correctly. In UIKit, set `accessibilityLanguage` to a BCP 47 tag on the element. In SwiftUI, an `AttributedString` run can carry Foundation's `languageIdentifier` attribute; verify on a device that VoiceOver switches voices, because SwiftUI does not document how it maps that attribute.
 - Keep visible control text in the accessibility label and Voice Control input labels, preferably at the start. A control shown as “Continue” but labeled only “Submit order” is difficult to activate by saying what is visible.
 - Use `.accessibilityInputLabels` for concise localized synonyms only when they improve Voice Control recognition; include the visible label and do not use input labels to hide a mismatched accessibility label.
 - Localize labels, values, hints, custom-action names, errors, and announcements as complete phrases. Use String Catalog pluralization and locale-aware number/date formatting instead of concatenating fragments.
@@ -55,10 +69,12 @@ Keep separate controls, or expose well-named custom actions on one row element o
 
 - Use `@AccessibilityFocusState` for meaningful SwiftUI context changes such as presenting validation summary or moving to newly displayed content. Do not bind routine selection state to accessibility focus.
 - Prefer native navigation and presentation because they supply window and focus behavior.
-- On supported SDKs, use SwiftUI accessibility announcement APIs for exceptional asynchronous results that state/value changes cannot convey.
+- Announce only exceptional asynchronous results that a state or value change cannot convey. On iOS 17 and later, use `AccessibilityNotification.Announcement(message).post()`; in UIKit, `UIAccessibility.post(notification: .announcement, argument: message)`.
 - In UIKit, use `UIAccessibility.post(notification:argument:)` sparingly.
 - Use `.screenChanged` for a major context/screen change and `.layoutChanged` for meaningful changes within the current context. Pass the intended focus target only when necessary.
 - Set `accessibilityViewIsModal` for custom modal containers so VoiceOver cannot navigate behind them; restore focus appropriately after dismissal.
+- Let VoiceOver users dismiss custom modals with the escape gesture (a two-finger Z). In UIKit, override `accessibilityPerformEscape()` to dismiss and return `true`. In SwiftUI, add `.accessibilityAction(.escape) { dismiss() }` and `.accessibilityAddTraits(.isModal)` to a custom panel. System sheets and alerts already handle escape.
+- SwiftUI has no error property for a text field. Keep the error as visible text next to the field, in reading order after it. After a failed submit, move focus with `@AccessibilityFocusState` to the first invalid field or a summary, and do not replace the field's value with the error.
 - Never post the same message from both SwiftUI state and UIKit notification bridges.
 
 ### Bad: force focus on every update
@@ -79,7 +95,7 @@ Update `.accessibilityValue` and move focus only when a new context or blocking 
 - Use `ViewThatFits`, adaptive stacks, and layout changes at accessibility Dynamic Type sizes instead of shrinking text.
 - Use `dynamicTypeSize` environment information to change layout, not to cap user settings without a documented exceptional reason.
 - Avoid fixed heights and single-line assumptions. Test all accessibility sizes, landscape, localization expansion, and narrow screens.
-- Provide Large Content Viewer support for small controls in dense interfaces when larger permanent presentation is not practical.
+- Provide Large Content Viewer support for small controls in dense interfaces when larger permanent presentation is not practical: `.accessibilityShowsLargeContentViewer()` in SwiftUI, or `UILargeContentViewerInteraction` with `showsLargeContentViewer` and `largeContentTitle` in UIKit.
 
 ### Bad: fixed text row
 
@@ -103,7 +119,11 @@ People turn on these settings in Accessibility > Display & Text Size. SwiftUI ex
 - **Bold Text** (`legibilityWeight`, which reflects this setting, or `UIAccessibility.isBoldTextEnabled`). When text uses a custom font or is drawn by the app, read the setting and apply a heavier weight.
 - **Button Shapes** (`accessibilityShowButtonShapes`, `UIAccessibility.buttonShapesEnabled`, iOS 14+). For borderless or text-only custom buttons, add an underline or background shape when the setting is on, so actionable text is distinguishable from plain text.
 - **On/Off Labels** (`UIAccessibility.isOnOffSwitchLabelsEnabled`). Prefer the native `Toggle` and `UISwitch`. A custom switch must read this setting and show on and off labels.
+- **Smart Invert** (`accessibilityIgnoresInvertColors()`, `UIView.accessibilityIgnoresInvertColors`). Photos, video, and other media must keep their real colors when people use Smart Invert. Apply the modifier to the media view, not to the whole screen.
 - **Reduce Transparency** (`accessibilityReduceTransparency`). Replace blurs and translucent backgrounds with opaque ones, and keep text contrast at 4.5:1 against the result.
+- **Reduce Motion** (`accessibilityReduceMotion`, `UIAccessibility.isReduceMotionEnabled`). Replace large movement, parallax, and zooming transitions with a fade or no animation, and keep the state change visible.
+- **Increase Contrast** (`colorSchemeContrast == .increased`, `UIAccessibility.isDarkerSystemColorsEnabled`). System colors adapt; give custom colors a higher-contrast variant, for example in the asset catalog's High Contrast appearance.
+- **Full Keyboard Access**. Keep every control reachable with Tab and the arrow keys, keep the system focus indicator visible, and offer `.keyboardShortcut` for frequent actions. Test with a hardware keyboard on a device.
 - Test each setting on a device together with large Dynamic Type sizes, because the combinations change layout.
 
 ## Custom controls, charts, and media
@@ -119,6 +139,8 @@ People turn on these settings in Accessibility > Display & Text Size. SwiftUI ex
 - `AVPlayer` applies media selection from the system accessibility preferences by default (`appliesMediaSelectionCriteriaAutomatically`). Do not turn that off without replacing it. When you render captions yourself, read the caption preferences through the Media Accessibility framework.
 - Give custom playback controls labels and keep them reachable with VoiceOver, Switch Control, and Full Keyboard Access. Audio that plays automatically for more than three seconds needs a control to pause or stop it, or to change its volume independently (WCAG 1.4.2).
 - Respect Reduce Motion and provide a non-motion equivalent for state changes conveyed by animation.
+- Content that moves or advances on its own for more than five seconds, such as a carousel, needs a visible pause or stop control for everyone (WCAG 2.2.2 Pause, Stop, Hide), and should stop when Reduce Motion is on. If you also adapt to VoiceOver, observe it with `@Environment(\.accessibilityVoiceOverEnabled)` or `UIAccessibility.voiceOverStatusDidChangeNotification`; a one-time `UIAccessibility.isVoiceOverRunning` read misses later changes and does not cover Switch Control or Voice Control users.
+- Give actionable content that disappears on its own, such as an Undo banner, enough time or keep it until dismissed (WCAG 2.2.1 Timing Adjustable).
 
 ### Bad: drawing only
 
@@ -140,7 +162,7 @@ Canvas { context, size in drawBars(sales, in: &context, size: size) }
             ForEach(sales) { sale in
                 Rectangle()
                     .accessibilityLabel(sale.month)
-                    .accessibilityValue("\(sale.value)")
+                    .accessibilityValue(Text(sale.value, format: .number))
             }
         }
     }
@@ -153,6 +175,7 @@ Canvas { context, size in drawBars(sales, in: &context, size: size) }
 - Keep `accessibilityFrame` or `accessibilityFrameInContainerSpace` aligned with visible/tappable content and update it after layout changes.
 - Use `accessibilityElements` ordering only to correct a demonstrated problem; keep it synchronized with dynamic content.
 - Use custom actions for secondary operations and `accessibilityIncrement`/`accessibilityDecrement` for adjustable controls.
+- Mark section titles with the `.header` trait.
 
 ## Input, authentication, and privacy
 
@@ -208,4 +231,14 @@ Official sources:
 - Canvas: https://developer.apple.com/documentation/swiftui/canvas
 - AVPlayer.appliesMediaSelectionCriteriaAutomatically: https://developer.apple.com/documentation/avfoundation/avplayer/appliesmediaselectioncriteriaautomatically
 - Media Accessibility: https://developer.apple.com/documentation/mediaaccessibility
+- accessibilityHeading(_:): https://developer.apple.com/documentation/swiftui/view/accessibilityheading(_:)
+- accessibilitySortPriority(_:): https://developer.apple.com/documentation/swiftui/view/accessibilitysortpriority(_:)
+- accessibilityPerformEscape(): https://developer.apple.com/documentation/objectivec/nsobject-swift.class/accessibilityperformescape()
+- AccessibilityNotification.Announcement: https://developer.apple.com/documentation/accessibility/accessibilitynotification/announcement
+- accessibilityLanguage: https://developer.apple.com/documentation/objectivec/nsobject-swift.class/accessibilitylanguage
+- Large Content Viewer: https://developer.apple.com/documentation/uikit/uilargecontentviewerinteraction
+- Reduce Motion: https://developer.apple.com/documentation/swiftui/environmentvalues/accessibilityreducemotion
+- Smart Invert (accessibilityIgnoresInvertColors): https://developer.apple.com/documentation/swiftui/view/accessibilityignoresinvertcolors(_:)
+- accessibilityVoiceOverEnabled: https://developer.apple.com/documentation/swiftui/environmentvalues/accessibilityvoiceoverenabled
+- Increase Contrast (colorSchemeContrast): https://developer.apple.com/documentation/swiftui/environmentvalues/colorschemecontrast
 - WCAG 2.2 captions, audio description, audio control, and non-text contrast: https://www.w3.org/TR/WCAG22/

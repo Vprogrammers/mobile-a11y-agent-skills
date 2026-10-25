@@ -1,6 +1,6 @@
 # Real-device accessibility evidence template
 
-Last reviewed: 2026-10-24.
+Last reviewed: 2026-10-25.
 
 Use one record per platform, build, assistive technology, settings combination, and tested flow. Do not reuse a result for a later release without rerunning the relevant checks.
 
@@ -28,10 +28,14 @@ Use one record per platform, build, assistive technology, settings combination, 
 - Expected result:
 - Actual result:
 - Result: Pass / Fail / Blocked / Not run
-- Evidence attachment or link:
+- Evidence attachment or link (redacted):
 - Issue link:
 - Known limitations:
 - Follow-up owner:
+
+## Sensitive evidence
+
+Use synthetic accounts and test data. Screenshots, recordings, accessibility trees, and screen-reader logs can expose passwords, one-time codes, payment, identity, health, or location data. Redact them before attaching, and keep notification previews and keyboard suggestions out of recordings.
 
 ## Evidence boundary
 

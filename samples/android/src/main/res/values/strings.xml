@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- One complete phrase per chart value, so translators can reorder the month and the value. -->
+    <string name="sales_value">%1$s: %2$s</string>
+</resources>

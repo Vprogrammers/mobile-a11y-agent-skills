@@ -1,6 +1,6 @@
 # KMP accessibility boundaries
 
-Last reviewed: 2026-10-24. Swift export, SKIE, and Compose Multiplatform accessibility change quickly; verify against the Kotlin and Compose Multiplatform versions used by the project.
+Last reviewed: 2026-10-25. Swift export, SKIE, and Compose Multiplatform accessibility change quickly; verify against the Kotlin and Compose Multiplatform versions used by the project.
 Review interval: 180 days.
 
 Two architectures need different rules:
@@ -35,6 +35,8 @@ interface AccessibilityPreferences {
     val reduceMotion: StateFlow<Boolean>
 }
 ```
+
+`StateFlow` keeps the example short, but it reaches Swift as a generic Kotlin class without native observation. When Swift consumers observe the preference, decide the interop explicitly: add a callback-based listener, or use SKIE or Swift export, which map flows to `AsyncSequence`. See [Swift interop](#swift-interop).
 
 Prefer `expect`/`actual` only when every target needs the same compile-time API and platform selection is intrinsic:
 
@@ -72,7 +74,7 @@ Android maps it to Compose `error()`/state semantics; iOS maps it to native labe
 ## Swift export and SKIE
 
 - Kotlin/Native framework export through Objective-C headers is the baseline and must remain understandable without optional tooling.
-- Swift export is Alpha as of this review: it works only with direct Xcode integration, erases generic type parameters, ignores types inheriting `List`/`Set`/`Map`, and supports only final classes that inherit directly from `Any`. Suspend functions become `async` and flows become `AsyncSequence`. Do not make a public library contract depend on it without accepting breaking changes.
+- Swift export is Alpha as of this review (kotlinlang.org, checked 2026-10-25): it works only with direct Xcode integration, erases generic type parameters, ignores types inheriting `List`/`Set`/`Map`, and supports only final classes that inherit directly from `Any`. Suspend functions become `async` and flows become `AsyncSequence`. Do not make a public library contract depend on it without accepting breaking changes.
 - SKIE can improve coroutines, flows, sealed hierarchies, and Swift ergonomics, but adds a build dependency and configuration surface. Keep it optional unless the library contract requires it.
 - Document which layer consumers must configure and test both direct and enhanced interop paths when both are supported.
 

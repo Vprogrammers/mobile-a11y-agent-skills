@@ -19,7 +19,7 @@ Scan the changed code for these signals before reading it line by line. Each one
 | Compose `Canvas`, SwiftUI `Canvas`, `Chart`, or map views | A summary, reachable values or places, and color-independent series |
 | Media3 `PlayerView`, `AVPlayer`, `VideoPlayer`, or custom playback controls | Captions follow system preferences, audio description where needed, and labeled, reachable controls |
 | `WebView`, `WKWebView`, `loadUrl`, `loadHTMLString` | Native title for the web content and a separate audit of the DOM and focus transitions |
-| `announceForAccessibility`, `UIAccessibility.post`, `liveRegion` on frequently changing text | Announcements are limited to important asynchronous changes |
+| `announceForAccessibility`, `UIAccessibility.post`, `liveRegion` on frequently changing text | Announcements are limited to important asynchronous changes; `View.announceForAccessibility` is deprecated as of API level 36 |
 | `FocusRequester` or `@AccessibilityFocusState` driven by ordinary state | Focus moves only for meaningful context changes |
 | `clickable(indication = null)`, custom indications, or removed focus styles | Keyboard and switch focus stays visible |
 | Password, OTP, payment, or identity fields with custom masking, blocked paste, or `contentType`/`textContentType` changes | Autofill, paste, and consistent visual and accessibility masking |
@@ -29,6 +29,16 @@ Scan the changed code for these signals before reading it line by line. Each one
 | Concatenated user-facing strings, hard-coded accessibility text, manual plurals, or locale-dependent formatting | Labels, values, hints, and announcements remain grammatical and synchronized in every supported locale and RTL/BiDi layout |
 | Touch-exploration checks, enabled accessibility-service inspection, or VoiceOver-running status checks | Core semantics and functionality do not depend on detecting one assistive technology |
 | `onBackPressed`, `KEYCODE_BACK`, missing insets on edge-to-edge screens | Back dismissal and focused content stay reachable on current SDK targets |
+| `clickable` row that also contains a clickable `Switch`, `Checkbox`, or `RadioButton` | One toggleable or selectable node with a role and state |
+| `ClickableText`, links resolved from tap offsets | Each link is reachable as a link (`LinkAnnotation`) |
+| A fixed `delay`, timer, or `asyncAfter` that hides content with an action | The user's recommended timeout or an explicit dismiss keeps the action reachable |
+| Auto-advancing carousels or timers that change content | A pause or stop control exists for everyone, and VoiceOver or TalkBack detection is observed, not read once |
+| Selection shown by background or text color | The selected state is exposed (selected trait, `selectable`, segmented `Picker`) |
+| Photos, video, or maps in iOS views | Media opts out of Smart Invert with `accessibilityIgnoresInvertColors` |
+| Section titles styled only with a larger or bolder font | Headings are exposed (`heading()`, `.isHeader`, `.header`) so screen-reader users can navigate by them |
+| Custom `clickable` rows or cards without `role` or `onClickLabel` | The node exposes the role it acts as and a meaningful action label |
+| Custom modal panels on iOS without an escape action | VoiceOver's escape gesture dismisses them (`accessibilityPerformEscape`, `.accessibilityAction(.escape)`) |
+| Quotes, names, or content in a language other than the app's | The language is marked (`LocaleSpan`, `SpanStyle(localeList)`, `accessibilityLanguage`) so pronunciation is correct |
 
 ## Structure and semantics
 
@@ -86,3 +96,4 @@ Sources:
 - Focus Not Obscured (Minimum): https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum.html
 - Android touch target guidance: https://developer.android.com/guide/topics/ui/accessibility/apps
 - Apple accessibility guidelines: https://developer.apple.com/design/human-interface-guidelines/accessibility
+- WCAG2ICT for WCAG 2.2: https://www.w3.org/TR/wcag2ict-22/

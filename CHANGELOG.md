@@ -1,7 +1,18 @@
 # Changelog
 
-## Unreleased
+## 0.8.0
 
+- Move agent routing, the repair/re-review loop, the source policy, safety rules, and the completion report into a new `mobile-a11y-workflow` skill. Claude Code does not load `CLAUDE.md` from a plugin, so plugin installs previously never received the status values and rules the agents referred to. Every agent preloads the skill through `skills` frontmatter, keeps an invoke fallback for `--agent` sessions, and sets `maxTurns`. Both `CLAUDE.md` files and the README now point to the skill.
+- Give `accessibility-test-engineer` web tools for version checks and `kmp-a11y-architect` read-only Bash for generated headers, and name the neighbouring agent in every agent description.
+- Teach headings with levels, reading-order priority, 44 pt targets, the VoiceOver escape gesture, iOS 17 announcements, SwiftUI field errors, language marking, Large Content Viewer, Reduce Motion, Increase Contrast, and Full Keyboard Access on iOS; and click labels, roles, language marking, and the API 36 deprecation of `announceForAccessibility` on Android. Chart examples format values through resources and locale-aware formatters.
+- Add `DeviceConfigurationOverride`, minimum-size and click-label assertions, XCUITest Dynamic Type and RTL launch arguments, and the audit OS requirement to the test matrix. The manual record points to the evidence template, which now covers redaction.
+- Add WCAG2ICT, EAA provisions to check, and an explicit limit for other jurisdictions to the regulatory guidance.
+- Teach the first held-out defects (toggle rows, `LinkAnnotation` links, the Time to take action timeout, Pause, Stop, Hide, observed VoiceOver state, the selected trait, and Smart Invert). Their evals become `compose-message-thread-review` and `swiftui-photo-feed-review`, and two new held-out evals, `heldout-compose-reader-review` and `heldout-swiftui-settings-review`, replace them.
+- Add `uikit-receipt-cell`, an iOS repair eval scored by hidden XCTest checks on a simulator. Repair runs now score a hung build as zero, and only the hidden test class counts.
+- Put each eval fixture in the agent's workspace at the path its prompt names. Record the local commit in eval summaries.
+- Make the routing plugin evals accept the agent or its skill, because Claude Code answered short prompts in the main session with the skill loaded, never delegating, on the previous version too. Add `web-only-not-routed` and `reviewer-status-line`.
+- The validator accepts `skills` and `maxTurns` in agents, requires the workflow preload, checks plugin eval graders, scans agents and the consumer `CLAUDE.md` for held-out terms, and sends bare source URLs to the monthly link check.
+- Add an opt-in baseline run to the paid eval workflow, deny Gradle and keystore property files, `.pem`, `.key`, `.netrc`, PR merges, and test distribution in the settings template, and ignore local Claude Code settings and worktrees.
 - Strengthen agent routing, source verification, test-edit boundaries, repair/re-review flow, completion status, and Android 16 accessibility guidance.
 - Clarify agent orchestration, PR diff discovery, KMP skill routing, scope boundaries, and completion evidence. Add visible-label matching, localization, and assistive-technology detection guidance, and move detailed eval operations from the README to `docs/evals.md`.
 - Retain the r5 repair eval bundles and record the result: plugin and baseline both fixed `compose-order-card` with 8/8 in all three runs, so this eval does not yet separate them. See `evals/results/README.md`.
