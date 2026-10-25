@@ -1,9 +1,13 @@
 ---
 name: mobile-a11y-workflow
-description: Coordinate Android, iOS, and Kotlin Multiplatform accessibility work across the mobile accessibility agents. Use when planning or delegating an accessibility change that spans architecture, implementation, tests, and review; when choosing which accessibility agent runs next; when a review finding must go back for repair; and for the completion report, source policy, and safety boundaries every accessibility agent follows.
+description: Coordinate Android, iOS, and Kotlin Multiplatform accessibility work across the mobile accessibility agents. Use when deciding whether to delegate, planning or delegating an accessibility change that spans architecture, implementation, tests, and review; when choosing which accessibility agent runs next; when a review finding must go back for repair; and for the completion report, source policy, and safety boundaries every accessibility agent follows.
 ---
 
 # Coordinate mobile accessibility work
+
+## When to delegate
+
+Answer a short, self-contained question or a single snippet directly with the matching domain skill (`android-a11y`, `ios-a11y`, `kmp-a11y`, `mobile-a11y-review`, or `mobile-a11y-testing`). Delegate to the agents below when the work edits several files, needs implementation plus tests, changes a shared boundary, or needs an independent review.
 
 ## Agent routing
 
@@ -13,9 +17,9 @@ description: Coordinate Android, iOS, and Kotlin Multiplatform accessibility wor
 4. Reuse `kmp-a11y-architect` for a read-only final architecture check when implementation changed a shared public API, exported type, source-set boundary, framework packaging, or Compose Multiplatform/native UI boundary.
 5. Use `accessibility-reviewer` for an independent final review after implementation and tests. Do not ask an implementation agent to approve its own work.
 
-Skip steps that do not apply. A review-only request goes straight to `accessibility-reviewer`; a test-only request goes to `accessibility-test-engineer`. Do not use these agents for web-only, Flutter, or React Native changes.
+Skip steps that do not apply. A review-only request goes straight to `accessibility-reviewer`; a test-only request goes to `accessibility-test-engineer`. Do not use these agents for web-only, Flutter, or React Native changes. An agent that receives such a task stops with `Status: blocked` and says the task is out of scope, without editing files.
 
-When final review finds a P0/P1 issue or an API-boundary problem, return the finding to the responsible implementation agent, rerun the narrowest relevant tests, and ask the reviewer to inspect the new committed range. Stop after two repair/re-review cycles and report the remaining blocker or product decision instead of looping.
+When final review finds a P0/P1 issue or an API-boundary problem, return the finding to the responsible implementation agent, rerun the narrowest relevant tests, and ask the reviewer to inspect the new changes: the committed range if the engineer committed, otherwise the staged and unstaged changes. Implementation agents do not commit unless the user asks. Stop after two repair/re-review cycles and report the remaining blocker or product decision instead of looping.
 
 ## Scope
 
@@ -25,7 +29,7 @@ When final review finds a P0/P1 issue or an API-boundary problem, return the fin
 
 ## Source policy
 
-- Verify version-sensitive platform, standards, and regulatory claims against current primary sources from Android, Apple, JetBrains, W3C, ETSI, EU institutions, or US government bodies. Use `WebSearch` and `WebFetch` only for those sources.
+- Verify version-sensitive platform, standards, and regulatory claims against current primary sources from Android, Apple, JetBrains, W3C, ETSI, EU institutions, or US government bodies, or from the upstream project of a tool the project already uses, such as Robolectric or SKIE. Use `WebSearch` and `WebFetch` only for those sources.
 - Record the source and the date you checked it. If web tools are unavailable, mark the claim `not independently verified` instead of presenting it as current.
 - Distinguish requirements from recommendations, and label draft guidance as draft.
 
@@ -47,6 +51,8 @@ Start the final report with exactly one status line:
 
 - `Status: completed` when every check required for the assigned scope ran and passed;
 - `Status: needs-device-verification` when code and automated checks are done but assistive-technology behavior still needs a real device;
-- `Status: blocked` when a failure, missing tool, or decision stops the work.
+- `Status: blocked` when a failure, missing tool, out-of-scope request, or decision stops the work.
+
+For `accessibility-reviewer` and `kmp-a11y-architect`, which do not edit files, `completed` means the review or design finished, whatever its findings; report P0/P1 findings under **Blockers**, not as `Status: blocked`. Use `needs-device-verification` only when the reviewed behavior cannot be judged without a device.
 
 Then report, as separate items: changed or inspected files; commands executed; automated results as passed, failed, or skipped; simulator or emulator results; real-device checks completed; checks not verified; assumptions; and decisions required. Never collapse these evidence levels into “accessibility passed.”

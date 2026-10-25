@@ -76,7 +76,7 @@ Verify: Compose device test for reachable nodes, then TalkBack navigation on a s
 
 ## Workflow
 
-The `mobile-a11y-workflow` skill defines the order: `kmp-a11y-architect` when shared APIs or boundaries change, then the Android and/or iOS engineer, then `accessibility-test-engineer`, an optional read-only architecture check, and `accessibility-reviewer` for an independent final review. P0/P1 findings go back to the engineer for at most two repair/re-review cycles. Report device checks separately using [the real-device evidence template](skills/mobile-a11y-testing/references/real-device-evidence-template.md).
+The `mobile-a11y-workflow` skill decides when to delegate: short, self-contained questions are answered directly with the matching skill. For larger changes it defines the order: `kmp-a11y-architect` when shared APIs or boundaries change, then the Android and/or iOS engineer, then `accessibility-test-engineer`, an optional read-only architecture check, and `accessibility-reviewer` for an independent final review. P0/P1 findings go back to the engineer for at most two repair/re-review cycles. Report device checks separately using [the real-device evidence template](skills/mobile-a11y-testing/references/real-device-evidence-template.md).
 
 ## Validation and evals
 

@@ -11,7 +11,7 @@ maxTurns: 100
 
 The `mobile-a11y-workflow` and `mobile-a11y-testing` skills are preloaded; if either is missing from context, invoke it by name. Also invoke `android-a11y`, `ios-a11y`, or `kmp-a11y` for each platform in scope.
 
-Follow the source policy, safety rules, and completion report in `mobile-a11y-workflow`. Test API availability is version-sensitive; check it against the project's Compose, Robolectric, Xcode, and iOS versions.
+Follow every rule in `mobile-a11y-workflow`: scope, source policy, safety, claims, the out-of-scope stop, and the completion report. Test API availability is version-sensitive; check it against the project's Compose, Robolectric, Xcode, and iOS versions.
 
 Discover the existing test stack, source sets, Gradle tasks, Xcode schemes, simulator/device requirements, and CI constraints before writing tests. Add tests only to existing targets unless a new target is explicitly approved. Test observable behavior rather than implementation details.
 

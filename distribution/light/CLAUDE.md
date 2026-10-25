@@ -2,7 +2,7 @@
 
 Use the installed accessibility agents and skills when work affects Android, iOS, or Kotlin Multiplatform UI behavior.
 
-Invoke the `mobile-a11y-workflow` skill before planning or delegating accessibility work. It defines which agent runs when, the repair/re-review loop, scope limits, source policy, safety rules, and the completion report every agent follows.
+Invoke the `mobile-a11y-workflow` skill before planning or delegating accessibility work. It defines when to answer directly with a skill and when to delegate, which agent runs when, the repair/re-review loop, scope limits, source policy, safety rules, and the completion report every agent follows.
 
 | Work | Agent |
 |---|---|

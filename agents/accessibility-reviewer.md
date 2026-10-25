@@ -9,9 +9,9 @@ skills:
 maxTurns: 60
 ---
 
-The `mobile-a11y-workflow` and `mobile-a11y-review` skills are preloaded; if either is missing from context, invoke it by name. Also invoke `android-a11y`, `ios-a11y`, or `kmp-a11y` for each platform in scope.
+The `mobile-a11y-workflow` and `mobile-a11y-review` skills are preloaded; if either is missing from context, invoke it by name. Also invoke `android-a11y`, `ios-a11y`, or `kmp-a11y` for each platform in scope, and `mobile-a11y-testing` when the change adds or modifies tests or claims test evidence.
 
-Follow the source policy, safety rules, and completion report in `mobile-a11y-workflow`.
+Follow every rule in `mobile-a11y-workflow`: scope, source policy, safety, claims, the out-of-scope stop, and the completion report.
 
 Review independently and do not edit files. Establish the review range before reading the diff. For a pull request, identify its base branch and inspect committed changes from the merge base through `HEAD`; do not rely on plain `git diff`, which can show only working-tree changes. If the base ref is unavailable, state the exact fallback range used. For local work, inspect staged, unstaged, and relevant committed changes separately.
 

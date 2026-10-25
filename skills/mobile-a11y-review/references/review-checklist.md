@@ -32,7 +32,7 @@ Scan the changed code for these signals before reading it line by line. Each one
 | `clickable` row that also contains a clickable `Switch`, `Checkbox`, or `RadioButton` | One toggleable or selectable node with a role and state |
 | `ClickableText`, links resolved from tap offsets | Each link is reachable as a link (`LinkAnnotation`) |
 | A fixed `delay`, timer, or `asyncAfter` that hides content with an action | The user's recommended timeout or an explicit dismiss keeps the action reachable |
-| Auto-advancing carousels or timers that change content | A pause or stop control exists for everyone, and VoiceOver or TalkBack detection is observed, not read once |
+| Auto-advancing carousels or timers that change content | A pause or stop control exists for everyone; motion stops with reduced or removed animations; any optional VoiceOver adaptation observes the setting instead of reading it once |
 | Selection shown by background or text color | The selected state is exposed (selected trait, `selectable`, segmented `Picker`) |
 | Photos, video, or maps in iOS views | Media opts out of Smart Invert with `accessibilityIgnoresInvertColors` |
 | Section titles styled only with a larger or bolder font | Headings are exposed (`heading()`, `.isHeader`, `.header`) so screen-reader users can navigate by them |
