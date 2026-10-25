@@ -9,7 +9,7 @@ description: Review native Android, iOS, or Kotlin Multiplatform UI for accessib
 2. Identify affected users and assistive technologies before judging implementation details.
 3. Inspect standard-control usage, accessibility tree, focus order, labels, values, states, actions, errors, and alternatives to gestures.
 4. Check scaling, reflow, contrast, non-color cues, target size, orientation, motion, audio, media, keyboard, switch, and voice input.
-5. Check navigation, sheets, dialogs, lists, sliders, charts, custom drawing, WebView boundaries, and asynchronous updates.
+5. Check navigation, sheets, dialogs, lists, sliders, charts, custom drawing, WebView boundaries, asynchronous updates, time limits, auto-advancing content, and text in another language.
 6. Inspect privacy, autofill, clipboard, masking, logging, analytics, and announcements for sensitive data.
 7. Map findings to standards only when useful and never infer legal applicability from WCAG alone.
 8. Separate static evidence, automated checks, simulator observations, and real-device results.

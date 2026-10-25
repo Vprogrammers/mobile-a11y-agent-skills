@@ -1,6 +1,6 @@
 ---
 name: ios-a11y
-description: Implement or review SwiftUI and UIKit accessibility. Use for VoiceOver or Voice Control problems, accessibilityLabel, visible-label matching, localization, VoiceOver-status detection, accessibilityValue, traits, focus, adjustable actions, rotors, Dynamic Type, Large Content Viewer, reduced motion, contrast, modal navigation, accessibility audits, or “VoiceOver does not read this”.
+description: Implement or review SwiftUI and UIKit accessibility. Use for VoiceOver or Voice Control problems, headings, selection state, escape from custom modals, Smart Invert, auto-advancing content, accessibilityLabel, visible-label matching, localization, VoiceOver-status detection, accessibilityValue, traits, focus, adjustable actions, rotors, Dynamic Type, Large Content Viewer, reduced motion, contrast, modal navigation, accessibility audits, or “VoiceOver does not read this”.
 ---
 
 # Implement iOS accessibility
@@ -20,12 +20,12 @@ Match the code in the change to a section of [references/apple-patterns.md](refe
 
 | Code in the change | Section |
 |---|---|
-| `accessibilityElement(children:)`, labels, values, traits, headings, reading order, gestures, custom actions, small targets | [SwiftUI structure](references/apple-patterns.md#swiftui-structure) |
+| `accessibilityElement(children:)`, labels, values, traits, headings, reading order, selection shown by color, gestures, custom actions, small targets | [SwiftUI structure](references/apple-patterns.md#swiftui-structure) |
 | `accessibilityLabel`, `accessibilityInputLabels`, hard-coded accessibility text, String Catalog, locale or RTL handling, text in another language | [Names, voice control, and localization](references/apple-patterns.md#names-voice-control-and-localization) |
 | `@AccessibilityFocusState`, `UIAccessibility.post`, announcements, modals, escape, presentations, field errors | [Focus, navigation, and notifications](references/apple-patterns.md#focus-navigation-and-notifications) |
 | Fonts, fixed frames, `UIButton` titles, `dynamicTypeSize` | [Dynamic Type and layout](references/apple-patterns.md#dynamic-type-and-layout) |
-| Custom fonts or switches, borderless buttons, color-coded state, blur, motion, custom colors, keyboard navigation | [Display settings](references/apple-patterns.md#display-settings) |
-| Custom controls, `Canvas`, charts, maps, players | [Custom controls, charts, and media](references/apple-patterns.md#custom-controls-charts-and-media) |
+| Custom fonts or switches, borderless buttons, color-coded state, blur, motion, custom colors, keyboard navigation, photos or video under Smart Invert | [Display settings](references/apple-patterns.md#display-settings) |
+| Custom controls, `Canvas`, charts, maps, players, carousels, timers that hide actionable content | [Custom controls, charts, and media](references/apple-patterns.md#custom-controls-charts-and-media) |
 | `isAccessibilityElement`, `accessibilityElements`, frames, UIKit traits | [UIKit details](references/apple-patterns.md#uikit-details) |
 | Text fields, passwords, one-time codes, AutoFill | [Input, authentication, and privacy](references/apple-patterns.md#input-authentication-and-privacy) |
 | `WKWebView` | [Web content](references/apple-patterns.md#web-content) |

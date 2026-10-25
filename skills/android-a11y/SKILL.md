@@ -1,6 +1,6 @@
 ---
 name: android-a11y
-description: Implement or review Android accessibility in Jetpack Compose or Views. Use for TalkBack or Voice Access problems, contentDescription, visible-label matching, localization, accessibility-service detection, sensitive accessibility data, outline text, custom text rendering, semantics, traversal, focus, headings, stateDescription, custom actions, live regions, font scaling, touch targets, autofill, errors, motion, contrast, WebView, accessibility testing, or “TalkBack does not read this”.
+description: Implement or review Android accessibility in Jetpack Compose or Views. Use for TalkBack or Voice Access problems, contentDescription, roles and click labels, toggle rows, inline links, time limits and auto-advancing content, visible-label matching, localization, accessibility-service detection, sensitive accessibility data, outline text, custom text rendering, semantics, traversal, focus, headings, stateDescription, custom actions, live regions, font scaling, touch targets, autofill, errors, motion, contrast, WebView, accessibility testing, or “TalkBack does not read this”.
 ---
 
 # Implement Android accessibility
@@ -22,9 +22,9 @@ Match the code in the change to a section of [references/android-patterns.md](re
 
 | Code in the change | Section |
 |---|---|
-| `Modifier.semantics`, `clearAndSetSemantics`, `mergeDescendants`, custom composables, `clickable` without `role` or `onClickLabel` | [Compose semantics](references/android-patterns.md#compose-semantics) |
+| `Modifier.semantics`, `clearAndSetSemantics`, `mergeDescendants`, custom composables, `clickable` without `role` or `onClickLabel`, a clickable row with its own `Switch` or `Checkbox`, `ClickableText` or other inline links | [Compose semantics](references/android-patterns.md#compose-semantics) |
 | `contentDescription`, hard-coded accessibility text, formatted strings, plurals, locale or RTL handling, text in another language | [Names, voice access, and localization](references/android-patterns.md#names-voice-access-and-localization) |
-| `FocusRequester`, `liveRegion`, `announceForAccessibility`, lazy lists | [Focus and dynamic updates](references/android-patterns.md#focus-and-dynamic-updates) |
+| `FocusRequester`, `liveRegion`, `announceForAccessibility`, lazy lists, dialogs and sheets, `delay` or timers that hide actionable content, custom snackbars, carousels | [Focus and dynamic updates](references/android-patterns.md#focus-and-dynamic-updates) |
 | Fixed heights, text sizes, touch targets, animations, outline text or custom text rendering | [Touch, text, and layout](references/android-patterns.md#touch-text-and-layout) |
 | Insets, edge-to-edge, `onBackPressed`, back handlers | [Edge-to-edge, insets, and back navigation](references/android-patterns.md#edge-to-edge-insets-and-back-navigation) |
 | `clickable` indications, keyboard order | [Keyboard focus visibility](references/android-patterns.md#keyboard-focus-visibility) |

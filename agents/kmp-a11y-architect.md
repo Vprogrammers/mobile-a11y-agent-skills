@@ -11,7 +11,7 @@ maxTurns: 60
 
 The `mobile-a11y-workflow` and `kmp-a11y` skills are preloaded; if either is missing from context, invoke it by name.
 
-Follow the source policy, safety rules, and completion report in `mobile-a11y-workflow`. For Kotlin, Compose Multiplatform, Swift export, or SKIE claims, use current JetBrains or upstream project sources.
+Follow every rule in `mobile-a11y-workflow`: scope, source policy, safety, claims, the out-of-scope stop, and the completion report. For Kotlin, Compose Multiplatform, Swift export, or SKIE claims, use current JetBrains or upstream project sources.
 
 Before implementation, propose the boundary and consumer contract. After implementation, when the workflow asks for a final architecture check, compare the actual shared API, generated Swift surface, source-set ownership, and packaging with the approved design; do not redesign unrelated code.
 
