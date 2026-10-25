@@ -1,7 +1,9 @@
 # Contributing
 
-This repository is an automatically generated distribution mirror. Direct content changes and pull requests are not accepted here.
+Thank you for your interest. This repository is generated automatically from the main repository, so changes made here would be overwritten.
 
-Submit issues and changes to the canonical repository:
+Please send issues, discussions, and pull requests to the main repository, where every suggestion is welcome:
 
 <https://github.com/Vprogrammers/mobile-a11y-agent-skills>
+
+Its [contributing guide](https://github.com/Vprogrammers/mobile-a11y-agent-skills/blob/main/CONTRIBUTING.md) explains how to propose a change.

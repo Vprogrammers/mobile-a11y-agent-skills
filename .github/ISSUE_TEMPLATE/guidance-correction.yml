@@ -1,0 +1,30 @@
+name: Guidance correction
+description: Report guidance that is wrong, outdated, or unclear, such as a renamed API or a changed platform behavior.
+labels: ["guidance"]
+body:
+  - type: markdown
+    attributes:
+      value: Thank you for helping keep the guidance accurate. A link to an official source is the most useful thing you can add.
+  - type: input
+    id: location
+    attributes:
+      label: File and section
+      placeholder: skills/android-a11y/references/android-patterns.md, Compose semantics
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong or unclear
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Official source
+      description: Android, Apple, JetBrains, W3C, ETSI, EU, or US government documentation, or the upstream project of the tool.
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: Android API or iOS version, Compose, Kotlin, or Xcode version, as relevant.
