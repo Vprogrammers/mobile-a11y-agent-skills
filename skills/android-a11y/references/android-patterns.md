@@ -1,6 +1,6 @@
 # Android accessibility patterns
 
-Last reviewed: 2026-10-24. Verify exact signatures against the Android and Compose versions used by the project.
+Last reviewed: 2026-10-25. Verify exact signatures against the Android and Compose versions used by the project.
 Review interval: 180 days.
 
 ## Compose semantics
@@ -51,6 +51,14 @@ Modifier.semantics { heading() }
 ```
 
 Add only the missing property unless replacing the whole node is deliberate and tested.
+
+## Names, voice access, and localization
+
+- Keep visible control text in the accessible name, preferably at the start. A button shown as “Continue” but named only “Submit order” is difficult to activate by saying what is visible in Voice Access.
+- Add extra context through surrounding structure, state, or a concise expanded name without replacing the visible words. Verify voice selection with duplicate visible labels.
+- Put labels, values, custom-action names, errors, and announcements in Android resources. Use complete format strings, plurals, and locale-aware number/date formatting instead of concatenating fragments.
+- Test localization expansion, RTL layout, mixed-direction text, and runtime locale changes. Confirm semantics refresh with the visible UI.
+- Do not gate essential semantics, navigation, or actions on `AccessibilityManager.isTouchExplorationEnabled` or the list of enabled accessibility services. Those signals do not identify every disabled user or input method and can change while the app runs.
 
 ## Focus and dynamic updates
 

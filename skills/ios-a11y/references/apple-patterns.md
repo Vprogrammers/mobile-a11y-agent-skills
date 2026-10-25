@@ -1,6 +1,6 @@
 # Apple accessibility patterns
 
-Last reviewed: 2026-10-24. Verify availability and signatures against the deployment target and Xcode SDK used by the project.
+Last reviewed: 2026-10-25. Verify availability and signatures against the deployment target and Xcode SDK used by the project.
 Review interval: 180 days.
 
 ## SwiftUI structure
@@ -42,6 +42,14 @@ HStack { editButton; deleteButton }
 ### Better
 
 Keep separate controls, or expose well-named custom actions on one row element only when that interaction has been intentionally designed and tested.
+
+## Names, voice control, and localization
+
+- Keep visible control text in the accessibility label and Voice Control input labels, preferably at the start. A control shown as “Continue” but labeled only “Submit order” is difficult to activate by saying what is visible.
+- Use `.accessibilityInputLabels` for concise localized synonyms only when they improve Voice Control recognition; include the visible label and do not use input labels to hide a mismatched accessibility label.
+- Localize labels, values, hints, custom-action names, errors, and announcements as complete phrases. Use String Catalog pluralization and locale-aware number/date formatting instead of concatenating fragments.
+- Test localization expansion, right-to-left layout, mixed-direction text, and in-app locale changes. Keep visible and accessibility content synchronized.
+- Do not gate essential semantics, navigation, or actions on a VoiceOver-running status check. VoiceOver status does not represent Voice Control, Switch Control, Full Keyboard Access, or every disabled user and can change while the app runs.
 
 ## Focus, navigation, and notifications
 

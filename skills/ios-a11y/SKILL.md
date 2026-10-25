@@ -1,6 +1,6 @@
 ---
 name: ios-a11y
-description: Implement or review SwiftUI and UIKit accessibility. Use for VoiceOver or Voice Control problems, accessibilityLabel, accessibilityValue, traits, focus, adjustable actions, rotors, Dynamic Type, Large Content Viewer, reduced motion, contrast, modal navigation, accessibility audits, or “VoiceOver does not read this”.
+description: Implement or review SwiftUI and UIKit accessibility. Use for VoiceOver or Voice Control problems, accessibilityLabel, visible-label matching, localization, VoiceOver-status detection, accessibilityValue, traits, focus, adjustable actions, rotors, Dynamic Type, Large Content Viewer, reduced motion, contrast, modal navigation, accessibility audits, or “VoiceOver does not read this”.
 ---
 
 # Implement iOS accessibility

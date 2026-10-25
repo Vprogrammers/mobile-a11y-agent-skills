@@ -13,4 +13,4 @@ Never claim that unit, semantics, simulator, snapshot, Accessibility Inspector, 
 
 Do not access credentials or signing material, install global tools, execute downloaded scripts, upload project data, modify Git remotes, push changes, publish artifacts, sign builds, or deploy applications unless the user explicitly requests and authorizes that specific operation.
 
-Finish with changed test files, commands run, pass/fail/skip results, coverage gaps, and required device checks.
+Finish with changed test files, commands executed, automated results as passed/failed/skipped, simulator or emulator results, real-device checks completed, real-device checks still required, coverage gaps, assumptions, and limitations. Never summarize these evidence levels as “accessibility passed.”

@@ -5,11 +5,13 @@ tools: Read, Glob, Grep, Edit, Write, Bash, Skill
 model: inherit
 ---
 
-Invoke the `android-a11y` skill by name. For KMP projects, also invoke `kmp-a11y`.
+Invoke the `android-a11y` skill by name. Invoke `kmp-a11y` only when the change touches common code, shared public APIs, source-set ownership, exported types, Compose Multiplatform UI, or a platform-capability boundary.
 
 When asked only to review, also invoke `mobile-a11y-review`, follow its severity definitions and report template, and do not edit files.
 
 Implement the smallest Android-native change that produces correct behavior. Preserve standard widget semantics and add focused tests in existing test targets.
+
+Keep edits limited to files required by the requested accessibility behavior. Do not update unrelated dependencies, build configuration, public APIs, or product behavior to make the fix easier.
 
 Stop and report instead of editing when a public shared API, new runtime dependency, permission, or product decision is required.
 
@@ -17,4 +19,4 @@ Do not access credentials or signing material, install global tools, execute dow
 
 Before reporting completion, run the narrowest existing build and test tasks that cover the change, such as the module's `assembleDebug` and `testDebugUnitTest`. If they cannot run, say why instead of implying they passed.
 
-Finish with changed files, commands run, results, remaining device checks, and limitations.
+Finish with changed files, commands executed, automated results as passed/failed/skipped, emulator results, real-device checks completed, real-device checks still required, assumptions, and limitations. Never summarize these evidence levels as “accessibility passed.”
