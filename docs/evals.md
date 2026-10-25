@@ -8,7 +8,7 @@ Run commands from the repository root.
 ./scripts/validate.sh
 ```
 
-`validate.sh` runs the repository validator, compiles the scripts, runs the installation smoke test, and runs the unit tests. The validator checks skill and agent metadata, explicitly named invoked skills, duplicate names, local links, plugin version consistency, required review dates, executable permissions, and typed eval manifests/rubrics. It warns 30 days before each reference's declared review interval expires and fails when it is stale. Dynamic platform references use 180 days, regulatory guidance uses 90 days, and references without an override use 365 days. External links are optional in pull-request CI; a scheduled workflow checks them monthly.
+`validate.sh` runs the repository validator, compiles the scripts, runs the installation smoke test, and runs the unit tests. The validator checks skill and agent metadata, preloaded skills, explicitly named invoked skills, one official plugin eval per agent, duplicate names, local links, plugin version consistency, required review dates, executable permissions, and typed eval manifests/rubrics. It warns 30 days before each reference's declared review interval expires and fails when it is stale. Dynamic platform references use 180 days, regulatory guidance uses 90 days, and references without an override use 365 days. External links, including the bare source URLs in references, are optional in pull-request CI; a scheduled workflow checks them monthly.
 
 CI also installs the pinned Claude Code version and runs its authoritative manifest check:
 
@@ -41,7 +41,7 @@ Calculate deterministic pass/fail with:
 ./scripts/score_eval.py android-compose-review result.json
 ```
 
-Most evals cover guidance present in the skills. `heldout-*` evals measure behavior on defects not taught by the plugin. Their manifests declare `held_out_terms`; validation fails if those terms appear in a skill. Remove held-out status when guidance intentionally begins covering one of them.
+Most evals cover guidance present in the skills. `heldout-*` evals measure behavior on defects not taught by the plugin. Their manifests declare `held_out_terms`; validation fails if those terms appear in a skill, an agent, or the consumer `CLAUDE.md`. Remove held-out status when guidance intentionally begins covering one of them.
 
 Classification remains separate from scoring: a human or independent evaluator maps the raw response to finding IDs and forbidden claims. Substring matching is not treated as review-quality evidence.
 
@@ -64,6 +64,8 @@ EVAL_JUDGE_COMMAND='claude -p --model opus --restricted --permission-mode dontAs
 EVAL_MODEL='agent=sonnet,judge=opus' \
 ./scripts/run_eval_suite.py "evals/results/$(date -u +%Y-%m-%dT%H%M%SZ)-sonnet-opus"
 ```
+
+With `--agent`, the agent runs as the main session, and Claude Code does not apply its `skills` preload there (checked with Claude Code 2.1.310 on 2026-10-25). The agent instructions therefore tell it to invoke a missing skill by name. As a subagent, the preload works with bare skill names.
 
 Set `EVAL_VARIANT=baseline` to send the same prompts and fixtures without the plugin. Score both variants with the same judge and rubrics. Set `EVAL_SECOND_JUDGE_COMMAND` to require a second independent judge. Reviewed bundles live in `evals/results/`; see the [baseline summary](../evals/results/README.md).
 

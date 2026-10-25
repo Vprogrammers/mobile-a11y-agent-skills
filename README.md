@@ -28,6 +28,7 @@ The project helps coding agents implement and review accessible native mobile in
 
 | Skill | Focus |
 |---|---|
+| `mobile-a11y-workflow` | Agent routing, repair/re-review loop, source policy, safety rules, and the completion report every agent follows |
 | `mobile-a11y-review` | Cross-platform audit, evidence, severity, and regulatory mapping |
 | `android-a11y` | Compose/Views semantics, focus, actions, scaling, input, WebView, and testing |
 | `ios-a11y` | SwiftUI/UIKit structure, focus, actions, Dynamic Type, audits, and device checks |
@@ -43,7 +44,7 @@ The project helps coding agents implement and review accessible native mobile in
 
 Or copy `agents/*` to `.claude/agents/` and `skills/*` to `.claude/skills/`.
 
-The agents invoke skills by name, so they work from plugin installation or copied project directories without repository-relative paths.
+The agents preload their skills by name, so they work from plugin installation or copied project directories without repository-relative paths. Claude Code does not load a `CLAUDE.md` from a plugin, so the shared rules live in the `mobile-a11y-workflow` skill, which ships with the agents. For copied installs, optionally add the short pointer in [`distribution/light/CLAUDE.md`](distribution/light/CLAUDE.md) to the project's `CLAUDE.md`.
 
 For a minimal copy-ready package, use [`mobile-a11y-agent-skills-lite`](https://github.com/Vprogrammers/mobile-a11y-agent-skills-lite). It is generated from this repository and contains only consumer instructions, agents, skills, references, and license files.
 
@@ -75,11 +76,7 @@ Verify: Compose device test for reachable nodes, then TalkBack navigation on a s
 
 ## Workflow
 
-1. Use `kmp-a11y-architect` when public APIs, exports, dependencies, or source-set ownership change.
-2. Use the Android and/or iOS implementation agent.
-3. Use `accessibility-test-engineer` to close evidence gaps.
-4. Use `accessibility-reviewer` for an independent final pass.
-5. Run `./scripts/validate.sh` and report device checks separately using [the real-device evidence template](skills/mobile-a11y-testing/references/real-device-evidence-template.md).
+The `mobile-a11y-workflow` skill defines the order: `kmp-a11y-architect` when shared APIs or boundaries change, then the Android and/or iOS engineer, then `accessibility-test-engineer`, an optional read-only architecture check, and `accessibility-reviewer` for an independent final review. P0/P1 findings go back to the engineer for at most two repair/re-review cycles. Report device checks separately using [the real-device evidence template](skills/mobile-a11y-testing/references/real-device-evidence-template.md).
 
 ## Validation and evals
 

@@ -69,7 +69,7 @@ class ValidateRepositoryTests(unittest.TestCase):
             path.write_text(path.read_text() + "\n- Opt photos out of Smart Invert.\n")
 
         result = self.invalid_copy(mutate)
-        self.assertIn("heldout-swiftui-review held-out term appears in skills/: Smart Invert", result.stdout)
+        self.assertIn("heldout-swiftui-review held-out term appears in agent-loaded guidance: Smart Invert", result.stdout)
 
     def test_missing_link_anchor_is_rejected(self) -> None:
         def mutate(root: Path) -> None:
@@ -160,8 +160,8 @@ class ValidateRepositoryTests(unittest.TestCase):
             path = root / "agents/kmp-a11y-architect.md"
             path.write_text(
                 path.read_text().replace(
-                    "tools: Read, Glob, Grep, WebSearch, WebFetch, Skill",
-                    "tools: Read, Glob, Grep, WebSearch, WebFetch",
+                    "tools: Read, Glob, Grep, Bash, WebSearch, WebFetch, Skill",
+                    "tools: Read, Glob, Grep, Bash, WebSearch, WebFetch",
                 )
             )
 
@@ -265,11 +265,82 @@ class ValidateRepositoryTests(unittest.TestCase):
     def test_agent_without_invoked_skill_is_rejected(self) -> None:
         def mutate(root: Path) -> None:
             path = root / "agents/kmp-a11y-architect.md"
-            path.write_text(path.read_text().replace("Invoke the `kmp-a11y` skill by name.", ""))
+            path.write_text(
+                path.read_text().replace(
+                    "The `mobile-a11y-workflow` and `kmp-a11y` skills are preloaded; "
+                    "if either is missing from context, invoke it by name.",
+                    "",
+                )
+            )
 
         result = self.invalid_copy(mutate)
         self.assertIn("must invoke at least one skill by name", result.stdout)
 
+
+    def test_agent_without_workflow_preload_is_rejected(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "agents/ios-a11y-engineer.md"
+            path.write_text(path.read_text().replace("  - mobile-a11y-workflow\n", ""))
+
+        result = self.invalid_copy(mutate)
+        self.assertIn("agents/ios-a11y-engineer.md must preload the mobile-a11y-workflow skill", result.stdout)
+
+    def test_missing_preloaded_skill_is_rejected(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "agents/ios-a11y-engineer.md"
+            path.write_text(path.read_text().replace("  - ios-a11y\n", "  - ios-a11y\n  - missing-preload\n"))
+
+        result = self.invalid_copy(mutate)
+        self.assertIn("preloads missing skill: missing-preload", result.stdout)
+
+    def test_invalid_agent_fields_are_rejected(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "agents/accessibility-reviewer.md"
+            path.write_text(path.read_text().replace("maxTurns: 60", "maxTurns: many\ncolor: red"))
+
+        result = self.invalid_copy(mutate)
+        self.assertIn("may add only skills and maxTurns", result.stdout)
+        self.assertIn("maxTurns must be a positive integer", result.stdout)
+
+    def test_held_out_term_in_agent_is_rejected(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "agents/ios-a11y-engineer.md"
+            path.write_text(path.read_text() + "\nCheck Smart Invert on photos.\n")
+
+        result = self.invalid_copy(mutate)
+        self.assertIn("held-out term appears in agent-loaded guidance: Smart Invert", result.stdout)
+
+    def test_plugin_eval_grader_must_name_its_agent(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "plugin-evals/kmp-a11y-architect-routing/graders/agent-used.md"
+            path.write_text(path.read_text().replace(":kmp-a11y-architect", ":kmp-architect"))
+
+        result = self.invalid_copy(mutate)
+        self.assertIn("kmp-a11y-architect-routing grader must match", result.stdout)
+        self.assertIn("names unknown agent: kmp-architect", result.stdout)
+
+    def test_consumer_instructions_must_point_to_workflow(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "distribution/light/CLAUDE.md"
+            path.write_text(path.read_text().replace("mobile-a11y-workflow", "workflow"))
+
+        result = self.invalid_copy(mutate)
+        self.assertIn("must point to the mobile-a11y-workflow skill", result.stdout)
+
+    def test_bare_source_urls_keep_parentheses_and_drop_punctuation(self) -> None:
+        import sys
+
+        sys.path.insert(0, str(ROOT / "scripts"))
+        from validate_repo import bare_urls
+
+        text = (
+            "- Audit: https://example.org/audit(for:). "
+            "See (https://example.org/x), <https://example.org/y>."
+        )
+        self.assertEqual(
+            bare_urls(text),
+            {"https://example.org/audit(for:)", "https://example.org/x", "https://example.org/y"},
+        )
 
 if __name__ == "__main__":
     unittest.main()

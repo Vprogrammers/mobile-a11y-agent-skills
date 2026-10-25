@@ -16,9 +16,11 @@ Contributions are welcome for Android, iOS, Kotlin Multiplatform, testing, and a
 - When you change a code example in a reference, update the matching code in `samples/` and run its tests: `./gradlew assembleDebug testDebugUnitTest` in `samples/android`, `./samples/ios/test.sh`, or `./gradlew check` in `samples/kmp`.
 - Keep eval fixtures free of import lines; the samples compile generated copies. Update the guard tests in `samples/` or `tests/test_eval_fixtures.py` when a fixture or rubric changes.
 - Name every invoked skill explicitly in agent instructions; the validator rejects phrases such as "relevant platform skills".
+- Change agent routing, the repair loop, the source policy, safety rules, and the completion report only in the `mobile-a11y-workflow` skill. Claude Code does not load `CLAUDE.md` from a plugin, so agents preload that skill through their `skills` frontmatter. Keep `distribution/light/CLAUDE.md` and the README as pointers to it.
+- Agent frontmatter may add only `skills` and `maxTurns` to `name`, `description`, `tools`, and `model`. Every agent preloads `mobile-a11y-workflow`.
 - Run `./scripts/validate.sh`; it also runs the unit and installation smoke tests.
 - Treat `mobile-a11y-agent-skills-lite` as generated output. Change agents, skills, consumer instructions, and distribution templates only in this canonical repository.
-- Do not add a `heldout-*` eval's `held_out_terms` to `skills/`; the validator rejects it. If guidance must cover such a defect, remove the eval's held-out status in the same pull request and say so.
+- Do not add a `heldout-*` eval's `held_out_terms` to `skills/`, `agents/`, or `distribution/light/CLAUDE.md`; the validator rejects it. If guidance must cover such a defect, remove the eval's held-out status in the same pull request and say so.
 - Keep repair eval tests and reference fixes out of the repair workspace. Run `./scripts/run_repair_eval.py --self-check` after changing a repair fixture, test, or reference fix.
 - Keep paid or nondeterministic model evals outside pull-request CI. Use `claude plugin eval .` for plugin routing evidence and `scripts/run_eval_suite.py` for the detailed domain rubrics. Retain generated summaries and never commit credentials or private project data with eval evidence.
 - Use `skills/mobile-a11y-testing/references/real-device-evidence-template.md` for manual assistive-technology results and keep them release-specific.
