@@ -13,10 +13,18 @@
       "Read(./**/*.p12)",
       "Read(./**/*.p8)",
       "Read(./**/*.mobileprovision)",
+      "Read(./**/local.properties)",
+      "Read(./**/keystore.properties)",
+      "Read(~/.gradle/gradle.properties)",
+      "Read(./**/*.pem)",
+      "Read(./**/*.key)",
+      "Read(~/.netrc)",
+      "Read(./**/.netrc)",
       "Bash(git push)",
       "Bash(git push *)",
       "Bash(git -C * push *)",
       "Bash(gh release *)",
+      "Bash(gh pr merge *)",
       "Bash(./gradlew *publish*)",
       "Bash(./gradlew *upload*)",
       "Bash(./gradlew *sign*)",
@@ -25,6 +33,8 @@
       "Bash(xcrun notarytool *)",
       "Bash(fastlane deliver *)",
       "Bash(fastlane pilot *)",
+      "Bash(bundle exec fastlane *)",
+      "Bash(firebase appdistribution:*)",
       "Bash(npm publish *)"
     ]
   }

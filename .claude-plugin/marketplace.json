@@ -9,7 +9,7 @@
       "name": "mobile-a11y-agent-skills",
       "source": "./",
       "description": "Accessibility agents and skills for Android, iOS, and Kotlin Multiplatform.",
-      "version": "0.7.0"
+      "version": "0.8.0"
     }
   ]
 }
