@@ -104,7 +104,7 @@ NOT_GUARDED: dict[str, set[str]] = {
     "test-evidence-traps-review": set(),
     # The Compose defects are also guarded at runtime by EvalFixturesTest.
     "heldout-compose-review": {"verification-covers-talkback-links-and-timeout"},
-    "heldout-swiftui-review": {"verification-covers-voiceover-switch-control-and-smart-invert"},
+    "heldout-swiftui-review": {"verification-covers-voiceover-and-switch-control"},
 }
 
 

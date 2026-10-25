@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Retain the r4 held-out eval bundles and record the result: on defects the skills do not teach, the plugin and the baseline both passed 3 of 6 runs. See `evals/results/README.md`.
+- Stop requiring Smart Invert in the `heldout-swiftui-review` verification criterion, now `verification-covers-voiceover-and-switch-control`. A missed Smart Invert defect lost points twice.
 - Run the paid `Agent eval regression` workflow only on demand. The weekly schedule failed by design whenever `CLAUDE_CODE_OAUTH_TOKEN` was not configured.
 - Move the light distribution to `Vprogrammers/mobile-a11y-agent-skills-lite` and point the sync workflow and README at it.
 - Add two held-out evals, `heldout-compose-review` and `heldout-swiftui-review`, built from defects whose patterns and fix APIs appear nowhere in `skills/`. Their manifest entries list `held_out_terms`, and the validator fails when a term appears in a skill file. The Compose fixture compiles in `samples/` with runtime guards; the SwiftUI fixture compiles and has static guards.

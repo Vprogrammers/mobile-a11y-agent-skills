@@ -1,0 +1,20 @@
+{
+  "matched_findings": [
+    {
+      "id": "undo-banner-fixed-timeout",
+      "severity": "P1"
+    },
+    {
+      "id": "clickable-text-links-not-accessible",
+      "severity": "P1"
+    },
+    {
+      "id": "toggle-row-without-role-or-state",
+      "severity": "P2"
+    },
+    {
+      "id": "verification-covers-talkback-links-and-timeout"
+    }
+  ],
+  "forbidden_claims": []
+}

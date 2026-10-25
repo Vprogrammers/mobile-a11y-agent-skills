@@ -1,0 +1,4 @@
+heldout-swiftui-review: 2/8; minimum 6
+Defects with a mismatched severity earn no points:
+- filter-selection-only-visual: expected P1, received P2
+FAIL
