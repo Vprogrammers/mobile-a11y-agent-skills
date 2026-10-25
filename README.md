@@ -28,7 +28,7 @@ The project helps coding agents implement and review accessible native mobile in
 
 | Skill | Focus |
 |---|---|
-| `mobile-a11y-workflow` | Agent routing, repair/re-review loop, source policy, safety rules, and the completion report every agent follows |
+| `mobile-a11y-workflow` | When to delegate, agent routing, repair/re-review loop, source policy, safety rules, and the completion report every agent follows |
 | `mobile-a11y-review` | Cross-platform audit, evidence, severity, and regulatory mapping |
 | `android-a11y` | Compose/Views semantics, focus, actions, scaling, input, WebView, and testing |
 | `ios-a11y` | SwiftUI/UIKit structure, focus, actions, Dynamic Type, audits, and device checks |
@@ -102,7 +102,7 @@ See [samples/README.md](samples/README.md) for requirements and limits.
 
 When the iOS job fails, CI uploads its `.xcresult` bundle for diagnosis. Successful runs do not retain the bundle.
 
-The eval set includes defect-bearing Android, iOS, KMP, test-strategy, and regulatory cases; clean Compose, Android Views, SwiftUI, and UIKit cases that penalize invented findings; and an EN 301 549 scenario that tests technology self-scoping.
+The eval set includes defect-bearing Android, iOS, KMP, test-strategy, and regulatory cases; clean Compose, Android Views, SwiftUI, and UIKit cases that penalize invented findings; and an EN 301 549 scenario that tests technology self-scoping. Two held-out evals measure defects the skills do not teach, and two repair evals score an engineer's fix of Compose and UIKit code with hidden tests.
 
 ## Verification status
 
