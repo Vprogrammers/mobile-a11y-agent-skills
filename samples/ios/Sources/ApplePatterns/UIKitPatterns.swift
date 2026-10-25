@@ -37,6 +37,15 @@ public final class ModalCardView: UIView {
         fatalError("init(coder:) is not supported")
     }
 
+    /// Called when the card closes, including through the VoiceOver escape gesture.
+    public var onDismiss: (() -> Void)?
+
+    public override func accessibilityPerformEscape() -> Bool {
+        guard let onDismiss else { return false }
+        onDismiss()
+        return true
+    }
+
     /// Move VoiceOver to the card after presentation; this is a major context change.
     public func announcePresented() {
         UIAccessibility.post(notification: .screenChanged, argument: titleLabel)
@@ -86,4 +95,15 @@ public func addArchiveAction(to row: UIView, onArchive: @escaping @MainActor () 
         return true
     }
     row.accessibilityCustomActions = (row.accessibilityCustomActions ?? []) + [archive]
+}
+
+/// A label whose text is in a different language from the app.
+@MainActor
+public func makeForeignLanguageLabel(text: String, languageTag: String) -> UILabel {
+    let label = UILabel()
+    label.text = text
+    label.accessibilityLanguage = languageTag
+    label.font = .preferredFont(forTextStyle: .body)
+    label.adjustsFontForContentSizeCategory = true
+    return label
 }

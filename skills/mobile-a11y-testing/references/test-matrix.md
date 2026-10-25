@@ -1,6 +1,6 @@
 # Accessibility test matrix
 
-Last reviewed: 2026-10-24. Verify test API availability against the Compose, Robolectric, Xcode, and iOS versions used by the project.
+Last reviewed: 2026-10-25. Verify test API availability against the Compose, Robolectric, Xcode, and iOS versions used by the project.
 Review interval: 180 days.
 
 ## Discover before writing tests
@@ -9,12 +9,11 @@ Android/KMP examples:
 
 ```bash
 ./gradlew projects
-./gradlew tasks --all
-./gradlew test
-./gradlew connectedCheck
+./gradlew :app:tasks --all
+./gradlew :app:testDebugUnitTest --tests '*CheckoutScreenTest*'
 ```
 
-Run the narrowest existing task after discovery; do not invent module task names. Determine whether Compose host tests use Robolectric and whether an emulator/device is available. Robolectric runs against one SDK per sandbox; recent SDK sandboxes can require a newer JDK than the build uses, so pin the sandbox SDK explicitly (for example in `robolectric.properties`) when the JDK is fixed.
+List tasks first, then run the narrowest existing one, filtered to the affected tests; do not invent module task names. Avoid the aggregate `test` and `connectedCheck` tasks unless the change needs them: they run every module, and `connectedCheck` also needs an attached device or emulator. Determine whether Compose host tests use Robolectric and whether an emulator/device is available. Robolectric runs against one SDK per sandbox; recent SDK sandboxes can require a newer JDK than the build uses, so pin the sandbox SDK explicitly (for example in `robolectric.properties`) when the JDK is fixed.
 
 iOS examples:
 
@@ -40,6 +39,8 @@ Adapt workspace/project, scheme, configuration, and destination to the repositor
 | Dynamic Type/font scale | Layout/snapshot assertions | Largest supported size |
 | Reduced motion | Policy/state test | Visual device check |
 | Contrast algorithm | Unit test | Inspect rendered dynamic backgrounds |
+| Touch target size | Compose `assertHeightIsAtLeast`/`assertWidthIsAtLeast`; XCUITest `.hitRegion` audit | Switch Access/Control scanning |
+| Right-to-left layout | Compose `DeviceConfigurationOverride.LayoutDirection`; XCUITest with `-AppleLanguages` | RTL locale on a device |
 | Exact screen-reader speech | Not a reliable unit assertion | Real device required |
 
 ## Android APIs
@@ -50,12 +51,16 @@ Adapt workspace/project, scheme, configuration, and destination to the repositor
 - Use Android Accessibility Scanner for exploratory device evidence.
 - Use instrumentation or device tests for IME, autofill, framework focus, WebView, insets, back handling, and window behavior.
 - Test node role/state/actions/errors rather than hard-coding a full spoken sentence.
+- Override device settings inside a Compose test with `DeviceConfigurationOverride`, for example `DeviceConfigurationOverride(DeviceConfigurationOverride.FontScale(2f)) { Screen() }` or `DeviceConfigurationOverride.LayoutDirection(LayoutDirection.Rtl)`.
+- Check minimum sizes with `assertHeightIsAtLeast(48.dp)` and `assertWidthIsAtLeast(48.dp)`, and the expanded touch bounds with `assertTouchHeightIsEqualTo`/`assertTouchWidthIsEqualTo` when `minimumInteractiveComponentSize()` extends them.
+- Read an action's label through `SemanticsActions.OnClick`, for example to assert an `onClickLabel`.
 
 ## Apple APIs
 
 - Use accessibility identifiers for automation, not as user-facing labels.
 - Assert labels, values, enabled/selected state, actions, and flow completion in XCUITest.
-- Use `performAccessibilityAudit(for:)` on supported Xcode/iOS versions and document issue types or exclusions.
+- Use `performAccessibilityAudit(for:)` (Xcode 15 and iOS 17 or later) and document issue types or exclusions.
+- Launch the app at a Dynamic Type size with `app.launchArguments += ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]`, and in a right-to-left language with `["-AppleLanguages", "(ar)"]`.
 - Use Accessibility Inspector for hierarchy, hit regions, contrast, and manual auditing.
 - Use XCTest for view-model and UIKit adapter properties (traits, values, custom actions, `accessibilityViewIsModal`); SwiftUI accessibility structure needs XCUITest or Accessibility Inspector.
 
@@ -142,21 +147,12 @@ Test that native adapters read the platform setting. On Android, set `Settings.G
 
 ## Manual device record
 
-Record:
-
-- device and OS build;
-- app build/configuration;
-- assistive technology and relevant settings;
-- locale, font size, display size, appearance, and orientation;
-- start state and exact steps;
-- expected and actual results;
-- screenshots/video only when they do not expose sensitive data.
-
-Do not report “accessibility passed” from a green automated suite. Report which observable requirements passed and which assistive-technology behaviors remain unverified.
+Record manual results with [the real-device evidence template](real-device-evidence-template.md). Do not report “accessibility passed” from a green automated suite. Report which observable requirements passed and which assistive-technology behaviors remain unverified.
 
 Official sources:
 
 - Compose accessibility testing: https://developer.android.com/develop/ui/compose/accessibility/testing
+- Compose `DeviceConfigurationOverride`: https://developer.android.com/reference/kotlin/androidx/compose/ui/test/DeviceConfigurationOverride
 - Compose accessibility checks API (API 34+, not Robolectric): https://developer.android.com/reference/kotlin/androidx/compose/ui/test/junit4/accessibility/package-summary
 - Espresso accessibility checks: https://developer.android.com/training/testing/espresso/accessibility-checking
 - Robolectric configuration: https://robolectric.org/configuring/

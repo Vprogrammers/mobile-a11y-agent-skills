@@ -22,8 +22,8 @@ Match the code in the change to a section of [references/android-patterns.md](re
 
 | Code in the change | Section |
 |---|---|
-| `Modifier.semantics`, `clearAndSetSemantics`, `mergeDescendants`, custom composables | [Compose semantics](references/android-patterns.md#compose-semantics) |
-| `contentDescription`, hard-coded accessibility text, formatted strings, plurals, locale or RTL handling | [Names, voice access, and localization](references/android-patterns.md#names-voice-access-and-localization) |
+| `Modifier.semantics`, `clearAndSetSemantics`, `mergeDescendants`, custom composables, `clickable` without `role` or `onClickLabel` | [Compose semantics](references/android-patterns.md#compose-semantics) |
+| `contentDescription`, hard-coded accessibility text, formatted strings, plurals, locale or RTL handling, text in another language | [Names, voice access, and localization](references/android-patterns.md#names-voice-access-and-localization) |
 | `FocusRequester`, `liveRegion`, `announceForAccessibility`, lazy lists | [Focus and dynamic updates](references/android-patterns.md#focus-and-dynamic-updates) |
 | Fixed heights, text sizes, touch targets, animations, outline text or custom text rendering | [Touch, text, and layout](references/android-patterns.md#touch-text-and-layout) |
 | Insets, edge-to-edge, `onBackPressed`, back handlers | [Edge-to-edge, insets, and back navigation](references/android-patterns.md#edge-to-edge-insets-and-back-navigation) |

@@ -1,13 +1,13 @@
 # Regulatory and standards landscape
 
-Last reviewed: 2026-10-24.
+Last reviewed: 2026-10-25.
 Review interval: 90 days.
 
 This is engineering guidance, not legal advice. Applicability depends on jurisdiction, organization, product, service, contract, and national implementation. Verify current primary sources before making a compliance claim.
 
 ## Recommended engineering baseline
 
-Use WCAG 2.2 Level AA as a forward-looking engineering baseline when contract and law do not specify another version. WCAG is technology-neutral but written for web content; use W3C mobile guidance and platform behavior to interpret it for native apps. Do not claim that passing automated checks proves conformance.
+Use WCAG 2.2 Level AA as a forward-looking engineering baseline when contract and law do not specify another version. WCAG is technology-neutral but written for web content. For native apps, interpret it with the W3C Group Note *Guidance on Applying WCAG 2 to Non-Web Information and Communications Technologies* (WCAG2ICT), published 11 December 2025 for WCAG 2.2, together with W3C mobile guidance and platform behavior. WCAG2ICT is informative guidance, not a standard. Do not claim that passing automated checks proves conformance.
 
 Mobile-relevant WCAG 2.2 additions include Focus Not Obscured, Dragging Movements, Target Size (Minimum), Consistent Help, Redundant Entry, and Accessible Authentication. Preserve paste, autofill, password managers, and alternatives to memory or transcription tasks.
 
@@ -15,12 +15,13 @@ Primary sources:
 
 - WCAG 2.2: https://www.w3.org/TR/WCAG22/
 - W3C mobile accessibility: https://www.w3.org/WAI/standards-guidelines/mobile/
+- WCAG2ICT for WCAG 2.2 (W3C Group Note, 11 December 2025; checked 2026-10-25): https://www.w3.org/TR/wcag2ict-22/
 
 ## European Union
 
 ### European Accessibility Act
 
-Directive (EU) 2019/882 applies from 28 June 2025 to covered products and services, including areas such as consumer banking, e-commerce, electronic communications, and parts of passenger transport. It does not make every mobile app automatically subject to identical requirements. Check national transposition, scope, exemptions, and enforcement.
+Directive (EU) 2019/882 applies from 28 June 2025 to covered products and services, including areas such as consumer banking, e-commerce, electronic communications, and parts of passenger transport. It does not make every mobile app automatically subject to identical requirements. Check national transposition, scope, exemptions, and enforcement. In the Directive's own text, check at least the exemption for microenterprises that provide services, the transitional measures for services that use products already in use before 28 June 2025, and the disproportionate-burden and fundamental-alteration provisions. The article text was not independently verified on 2026-10-25 because EUR-Lex refused automated retrieval; read it before relying on any of these provisions.
 
 - Directive: https://eur-lex.europa.eu/eli/dir/2019/882/oj/eng
 - Commission overview: https://commission.europa.eu/strategy-and-policy/policies/justice-and-fundamental-rights/disability/european-accessibility-act-eaa_en
@@ -104,6 +105,10 @@ A project may adopt WCAG 2.1 or 2.2 as an engineering baseline, but do not misst
 ### ADA Title III and other obligations
 
 Businesses open to the public must provide accessible services, but do not state that one universal WCAG version is federally mandated for every private native app. Contracts, settlements, state laws, procurement terms, and sector rules may impose more specific duties. Ask for legal review when applicability matters.
+
+## Other jurisdictions
+
+This file covers the EU and US federal context only. Other jurisdictions, such as the United Kingdom, Canada, Australia, Japan, and individual US states, have their own laws, standards, and procurement rules. Do not extrapolate EU or US conclusions to them; ask for the jurisdiction and seek legal review.
 
 ## Evidence language
 

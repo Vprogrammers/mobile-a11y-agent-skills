@@ -3,9 +3,14 @@ package dev.vprogrammers.a11y.samples
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.DeviceConfigurationOverride
+import androidx.compose.ui.test.FontScale
+import androidx.compose.ui.test.LayoutDirection
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasClickAction
@@ -14,6 +19,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection as Direction
 import androidx.compose.ui.unit.dp
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -95,5 +101,45 @@ class ComposePatternsTest {
         val bounds = rule.onNodeWithText("Line one\nLine two\nLine three").getUnclippedBoundsInRoot()
         val height = bounds.bottom - bounds.top
         assertTrue("Expected text to grow beyond its 40 dp minimum, was $height", height > 40.dp)
+    }
+
+    @Test
+    fun orderRow_namesClickOutcomeAndRoleWithMinimumTarget() {
+        rule.setContent { OrderRow(title = "Order 1234", onOpen = {}) }
+
+        rule.onNodeWithText("Order 1234")
+            .assert(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Button))
+            .assert(SemanticsMatcher("click label") { it.config[SemanticsActions.OnClick].label == "Open order details" })
+            .assertHeightIsAtLeast(48.dp)
+    }
+
+    @Test
+    fun scalableLabel_growsWithDeviceFontScaleOverride() {
+        rule.setContent {
+            DeviceConfigurationOverride(DeviceConfigurationOverride.FontScale(2f)) {
+                ScalableLabel("Line one\nLine two\nLine three")
+            }
+        }
+
+        val bounds = rule.onNodeWithText("Line one\nLine two\nLine three").getUnclippedBoundsInRoot()
+        assertTrue("Expected text to grow beyond its 40 dp minimum", bounds.bottom - bounds.top > 40.dp)
+    }
+
+    @Test
+    fun salesChart_keepsValuesInRightToLeftLayout() {
+        rule.setContent {
+            DeviceConfigurationOverride(DeviceConfigurationOverride.LayoutDirection(Direction.Rtl)) {
+                SalesChart(listOf("May" to 3), summary = "Sales were 3")
+            }
+        }
+
+        rule.onNodeWithText("May: 3").assertExists()
+    }
+
+    @Test
+    fun quotedPhrase_keepsTheWholeSentence() {
+        rule.setContent { QuotedPhrase(intro = "The menu says ", phrase = "plat du jour", languageTag = "fr-FR") }
+
+        rule.onNodeWithText("The menu says plat du jour").assertExists()
     }
 }

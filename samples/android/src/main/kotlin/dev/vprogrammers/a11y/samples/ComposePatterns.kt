@@ -1,7 +1,9 @@
 package dev.vprogrammers.a11y.samples
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -14,6 +16,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
@@ -21,7 +24,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.contentType
 import androidx.compose.ui.semantics.error
@@ -30,9 +35,14 @@ import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.intl.LocaleList
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import java.text.NumberFormat
 
 // Compiled counterparts of the "Better" examples in android-patterns.md.
 
@@ -128,7 +138,8 @@ fun SalesChart(sales: List<Pair<String, Int>>, summary: String) {
                 .height(160.dp)
                 .semantics { contentDescription = summary },
         ) { drawBars(sales) }
-        sales.forEach { (month, value) -> Text("$month: $value") }
+        val numbers = NumberFormat.getIntegerInstance()
+        sales.forEach { (month, value) -> Text(stringResource(R.string.sales_value, month, numbers.format(value))) }
     }
 }
 
@@ -140,4 +151,28 @@ private fun DrawScope.drawBars(sales: List<Pair<String, Int>>) {
         val height = size.height * value / max
         drawRect(Color.Gray, topLeft = Offset(index * 2 * barWidth, size.height - height), size = Size(barWidth, height))
     }
+}
+
+/** A custom clickable row names the action's outcome and the role it represents. */
+@Composable
+fun OrderRow(title: String, onOpen: () -> Unit) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clickable(onClickLabel = "Open order details", role = Role.Button, onClick = onOpen)
+            .minimumInteractiveComponentSize(),
+    ) {
+        Text(title)
+    }
+}
+
+/** A phrase in another language carries its locale so TalkBack can switch pronunciation. */
+@Composable
+fun QuotedPhrase(intro: String, phrase: String, languageTag: String) {
+    Text(
+        buildAnnotatedString {
+            append(intro)
+            withStyle(SpanStyle(localeList = LocaleList(languageTag))) { append(phrase) }
+        },
+    )
 }
