@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.2
+
+- Add a cross-platform acceptance contract and make platform agents own the smallest direct regression test, reserving the test agent for strategy, new layers, audits, coordinated coverage, and remaining evidence gaps.
+- Require reviewers to receive and verify an explicit local base ref or committed range, broaden Android and iOS routing triggers, and separate KMP architecture design from verification mode.
+- Harden the optional Claude settings template against destructive Git state and remote changes.
+
 ## 0.8.1
 
 - Record a VoiceOver device check on an iPhone 14 with iOS 26.7.2: headings with level, the custom toggle, Markdown links, the selected trait, the escape action, UIKit `accessibilityLanguage`, and SwiftUI `languageIdentifier` behaved as the guidance says. The undocumented SwiftUI language mapping now has device evidence. See `docs/device-evidence/2026-10-25-ios-voiceover.md`.
