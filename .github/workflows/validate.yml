@@ -45,7 +45,7 @@ jobs:
       - run: ./gradlew --console=plain assembleDebug testDebugUnitTest
       - name: Check repair eval tests against the original fixture and the reference fix
         working-directory: .
-        run: python3 scripts/run_repair_eval.py --self-check
+        run: python3 scripts/run_repair_eval.py --self-check --platform=android
 
   kmp-samples:
     name: KMP shared contract and native adapters
@@ -71,6 +71,8 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: ./samples/ios/test.sh
+      - name: Check iOS repair eval tests against the original fixture and the reference fix
+        run: python3 scripts/run_repair_eval.py --self-check --platform=ios
       - name: Upload failing XCTest result bundle
         if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

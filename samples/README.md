@@ -20,4 +20,4 @@ These tests assert exposed semantics and accessibility properties. They do not p
 
 When you change a code example in a reference file or an eval fixture, update the matching sample or guard test in the same pull request.
 
-Repair evals (`scripts/run_repair_eval.py`) copy the Android build into a temporary workspace without `evals/`. The build then skips fixture generation and compiles only the fixture under repair.
+Android repair evals (`scripts/run_repair_eval.py`) copy the Android build into a temporary workspace without `evals/`. The build then skips fixture generation and compiles only the fixture under repair. iOS repair evals generate their own minimal Swift package and do not use `samples/ios`.

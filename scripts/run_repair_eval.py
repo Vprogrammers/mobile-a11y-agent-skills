@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Run repair evals: an engineer agent fixes a fixture in a Gradle workspace, then hidden tests score the fix.
+"""Run repair evals: an engineer agent fixes a fixture in a Gradle or Swift package workspace, then hidden tests score the fix.
 
 Usage:
-  run_repair_eval.py --self-check [repair-id ...]
+  run_repair_eval.py --self-check [--platform=android|ios] [repair-id ...]
   run_repair_eval.py <new-output-directory> [repair-id ...]
 """
 from __future__ import annotations
@@ -22,10 +22,34 @@ import xml.etree.ElementTree as ElementTree
 # Allow both `python3 scripts/run_repair_eval.py` and `import scripts.run_repair_eval` in tests.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from bounded_process import OutputLimitExceeded, ProcessTimedOut, run_bounded  # noqa: E402
-from run_eval_suite import PLUGIN_NAME, VARIANTS, format_agent_command  # noqa: E402
+from run_eval_suite import PLUGIN_NAME, VARIANTS, current_commit, format_agent_command  # noqa: E402
 
 DEFAULT_AGENT_TIMEOUT_SECONDS = 900
-GRADLE_TIMEOUT_SECONDS = 900
+TEST_TIMEOUT_SECONDS = 900
+# Only the hidden test class counts, so a test the agent adds under the same method name cannot mask a failure.
+HIDDEN_TEST_CLASS = {"android": "repair.RepairTest", "ios": "RepairTests.RepairTest"}
+IOS_HEADER = "import SwiftUI\nimport UIKit\n\n"
+IOS_PACKAGE = """// swift-tools-version: 6.0
+import Foundation
+import PackageDescription
+
+// The runner adds Tests/RepairTests after the agent finishes; until then the package builds the fixture only.
+let testsDirectory = URL(fileURLWithPath: #filePath)
+    .deletingLastPathComponent()
+    .appendingPathComponent("Tests/RepairTests")
+var targets: [Target] = [.target(name: "RepairFixture")]
+if FileManager.default.fileExists(atPath: testsDirectory.path) {
+    targets.append(.testTarget(name: "RepairTests", dependencies: ["RepairFixture"]))
+}
+
+let package = Package(
+    name: "RepairWorkspace",
+    platforms: [.iOS(.v17)],
+    products: [.library(name: "RepairFixture", targets: ["RepairFixture"])],
+    targets: targets
+)
+"""
+IOS_TEST_RESULT = re.compile(r"Test Case '-\[(\S+) (\S+)\]' (passed|failed|skipped)")
 MAX_OUTPUT_BYTES = 1_000_000
 # The workspace gets the build, never the samples' tests, guard tests, or other fixtures.
 ANDROID_SKELETON = (
@@ -45,7 +69,15 @@ def load_repairs(root: Path) -> list[dict[str, object]]:
 
 
 def build_workspace(root: Path, repair: dict[str, object], workspace: Path, source: str) -> Path:
-    """Create an Android project that contains only the fixture under repair and its stubs."""
+    """Create a project that contains only the fixture under repair and its stubs."""
+    if repair.get("platform") == "ios":
+        (workspace / "Package.swift").write_text(IOS_PACKAGE, encoding="utf-8")
+        fixture = workspace / str(repair["workspace_path"])
+        fixture.parent.mkdir(parents=True)
+        fixture.write_text(IOS_HEADER + source, encoding="utf-8")
+        stubs = (root / str(repair["stubs"])).read_text(encoding="utf-8")
+        fixture.with_name("Stubs.swift").write_text(IOS_HEADER + stubs, encoding="utf-8")
+        return fixture
     samples = root / "samples/android"
     for name in ANDROID_SKELETON:
         path = samples / name
@@ -63,6 +95,11 @@ def build_workspace(root: Path, repair: dict[str, object], workspace: Path, sour
 
 
 def install_tests(root: Path, repair: dict[str, object], workspace: Path) -> None:
+    if repair.get("platform") == "ios":
+        tests = workspace / "Tests/RepairTests"
+        tests.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(root / str(repair["tests"]), tests / "RepairTest.swift")
+        return
     tests = workspace / "src/test/kotlin/repair"
     tests.mkdir(parents=True, exist_ok=True)
     shutil.copy2(root / str(repair["tests"]), tests / "RepairTest.kt")
@@ -71,22 +108,63 @@ def install_tests(root: Path, repair: dict[str, object], workspace: Path) -> Non
     shutil.copy2(root / "samples/android/src/test/resources/robolectric.properties", resources)
 
 
-def run_gradle(workspace: Path) -> tuple[int, str]:
-    completed = subprocess.run(
-        ["./gradlew", "--console=plain", "testDebugUnitTest"],
-        cwd=workspace,
-        text=True,
-        capture_output=True,
-        timeout=GRADLE_TIMEOUT_SECONDS,
-        check=False,
-    )
+def ios_simulator() -> str:
+    """Return the UDID of the newest available iPhone simulator."""
+    listing = json.loads(
+        subprocess.run(
+            ["xcrun", "simctl", "list", "devices", "available", "-j"], text=True, capture_output=True, check=True
+        ).stdout
+    )["devices"]
+    for runtime in sorted(listing, reverse=True):
+        if "iOS" in runtime:
+            for device in listing[runtime]:
+                if device["name"].startswith("iPhone"):
+                    return device["udid"]
+    raise RuntimeError("No available iPhone simulator")
+
+
+def test_command(platform: str) -> list[str]:
+    if platform == "ios":
+        return [
+            "xcodebuild", "test",
+            "-scheme", "RepairWorkspace",
+            "-destination", f"platform=iOS Simulator,id={ios_simulator()},arch={os.uname().machine}",
+            "-parallel-testing-enabled", "NO",
+        ]
+    return ["./gradlew", "--console=plain", "testDebugUnitTest"]
+
+
+def run_tests(workspace: Path, platform: str = "android") -> tuple[int, str]:
+    try:
+        completed = subprocess.run(
+            test_command(platform),
+            cwd=workspace,
+            text=True,
+            capture_output=True,
+            timeout=TEST_TIMEOUT_SECONDS,
+            check=False,
+        )
+    except subprocess.TimeoutExpired as error:
+        # A hung build scores zero like a failed one instead of aborting the whole run.
+        output = (error.stdout or b"") + (error.stderr or b"")
+        text = output.decode(errors="replace") if isinstance(output, bytes) else output
+        return 124, f"{text}\nTests timed out after {TEST_TIMEOUT_SECONDS} seconds."
     return completed.returncode, completed.stdout + completed.stderr
 
 
-def read_test_results(workspace: Path) -> dict[str, bool]:
+def read_test_results(workspace: Path, platform: str = "android", log: str = "") -> dict[str, bool]:
+    """Results of the hidden test class by method name."""
+    hidden = HIDDEN_TEST_CLASS[platform]
     results: dict[str, bool] = {}
+    if platform == "ios":
+        for test_class, name, outcome in IOS_TEST_RESULT.findall(log):
+            if test_class == hidden:
+                results[name] = outcome == "passed" and results.get(name, True)
+        return results
     for report in (workspace / "build/test-results/testDebugUnitTest").glob("TEST-*.xml"):
         for case in ElementTree.parse(report).getroot().iter("testcase"):
+            if case.get("classname") != hidden:
+                continue
             failed = any(case.find(tag) is not None for tag in ("failure", "error", "skipped"))
             results[case.get("name", "")] = not failed
     return results
@@ -114,11 +192,12 @@ def score(repair: dict[str, object], tests: dict[str, bool], source: str) -> dic
 
 
 def evaluate(root: Path, repair: dict[str, object], workspace: Path, fixture: Path) -> tuple[dict[str, object], str]:
+    platform = str(repair.get("platform", "android"))
     install_tests(root, repair, workspace)
-    _, log = run_gradle(workspace)
+    _, log = run_tests(workspace, platform)
     # A deleted fixture cannot compile with the hidden tests, so it scores nothing instead of crashing the run.
     source = fixture.read_text(encoding="utf-8") if fixture.exists() else ""
-    return score(repair, read_test_results(workspace), source), log
+    return score(repair, read_test_results(workspace, platform, log), source), log
 
 
 def self_check(root: Path, repair: dict[str, object]) -> list[str]:
@@ -184,7 +263,7 @@ def run_repair(root: Path, repair: dict[str, object], command: str, variant: str
             encoding="utf-8",
         )
         result, log = evaluate(root, repair, workspace, fixture)
-        (run_dir / "gradle.log").write_text("\n".join(log.splitlines()[-200:]) + "\n", encoding="utf-8")
+        (run_dir / "test.log").write_text("\n".join(log.splitlines()[-200:]) + "\n", encoding="utf-8")
         (run_dir / "result.json").write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
         return {
             "id": repair["id"],
@@ -199,8 +278,14 @@ def run_repair(root: Path, repair: dict[str, object], command: str, variant: str
 def main(root: Path, argv: list[str]) -> int:
     repairs = load_repairs(root)
     if argv[:1] == ["--self-check"]:
-        selected = argv[1:]
-        errors = [error for repair in repairs if not selected or repair["id"] in selected for error in self_check(root, repair)]
+        platforms = {arg.split("=", 1)[1] for arg in argv[1:] if arg.startswith("--platform=")}
+        selected = [arg for arg in argv[1:] if not arg.startswith("--platform=")]
+        errors = [
+            error
+            for repair in repairs
+            if (not selected or repair["id"] in selected) and (not platforms or repair["platform"] in platforms)
+            for error in self_check(root, repair)
+        ]
         for error in errors:
             print(error)
         return 1 if errors else 0
@@ -240,7 +325,7 @@ def main(root: Path, argv: list[str]) -> int:
         "created_at": datetime.now(timezone.utc).isoformat(),
         "model": os.environ.get("EVAL_MODEL", "unspecified"),
         "variant": variant,
-        "commit": os.environ.get("GITHUB_SHA", "local"),
+        "commit": current_commit(root),
         "runs": runs,
     }
     (output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")

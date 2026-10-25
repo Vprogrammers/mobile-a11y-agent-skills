@@ -25,6 +25,22 @@ VARIANTS = ("plugin", "baseline")
 SCORE = re.compile(r": (\d+)/(\d+);")
 
 
+def current_commit(root: Path) -> str:
+    """The evaluated commit: CI's SHA, or the local HEAD marked -dirty when the tree has uncommitted changes."""
+    if os.environ.get("GITHUB_SHA"):
+        return os.environ["GITHUB_SHA"]
+    try:
+        head = subprocess.run(
+            ["git", "rev-parse", "HEAD"], cwd=root, text=True, capture_output=True, check=True
+        ).stdout.strip()
+        dirty = subprocess.run(
+            ["git", "status", "--porcelain"], cwd=root, text=True, capture_output=True, check=True
+        ).stdout.strip()
+    except (OSError, subprocess.CalledProcessError):
+        return "local"
+    return f"{head}-dirty" if dirty else head
+
+
 def format_agent_command(command: str, agent: str, root: Path, variant: str = "plugin") -> list[str]:
     if variant == "plugin" and "{agent}" not in command:
         raise ValueError("EVAL_AGENT_COMMAND must contain the {agent} placeholder.")
@@ -188,7 +204,7 @@ def main(root: Path, output: Path, selected: list[str]) -> int:
         "model": os.environ.get("EVAL_MODEL", "unspecified"),
         "second_judge": bool(second_judge_command),
         "variant": variant,
-        "commit": os.environ.get("GITHUB_SHA", "local"),
+        "commit": current_commit(root),
         "runs": runs,
     }
     (output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")

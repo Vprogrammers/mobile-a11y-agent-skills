@@ -86,17 +86,23 @@ claude plugin eval . --runs 1 --ablation with-without --max-cost-usd 8.00 --no-p
 
 Use the official runner for plugin loading, routing, traces, and baseline evidence. Use the custom suite for detailed accessibility rubrics and deterministic scoring.
 
-The manually triggered `Agent eval regression` workflow runs plugin and baseline variants only when `CLAUDE_CODE_OAUTH_TOKEN` is configured. It has no schedule. Without the secret, it records an explicit skipped summary. Pull-request CI never invokes a paid model, and workflow results are retained as artifacts instead of committed automatically.
+The manually triggered `Agent eval regression` workflow runs only when `CLAUDE_CODE_OAUTH_TOKEN` is configured. It always runs the custom suite for the plugin variant and the official plugin evals, whose `with-without` ablation is their baseline. Set its `baseline` input to also run the custom suite without the plugin. It does not run repair evals or a second judge; run those locally. It has no schedule. Without the secret, it records an explicit skipped summary. Pull-request CI never invokes a paid model, and workflow results are retained as artifacts instead of committed automatically.
 
 ## Repair evals
 
-Review evals show whether an agent can describe a fix. Repair evals under `evals/repairs/` check the edited code. The runner copies only the fixture and stubs into a temporary workspace. After the agent edits it, the runner adds hidden Robolectric tests and scores required behavior, forbidden patterns, and preserved behavior. A build that does not compile scores zero.
+Review evals show whether an agent can describe a fix. Repair evals under `evals/repairs/` check the edited code. The runner copies only the fixture and stubs into a temporary workspace: a Gradle project for `android` repairs, or a Swift package for `ios` repairs. After the agent edits it, the runner adds hidden tests (Robolectric on Android, XCTest on an iPhone simulator on iOS) and scores required behavior, forbidden patterns, and preserved behavior. Only the hidden test class counts, so a test the agent adds with the same method name cannot mask a failure. A build that does not compile or times out scores zero.
+
+| Repair | Agent | Fixture |
+|---|---|---|
+| `compose-order-card` | `android-a11y-engineer` | `compose-semantics-traps-review/OrderCard.kt` |
+| `uikit-receipt-cell` | `ios-a11y-engineer` | `uikit-container-traps-review/ReceiptCell.swift` |
 
 ```bash
-./scripts/run_repair_eval.py --self-check
+./scripts/run_repair_eval.py --self-check --platform=android
+./scripts/run_repair_eval.py --self-check --platform=ios
 
 EVAL_REPAIR_AGENT_COMMAND='claude -p --model sonnet --plugin-dir "{plugin_dir}" --agent mobile-a11y-agent-skills:{agent} --restricted --tools Read,Glob,Grep,Edit,Write,Bash,Skill --add-dir "{plugin_dir}/skills" --allowedTools Read Glob Grep Edit Write Bash Skill --permission-mode dontAsk --permission-prompts none --no-session-persistence --max-turns 25 --max-budget-usd 2.00' \
 ./scripts/run_repair_eval.py "evals/results/$(date -u +%Y-%m-%dT%H%M%SZ)-repair-sonnet"
 ```
 
-Set `EVAL_VARIANT=baseline` and remove plugin and agent options for the baseline. Restricted mode removes Bash unless `--tools` names it, and the repair agent needs Bash to build. Bash is not confined by restricted file-tool boundaries, so use only trusted agent commands. Each run needs JDK 17 and the Android SDK.
+Set `EVAL_VARIANT=baseline` and remove plugin and agent options for the baseline. Restricted mode removes Bash unless `--tools` names it, and the repair agent needs Bash to build. Bash is not confined by restricted file-tool boundaries, so use only trusted agent commands. Android runs need JDK 17 and the Android SDK; iOS runs need macOS, Xcode, and an iPhone simulator. `summary.json` records the evaluated commit: CI's SHA, or the local `HEAD` with a `-dirty` suffix when the tree has uncommitted changes.

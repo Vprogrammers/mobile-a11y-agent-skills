@@ -48,10 +48,41 @@ class RepairScoreTests(unittest.TestCase):
             reports = Path(directory) / "build/test-results/testDebugUnitTest"
             reports.mkdir(parents=True)
             (reports / "TEST-repair.RepairTest.xml").write_text(
-                '<testsuite><testcase name="fixedTest"/><testcase name="keptTest"><failure/></testcase></testsuite>',
+                '<testsuite><testcase classname="repair.RepairTest" name="fixedTest"/>'
+                '<testcase classname="repair.RepairTest" name="keptTest"><failure/></testcase></testsuite>',
                 encoding="utf-8",
             )
             self.assertEqual(read_test_results(Path(directory)), {"fixedTest": True, "keptTest": False})
+
+    def test_agent_test_with_a_hidden_test_name_cannot_mask_a_failure(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            reports = Path(directory) / "build/test-results/testDebugUnitTest"
+            reports.mkdir(parents=True)
+            (reports / "TEST-repair.RepairTest.xml").write_text(
+                '<testsuite><testcase classname="repair.RepairTest" name="keptTest"><failure/></testcase></testsuite>',
+                encoding="utf-8",
+            )
+            (reports / "TEST-zz.AgentTest.xml").write_text(
+                '<testsuite><testcase classname="zz.AgentTest" name="keptTest"/></testsuite>', encoding="utf-8"
+            )
+            self.assertEqual(read_test_results(Path(directory)), {"keptTest": False})
+
+    def test_xcodebuild_results_are_read_for_the_hidden_class_only(self) -> None:
+        log = (
+            "Test Case '-[RepairTests.RepairTest testFixed]' started.\n"
+            "Test Case '-[RepairTests.RepairTest testFixed]' passed (0.003 seconds).\n"
+            "Test Case '-[RepairTests.RepairTest testKept]' failed (0.010 seconds).\n"
+            "Test Case '-[RepairTests.AgentTest testKept]' passed (0.001 seconds).\n"
+        )
+        self.assertEqual(read_test_results(Path("."), "ios", log), {"testFixed": True, "testKept": False})
+
+    def test_test_timeout_scores_nothing_instead_of_aborting(self) -> None:
+        timeout = run_repair_eval.subprocess.TimeoutExpired(["./gradlew"], 1, output=b"partial")
+        with mock.patch.object(run_repair_eval.subprocess, "run", side_effect=timeout):
+            code, log = run_repair_eval.run_tests(Path("."))
+        self.assertEqual(code, 124)
+        self.assertIn("partial", log)
+        self.assertIn("timed out", log)
 
 
 class RepairWorkspaceTests(unittest.TestCase):
@@ -66,6 +97,26 @@ class RepairWorkspaceTests(unittest.TestCase):
             self.assertFalse((workspace / "evals").exists())
             sources = {path.name for path in (workspace / "src").rglob("*.kt")}
             self.assertEqual(sources, {Path(str(repair["workspace_path"])).name, "Models.kt"})
+
+    def test_ios_workspace_is_a_swift_package_without_tests(self) -> None:
+        repair = next(item for item in load_repairs(ROOT) if item["platform"] == "ios")
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = Path(directory)
+            fixture = build_workspace(ROOT, repair, workspace, "final class Fixture {}\n")
+            self.assertTrue(fixture.read_text(encoding="utf-8").startswith("import SwiftUI\nimport UIKit\n"))
+            self.assertIn('name: "RepairWorkspace"', (workspace / "Package.swift").read_text(encoding="utf-8"))
+            self.assertFalse((workspace / "Tests").exists())
+            self.assertEqual({path.name for path in workspace.rglob("*.swift")}, {"Package.swift", fixture.name, "Stubs.swift"})
+            run_repair_eval.install_tests(ROOT, repair, workspace)
+            self.assertTrue((workspace / "Tests/RepairTests/RepairTest.swift").is_file())
+
+    def test_self_check_can_select_a_platform(self) -> None:
+        checked: list[str] = []
+        with mock.patch.object(run_repair_eval, "self_check", lambda root, repair: checked.append(repair["id"]) or []):
+            self.assertEqual(run_repair_eval.main(ROOT, ["--self-check", "--platform=ios"]), 0)
+        self.assertEqual(
+            checked, [repair["id"] for repair in load_repairs(ROOT) if repair["platform"] == "ios"]
+        )
 
     def test_baseline_prompt_omits_plugin_agent(self) -> None:
         self.assertIn("mobile-a11y-agent-skills:android-a11y-engineer", agent_prompt("android-a11y-engineer", "Fix", "plugin"))
@@ -125,7 +176,7 @@ class RepairWorkspaceTests(unittest.TestCase):
             workspace = Path(directory)
             fixture = build_workspace(ROOT, repair, workspace, "// fixture\n")
             fixture.unlink()
-            with mock.patch.object(run_repair_eval, "run_gradle", return_value=(1, "compilation failed")):
+            with mock.patch.object(run_repair_eval, "run_tests", return_value=(1, "compilation failed")):
                 result, log = run_repair_eval.evaluate(ROOT, repair, workspace, fixture)
         self.assertEqual((result["score"], result["passed"], log), (0, False, "compilation failed"))
 
