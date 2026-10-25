@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.8.1
 
 - Record a VoiceOver device check on an iPhone 14 with iOS 26.7.2: headings with level, the custom toggle, Markdown links, the selected trait, the escape action, UIKit `accessibilityLanguage`, and SwiftUI `languageIdentifier` behaved as the guidance says. The undocumented SwiftUI language mapping now has device evidence. See `docs/device-evidence/2026-10-25-ios-voiceover.md`.
 - Record the first real-device check: TalkBack 17.1 on a Samsung Galaxy Z Fold7 with Android 17 confirmed the Compose role, click-label, toggle-row, link, timeout, language, chart, and password patterns and the Views click label and custom action, and confirmed the `ClickableText` and split toggle-row defects. See `docs/device-evidence/2026-10-25-android-talkback.md`.
