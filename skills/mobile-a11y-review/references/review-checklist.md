@@ -12,7 +12,7 @@ Scan the changed code for these signals before reading it line by line. Each one
 | `clearAndSetSemantics`, `mergeDescendants = true`, `.accessibilityElement(children: .combine/.ignore)` | No label, state, or secondary action is lost from the merged node |
 | `pointerInput`, `detectTapGestures`, `onLongPress`, swipe or drag handlers, `.onTapGesture` | The action is also a native or custom accessibility action |
 | Custom `View` with `onDraw`/canvas, or a UIKit view drawing several targets | Accessibility node contract or virtual children, not one `contentDescription` |
-| `AccessibilityDelegateCompat`, `accessibilityTraits =`, `accessibilityElements =` | Superclass actions and traits are preserved and order matches dynamic content |
+| `setOnTouchListener` or gesture detectors on Views without `addAccessibilityAction`; `AccessibilityDelegateCompat`, `accessibilityTraits =`, `accessibilityElements =` | Superclass actions and traits are preserved and order matches dynamic content |
 | Fixed `height`/`frame(height:)`, `maxLines = 1`, `lineLimit(1)`, `UIButton(type: .system)` titles | Text scales and reflows at the largest font and Dynamic Type sizes |
 | Custom overlay, sheet, or dialog built from `Box`/`ZStack`/plain views | Modal boundary, system back or escape dismissal, and focus restoration |
 | Custom fonts, custom switches, borderless text buttons, or state shown by color on iOS | Bold Text, On/Off Labels, Button Shapes, and Differentiate Without Color |
@@ -29,8 +29,8 @@ Scan the changed code for these signals before reading it line by line. Each one
 | Concatenated user-facing strings, hard-coded accessibility text, manual plurals, or locale-dependent formatting | Labels, values, hints, and announcements remain grammatical and synchronized in every supported locale and RTL/BiDi layout |
 | Touch-exploration checks, enabled accessibility-service inspection, or VoiceOver-running status checks | Core semantics and functionality do not depend on detecting one assistive technology |
 | `onBackPressed`, `KEYCODE_BACK`, missing insets on edge-to-edge screens | Back dismissal and focused content stay reachable on current SDK targets |
-| `clickable` row that also contains a clickable `Switch`, `Checkbox`, or `RadioButton` | One toggleable or selectable node with a role and state |
-| `ClickableText`, links resolved from tap offsets | Each link is reachable as a link (`LinkAnnotation`) |
+| `clickable` row that also contains a clickable `Switch`, `Checkbox`, or `RadioButton`, or a tappable SwiftUI row that flips a setting | One toggleable or selectable node with a role and state (`toggleable`, `.isToggle`) |
+| `ClickableText`, links resolved from tap offsets, `onTapGesture` on text | Each link is reachable as a link (`LinkAnnotation`, `Link`, Markdown links in `Text`) |
 | A fixed `delay`, timer, or `asyncAfter` that hides content with an action | The user's recommended timeout or an explicit dismiss keeps the action reachable |
 | Auto-advancing carousels or timers that change content | A pause or stop control exists for everyone; motion stops with reduced or removed animations; any optional VoiceOver adaptation observes the setting instead of reading it once |
 | Selection shown by background or text color | The selected state is exposed (selected trait, `selectable`, segmented `Picker`) |
@@ -87,7 +87,7 @@ Scan the changed code for these signals before reading it line by line. Each one
 ## Evidence
 
 - Distinguish static findings, unit tests, semantics/XCUITest evidence, scanner/audit results, simulator observations, and real-device assistive-technology results.
-- Automated tools detect only a subset of barriers. Record OS, device, app build, assistive technology, settings, steps, expected result, and actual result for manual evidence.
+- Automated tools detect only a subset of barriers. Record manual results with the real-device evidence template in the `mobile-a11y-testing` skill.
 
 Sources:
 

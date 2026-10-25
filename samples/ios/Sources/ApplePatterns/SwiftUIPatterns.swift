@@ -274,6 +274,41 @@ public struct StatusBadge: View {
     }
 }
 
+/// A tappable row that switches a setting exposes the toggle trait and its state.
+public struct CustomToggleRow: View {
+    let title: String
+    @Binding var isOn: Bool
+
+    public init(title: String, isOn: Binding<Bool>) {
+        self.title = title
+        _isOn = isOn
+    }
+
+    public var body: some View {
+        HStack {
+            Text(title)
+            Spacer()
+            Image(systemName: isOn ? "checkmark.circle.fill" : "circle")
+                .accessibilityHidden(true)
+        }
+        .contentShape(Rectangle())
+        .onTapGesture { isOn.toggle() }
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits([.isButton, .isToggle])
+        .accessibilityValue(isOn ? Text("On") : Text("Off"))
+        .accessibilityAction { isOn.toggle() }
+    }
+}
+
+/// Inline links stay links for VoiceOver instead of tap targets inside the text.
+public struct TermsNotice: View {
+    public init() {}
+
+    public var body: some View {
+        Text("Messages follow our [terms](https://example.com/terms).")
+    }
+}
+
 /// Filter options expose which one is selected, not only through color.
 public struct FilterBar: View {
     @Binding var selection: String

@@ -117,3 +117,11 @@ public func makePhotoView(image: UIImage?, caption: String) -> UIImageView {
     view.accessibilityIgnoresInvertColors = true
     return view
 }
+
+/// A custom control that switches a setting reports itself as a toggle (iOS 17+).
+@MainActor
+public func markAsToggle(_ view: UIView, isOn: Bool) {
+    view.isAccessibilityElement = true
+    view.accessibilityTraits.insert(.toggleButton)
+    view.accessibilityValue = isOn ? "On" : "Off"
+}

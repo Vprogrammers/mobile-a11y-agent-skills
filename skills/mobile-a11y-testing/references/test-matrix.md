@@ -34,7 +34,7 @@ Adapt workspace/project, scheme, configuration, and destination to the repositor
 | Views accessibility node/actions | Robolectric where faithful; otherwise instrumentation | TalkBack/Voice Access |
 | Android focus, IME, autofill, WebView | Instrumentation/integration | Real service and assistive technology |
 | SwiftUI/UIKit label, value, action | XCTest/XCUITest | VoiceOver navigation |
-| iOS accessibility audit | XCUITest on supported OS | Triage and manual verification |
+| iOS accessibility audit | XCUITest on iOS 17 or later | Triage and manual verification |
 | Voice Control input labels | XCUITest presence/flow | Voice Control overlay |
 | Dynamic Type/font scale | Layout/snapshot assertions | Largest supported size |
 | Reduced motion | Policy/state test | Visual device check |
@@ -47,7 +47,7 @@ Adapt workspace/project, scheme, configuration, and destination to the repositor
 
 - Use Compose semantics matchers and assertions against merged and unmerged trees intentionally: roles, text, state, actions, errors, and traversal metadata.
 - Use `enableAccessibilityChecks()` (package `androidx.compose.ui.test.junit4.accessibility`, dependency `ui-test-junit4-accessibility`, Compose 1.8+) in instrumented tests on API 34+ devices or emulators. Its documentation states that it does not work on Robolectric, and in practice it passes silently there even for an unlabeled 16 dp target. Never report a green host-test accessibility check as evidence. Treat device results as heuristics and suppress false positives narrowly.
-- Use `AccessibilityChecks.enable()` for Espresso/View tests.
+- Use `AccessibilityChecks.enable()` (`androidx.test.espresso.accessibility`, dependency `espresso-accessibility`) in instrumented Espresso/View tests.
 - Use Android Accessibility Scanner for exploratory device evidence.
 - Use instrumentation or device tests for IME, autofill, framework focus, WebView, insets, back handling, and window behavior.
 - Test node role/state/actions/errors rather than hard-coding a full spoken sentence.

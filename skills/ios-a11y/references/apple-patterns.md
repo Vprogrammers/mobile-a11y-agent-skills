@@ -15,6 +15,8 @@ Review interval: 180 days.
 - Use `.accessibilityInputLabels` when Voice Control needs predictable spoken alternatives to visible text.
 - Use `.accessibilityAdjustableAction` for custom increment/decrement controls.
 - Use `.accessibilityAction(named:)` for meaningful secondary actions.
+- Give a custom toggle, such as a tappable row that switches a setting, the toggle trait and its state: `.accessibilityAddTraits(.isToggle)` with `.accessibilityValue` in SwiftUI, or the `.toggleButton` trait in UIKit; both need iOS 17 or later. Prefer a native `Toggle` with a real label.
+- Expose inline links as links: use `Link`, or a Markdown or `AttributedString` link inside `Text`, instead of `onTapGesture` on a text range. Verify with VoiceOver that each link is reachable.
 - Expose selection state with the selected trait, not only color: `.accessibilityAddTraits(filter == option ? .isSelected : [])` on each option, or use a native `Picker` with the segmented style.
 - Use `.accessibilityRotor` only when it materially improves navigation through repeated or structured content.
 - Mark section titles with `.accessibilityAddTraits(.isHeader)` so VoiceOver users can move between them with the Headings rotor. Add `.accessibilityHeading(_:)` with a level when the screen has nested sections. Use headings for real sections, not for visual emphasis.
@@ -69,8 +71,7 @@ Text(title)
 
 - Use `@AccessibilityFocusState` for meaningful SwiftUI context changes such as presenting validation summary or moving to newly displayed content. Do not bind routine selection state to accessibility focus.
 - Prefer native navigation and presentation because they supply window and focus behavior.
-- Announce only exceptional asynchronous results that a state or value change cannot convey. On iOS 17 and later, use `AccessibilityNotification.Announcement(message).post()`; in UIKit, `UIAccessibility.post(notification: .announcement, argument: message)`.
-- In UIKit, use `UIAccessibility.post(notification:argument:)` sparingly.
+- Announce only exceptional asynchronous results that a state or value change cannot convey. On iOS 17 and later, use `AccessibilityNotification.Announcement(message).post()`; in UIKit, `UIAccessibility.post(notification: .announcement, argument: message)`. Post UIKit notifications sparingly.
 - Use `.screenChanged` for a major context/screen change and `.layoutChanged` for meaningful changes within the current context. Pass the intended focus target only when necessary.
 - Set `accessibilityViewIsModal` for custom modal containers so VoiceOver cannot navigate behind them; restore focus appropriately after dismissal.
 - Let VoiceOver users dismiss custom modals with the escape gesture (a two-finger Z). In UIKit, override `accessibilityPerformEscape()` to dismiss and return `true`. In SwiftUI, add `.accessibilityAction(.escape) { dismiss() }` and `.accessibilityAddTraits(.isModal)` to a custom panel. System sheets and alerts already handle escape.
@@ -113,7 +114,7 @@ Text(title)
 
 ## Display settings
 
-People turn on these settings in Accessibility > Display & Text Size. SwiftUI exposes them as environment values that update the view; UIKit exposes them as `UIAccessibility` properties with matching status-change notifications.
+People turn on most of these settings in Accessibility > Display & Text Size; Reduce Motion is under Accessibility > Motion, and Full Keyboard Access under Accessibility > Keyboards. SwiftUI exposes them as environment values that update the view; UIKit exposes them as `UIAccessibility` properties with matching status-change notifications.
 
 - **Differentiate Without Color** (`accessibilityDifferentiateWithoutColor`, `UIAccessibility.shouldDifferentiateWithoutColor`). Never convey state by color alone. When this setting is on, add a shape, symbol, or text even where color normally carries a secondary cue.
 - **Bold Text** (`legibilityWeight`, which reflects this setting, or `UIAccessibility.isBoldTextEnabled`). When text uses a custom font or is drawn by the app, read the setting and apply a heavier weight.
@@ -239,6 +240,7 @@ Official sources:
 - Large Content Viewer: https://developer.apple.com/documentation/uikit/uilargecontentviewerinteraction
 - Reduce Motion: https://developer.apple.com/documentation/swiftui/environmentvalues/accessibilityreducemotion
 - Smart Invert (accessibilityIgnoresInvertColors): https://developer.apple.com/documentation/swiftui/view/accessibilityignoresinvertcolors(_:)
+- Toggle trait (UIAccessibilityTraitToggleButton, iOS 17): https://developer.apple.com/documentation/uikit/uiaccessibilitytraits/togglebutton
 - accessibilityVoiceOverEnabled: https://developer.apple.com/documentation/swiftui/environmentvalues/accessibilityvoiceoverenabled
 - Increase Contrast (colorSchemeContrast): https://developer.apple.com/documentation/swiftui/environmentvalues/colorschemecontrast
 - WCAG 2.2 captions, audio description, audio control, and non-text contrast: https://www.w3.org/TR/WCAG22/
