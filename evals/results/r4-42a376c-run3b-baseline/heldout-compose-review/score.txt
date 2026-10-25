@@ -1,0 +1,4 @@
+heldout-compose-review: 6/8; minimum 6
+Defects with a mismatched severity earn no points:
+- toggle-row-without-role-or-state: expected P2, received P1
+PASS

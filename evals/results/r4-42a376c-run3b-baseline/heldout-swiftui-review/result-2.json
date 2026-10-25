@@ -1,0 +1,16 @@
+{
+  "matched_findings": [
+    {
+      "id": "carousel-auto-advances-without-pause",
+      "severity": "P1"
+    },
+    {
+      "id": "filter-selection-only-visual",
+      "severity": "P1"
+    },
+    {
+      "id": "verification-covers-voiceover-switch-control-and-smart-invert"
+    }
+  ],
+  "forbidden_claims": []
+}
