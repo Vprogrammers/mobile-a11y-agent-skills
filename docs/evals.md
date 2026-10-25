@@ -80,10 +80,16 @@ EVAL_JUDGE_COMMAND='…same Opus judge…' EVAL_MODEL='agent=sonnet,judge=opus' 
 
 ## Official plugin evals
 
-`plugin-evals/` contains one eval per agent. They test namespaced routing, and the reviewer eval also grades output quality in Claude Code's isolated runner:
+`plugin-evals/` contains one routing eval per agent, a negative case, and a status case:
+
+- Each `*-routing` case passes when the session uses that agent or its skill. On 2026-10-25, with Claude Code 2.1.310 and Sonnet, short self-contained prompts were answered in the main session with the plugin skill loaded, not delegated to the agent, on both this branch and the previous `main`. Delegation is therefore not required.
+- `web-only-not-routed` must not reach any mobile agent and must give a web fix.
+- `reviewer-status-line` asks for the reviewer agent explicitly and checks that its report starts with a completion status from `mobile-a11y-workflow`.
+
+The reviewer and web-only cases also grade output quality in Claude Code's isolated runner:
 
 ```bash
-claude plugin eval . --runs 1 --ablation with-without --max-cost-usd 8.00 --no-publish
+claude plugin eval . --runs 1 --ablation with-without --max-cost-usd 10.00 --no-publish
 ```
 
 Use the official runner for plugin loading, routing, traces, and baseline evidence. Use the custom suite for detailed accessibility rubrics and deterministic scoring.

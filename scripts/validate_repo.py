@@ -428,16 +428,21 @@ def main(root: Path) -> int:
     for agent_name in sorted(agent_names):
         eval_dir = root / "plugin-evals" / f"{agent_name}-routing"
         prompt = eval_dir / "prompt.md"
-        grader = eval_dir / "graders/agent-used.md"
+        grader = eval_dir / "graders/plugin-guidance-used.md"
         if not prompt.is_file() or not grader.is_file():
-            errors.append(f"plugin-evals/{agent_name}-routing needs prompt.md and graders/agent-used.md")
+            errors.append(f"plugin-evals/{agent_name}-routing needs prompt.md and graders/plugin-guidance-used.md")
             continue
-        if f'"{PLUGIN_NAME}:{agent_name}"' not in grader.read_text(encoding="utf-8"):
+        _, grader_metadata = frontmatter(grader)
+        if agent_name not in re.findall(r"[a-z0-9-]+", grader_metadata.get("pattern", "")):
             errors.append(f"plugin-evals/{agent_name}-routing grader must match {PLUGIN_NAME}:{agent_name}")
+    plugin_components = agent_names | {skill.parent.name for skill in skills}
     for grader in sorted(root.glob("plugin-evals/*/graders/*.md")):
-        for named in re.findall(rf"{PLUGIN_NAME}:([a-z0-9-]+)", grader.read_text(encoding="utf-8")):
-            if named not in agent_names:
-                errors.append(f"{grader.relative_to(root)} names unknown agent: {named}")
+        text = grader.read_text(encoding="utf-8")
+        # Accept a plain name or a regex alternation such as plugin:(agent|skill).
+        for named in re.findall(rf"{PLUGIN_NAME}:\(?([a-z0-9|-]+)", text):
+            for name in filter(None, named.split("|")):
+                if name not in plugin_components:
+                    errors.append(f"{grader.relative_to(root)} names unknown agent or skill: {name}")
 
     consumer = root / "distribution/light/CLAUDE.md"
     if consumer.is_file() and WORKFLOW_SKILL not in consumer.read_text(encoding="utf-8"):

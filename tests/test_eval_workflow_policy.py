@@ -40,7 +40,7 @@ class EvalWorkflowPolicyTests(unittest.TestCase):
 
     def test_official_eval_keeps_baseline_and_cost_cap(self) -> None:
         self.assertIn("--ablation with-without", self.workflow)
-        self.assertIn("--max-cost-usd 8.00", self.workflow)
+        self.assertIn("--max-cost-usd 10.00", self.workflow)
 
     def test_paid_evals_run_only_on_demand(self) -> None:
         self.assertNotIn("schedule:", self.workflow)

@@ -315,12 +315,12 @@ class ValidateRepositoryTests(unittest.TestCase):
 
     def test_plugin_eval_grader_must_name_its_agent(self) -> None:
         def mutate(root: Path) -> None:
-            path = root / "plugin-evals/kmp-a11y-architect-routing/graders/agent-used.md"
-            path.write_text(path.read_text().replace(":kmp-a11y-architect", ":kmp-architect"))
+            path = root / "plugin-evals/kmp-a11y-architect-routing/graders/plugin-guidance-used.md"
+            path.write_text(path.read_text().replace("(kmp-a11y-architect|", "(kmp-architect|"))
 
         result = self.invalid_copy(mutate)
         self.assertIn("kmp-a11y-architect-routing grader must match", result.stdout)
-        self.assertIn("names unknown agent: kmp-architect", result.stdout)
+        self.assertIn("names unknown agent or skill: kmp-architect", result.stdout)
 
     def test_consumer_instructions_must_point_to_workflow(self) -> None:
         def mutate(root: Path) -> None:
