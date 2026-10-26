@@ -36,6 +36,24 @@ cp -R .claude/agents .claude/skills /path/to/your-project/.claude/
 
 Then add the short instructions from `.claude/CLAUDE.md`. If your project has no `.claude/CLAUDE.md`, copy the file; otherwise, merge its sections into your existing file.
 
+
+### Skills CLI (Codex, Cursor, OpenCode, and other supported agents)
+
+Install the six skills from the copy-ready Lite repository. This method installs **skills only**; to install the five Claude Code agents as well, use the Claude Code plugin installation above.
+
+```bash
+# Choose skills interactively
+npx skills add Vprogrammers/mobile-a11y-agent-skills-lite
+
+# Install all six skills without prompts
+npx skills add Vprogrammers/mobile-a11y-agent-skills-lite --skill '*' -y
+
+# Preview available skills before installing
+npx skills add Vprogrammers/mobile-a11y-agent-skills-lite --list
+```
+
+The skills CLI installs into supported agent environments; available targets and options depend on the installed CLI version.
+
 ## Contents
 
 ```text
