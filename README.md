@@ -48,6 +48,24 @@ The agents preload their skills by name, so they work from plugin installation o
 
 For a minimal copy-ready package, use [`mobile-a11y-agent-skills-lite`](https://github.com/Vprogrammers/mobile-a11y-agent-skills-lite). It is generated from this repository and contains only consumer instructions, agents, skills, references, and license files.
 
+
+### Skills CLI (Codex, Cursor, OpenCode, and other supported agents)
+
+Install the six skills from the copy-ready Lite repository. This method installs **skills only**; for the five Claude Code agents as well, use the Claude Code plugin installation above.
+
+```bash
+# Choose skills interactively
+npx skills add Vprogrammers/mobile-a11y-agent-skills-lite
+
+# Install all six skills without prompts
+npx skills add Vprogrammers/mobile-a11y-agent-skills-lite --skill '*' -y
+
+# Preview available skills before installing
+npx skills add Vprogrammers/mobile-a11y-agent-skills-lite --list
+```
+
+The skills CLI installs into supported agent environments; available targets and options depend on the installed CLI version. Verify the selected skills and target agent in your environment.
+
 ## Example prompts
 
 Plugin agents are namespaced. When the plugin is installed, invoke them as `<plugin>:<agent>` or with Claude Code's explicit `@agent-...` form. Agents copied directly into `.claude/agents/` keep their unprefixed names.
